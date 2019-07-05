@@ -10,9 +10,9 @@
     <a href="http://fljsbook.com"><img src="https://img.shields.io/badge/Buy-Leanpub-yellow.svg" title="Buy on Leanpub" alt="Buy on Leanpub"></a> <a href="http://manning.fljsbook.com"><img src="https://img.shields.io/badge/Buy-Manning-yellow.svg" title="Buy on Manning" alt="Buy on Manning"></a> <a href="http://amazon.fljsbook.com"><img src="https://img.shields.io/badge/Buy-Amazon-yellow.svg" title="Buy on Amazon" alt="Buy on Amazon"></a>
 </p>
 
-本书主要探讨了应用于javascript的函数式编程的核心原则。但本书与众不同的是，我们在处理这些原则时，没有沉溺于上面的繁重的术语中。我们研究了JS的函数式编程基本概念的一个子集，我把他称之为“多彩迷幻的 JavaScript”的函数式编程基础，并将它应用到javascript中去。
+本书主要探讨了应用于javascript的函数式编程的核心原则。但本书与众不同的是，我们在处理这些原则时，没有沉溺于上面的繁重的术语中。我们研究了JS的函数式编程基本概念的一个子集，我把他称之为函数式编程基础，并将它应用到javascript中去。
 
-**注意:** 尽管书名中含有“轻”这个字眼，但我并不推荐把这本书归类到作为“初学者入门”或“记帐式”的那一类主题书中去。本书严谨严谨，内容翔实，在阅读深入之前，需要有扎实的JS知识基础。“灯”的意思是范围有限；这本书对每个主题的理解要比在其他常见的书写函数式编程的JS书籍深入得多，而不是更广泛。
+**注意:** 尽管书名中含有“轻”这个字眼，但我并不推荐把这本书归类到作为“初学者入门”或“记帐式”的那一类主题书中去。本书严谨严谨，内容翔实，在阅读深入之前，需要有扎实的JS知识基础。“轻”可以理解为范围有限；这本书对每个主题的理解要比在其他常见的书写函数式编程的JS书籍深入得多，而不是更广泛。
 
 让我们看看现实中是怎么写的吧：“一个单元只是内函数类中的一个单位半群（又名:幺半群）”，这句话对我们来说是没有任何帮助的，除非你已经是基础函数中佼佼者（可惜我不是！）。
 
