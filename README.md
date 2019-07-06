@@ -72,7 +72,6 @@
 你为这项工作所做的任何贡献当然都会受到**莫大感激** 。
 
 但**请**在提交项目前仔细阅读[投稿指南](CONTRIBUTING.md)。
-But **PLEASE** read the [Contributions Guidelines](CONTRIBUTING.md) carefully before submitting a PR.
 
 ## 许可证和版权
 
