@@ -119,9 +119,10 @@ function constructMsg(v) { return `The magic number is: ${v}`; }
 我们需要更加关注代码的可读性。还得提一下，可读性不仅仅是字符数的减少，可读性实际上最受熟悉度的影响。
 <a href="#user-content-footnote-1"><sup>1</sup></a>
 
-If we are going to spend our time concerned with making code that will be more readable and understandable, FP is central in that effort. The principles of FP are well established, deeply studied and vetted, and provably verifiable. Taking the time to learn and employ these FP principles will ultimately lead to more readily and recognizably familiar code for you and others. The increase in code familiarity, and the expediency of that recognition, will improve code readability.
+如果我们要花时间来写更易于阅读和理解的代码，那么函数式编程就是这项工作的核心。函数式编程的原则是建立良好的，深入研究和审查，并可证实的。花时间学习和使用这些函数式编程原则最终将为您和其他人带来更容易识别的熟悉代码。代码熟悉度的提高以及识别的便利性将提高代码的可读性。
 
-For example, once you learn what `map(..)` does, you'll be able to almost instantly spot and understand it when you see it in any program. But every time you see a `for` loop, you're going to have to read the whole loop to understand it. The syntax of the `for` loop may be familiar, but the substance of what it's doing is not; that has to be *read*, every time.
+
+例如，一旦您学习了“map（…）”的功能，当您在任何程序中看到它时，您几乎可以立即发现并理解它。 但是每次你看到一个“for”循环，你就必须阅读整个循环才能理解它。“for”循环的语法可能是熟悉的，但实际上它所做的并不是；你每次都必须*读*才能理解。
 
 By having more code that's recognizable at a glance, and thus spending less time figuring out what the code is doing, our focus is freed up to think about the higher levels of program logic; this is the important stuff that most needs our attention anyway.
 
