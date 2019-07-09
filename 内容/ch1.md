@@ -137,7 +137,7 @@ By having more code that's recognizable at a glance, and thus spending less time
     <img src="images/fig17.png" width="50%">
 </p>
 
-You may just find yourself experiencing similar effects as you work through the book. But take heart; if you stick this out, the curve comes back up!
+你可能会发现，当你读这本书的时候，你也会有类似的感受。但振作起来;如果你坚持下去，曲线就会上升!
 
 *Imperative* describes the code most of us probably already write naturally; it's focused on precisely instructing the computer *how* to do something. Declarative code -- the kind we'll be learning to write, which adheres to FP principles -- is code that's more focused on describing the *what* outcome.
 
