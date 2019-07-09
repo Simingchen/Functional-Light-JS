@@ -124,13 +124,14 @@ function constructMsg(v) { return `The magic number is: ${v}`; }
 
 例如，一旦您学习了“map（…）”的功能，当您在任何程序中看到它时，您几乎可以立即发现并理解它。 但是每次你看到一个“for”循环，你就必须阅读整个循环才能理解它。“for”循环的语法可能是熟悉的，但实际上它所做的并不是；你每次都必须*读*才能理解。
 
+通过拥有看一眼就能识别的代码的能力，从而减少时间去了解代码在做什么，我们的注意力被释放出来，去思考更高层次的程序逻辑；那些都是最需要我们关注的重要内容。
 By having more code that's recognizable at a glance, and thus spending less time figuring out what the code is doing, our focus is freed up to think about the higher levels of program logic; this is the important stuff that most needs our attention anyway.
 
-FP (at least, without all the terminology weighing it down) is one of the most effective tools for crafting readable code. *That* is why it's so important.
+函数式编程 (至少，没有所有的术语来衡量它) 是制作可读代码最有效的工具之一。 这也是它如此重要的原因。
 
-## Readability
+## 可读性
 
-Readability is not a binary characteristic. It's a largely subjective human factor describing our relationship to code. And it will naturally vary over time as our skills and understanding evolve. I have experienced effects similar to the following figure, and anecdotally many others I've talked to have as well.
+可读性不是一个二进制特性。这在很大程度上是描述我们与代码关系的主观因素。随着时间的推移，我们的技能和理解自然会发生变化。我曾经历过类似下图的效果，而且我也曾与许多人聊过关于这些有趣的事。
 
 <p align="center">
     <img src="images/fig17.png" width="50%">
