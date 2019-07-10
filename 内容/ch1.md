@@ -139,17 +139,17 @@ By having more code that's recognizable at a glance, and thus spending less time
 
 你可能会发现，当你读这本书的时候，你也会有类似的感受。但振作起来;如果你坚持下去，曲线就会上升!
 
-*Imperative* describes the code most of us probably already write naturally; it's focused on precisely instructing the computer *how* to do something. Declarative code -- the kind we'll be learning to write, which adheres to FP principles -- is code that's more focused on describing the *what* outcome.
+命令式代码描述我们大多数人已经自然编写的代码;它专注于精确指导计算机“如何”做某事。而我们将学习编写的声明式代码，它遵循函数式编程原则是更专注于描述结果输出的代码。
 
-Let's revisit the two code snippets presented earlier in this chapter.
+让我们回顾本章前面介绍的两个代码片段。
 
-The first snippet is imperative, focused almost entirely on *how* to do the tasks; it's littered with `if` statements, `for` loops, temporary variables, reassignments, value mutations, function calls with side effects, and implicit data flow between functions. You certainly *can* trace through its logic to see how the numbers flow and change to the end state, but it's not at all clear or straightforward.
+第一个片段是命令式的，几乎完全集中于“如何”完成任务;它充斥着“if”语句、“for”循环、临时变量、重新分配、值突变、带有副作用的函数调用以及函数之间的隐式数据流。当然，你“可以”通过它的逻辑来查看数字是如何流动和更改到最终状态的，但它一点也不清楚或直接。
 
-The second snippet is more declarative; it does away with most of those aforementioned imperative techniques. Notice there's no explicit conditionals, loops, side effects, reassignments, or mutations; instead, it employs well-known (to the FP world, anyway!) and trustable patterns like filtering, reduction, transducing, and composition. The focus shifts from low-level *how* to higher level *what* outcomes.
+第二个片段更具声明性一些;它消除了前面提到的大多数命令式技术。注意没有显式的条件、循环、副作用、重新分配或突变;相反，它使用我们所说的函数式编程和可信的模式，如过滤、还原、转换和组合。注重从低级别的“如何”转移到高级的“结果”。
 
-Instead of messing with an `if` statement to test a number, we delegate that to a well-known FP utility like `gte(..)` (greater-than-or-equal-to), and then focus on the more important task of combining that filter with another filter and a summation function.
+我们没有使用“if”语句来测试一个数字，而是将其委托给一个函数式编程里的实用程序，如“gte(..)”(大于或等于)去操作，然后将重点放在更重要的任务上，即将该过滤器与另一个过滤器和求和函数组合起来，得到我们想要的结果。
 
-Moreover, the flow of data through the second program is explicit:
+此外，通过第二个程序的数据流是明确的:
 
 1. A list of numbers goes into `printMagicNumber(..)`.
 2. One at a time those numbers are processed by `sumOnlyFavorites(..)`, resulting in a single number total of only our favorite kinds of numbers.
