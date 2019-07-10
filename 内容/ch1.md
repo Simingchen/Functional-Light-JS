@@ -151,28 +151,28 @@ By having more code that's recognizable at a glance, and thus spending less time
 
 此外，通过第二个程序的数据流是明确的:
 
-1. A list of numbers goes into `printMagicNumber(..)`.
-2. One at a time those numbers are processed by `sumOnlyFavorites(..)`, resulting in a single number total of only our favorite kinds of numbers.
-3. That total is converted to a message string with `constructMsg(..)`.
-4. The message string is printed to the console with `console.log(..)`.
+1. 一系列数字经过函数 `printMagicNumber(..)`.
+2. 这些数字由“sumOnlyFavorites(..)”依次次处理，最后结果得到一个数字，其中得出一个我们最喜欢的数字
+3. 这个总数被“constructMsg(..)”函数转换为一个带有的消息字符串。
+4. 消息字符串通过`console.log(..)`打印出来.
 
-You may still feel this approach is convoluted, and that the imperative snippet was easier to understand. You're much more accustomed to it; familiarity has a profound influence on our judgments of readability. By the end of this book, though, you will have internalized the benefits of the second snippet's declarative approach, and that familiarity will spring its readability to life.
+从上面可以看到命令式代码片段更容易理解，但您可能仍然觉得这种方法很复杂，你的习惯与熟悉度对可读性的判断有深刻的影响。不过，在本书的最后，您将会潜移默化的了解到第二个代码片段的声明性方法的优点，并且熟悉性将使其可读性更强。
 
-I know asking you to believe that at this point is a leap of faith.
+我知道让你相信这一点是一种信仰的飞跃。
 
-It takes a lot more effort, and sometimes more code, to improve its readability as I'm suggesting, and to minimize or eliminate many of the mistakes that lead to bugs. Quite honestly, when I started writing this book, I could never have written (or even fully understood!) that second snippet. As I'm now further along on my journey of learning, it's more natural and comfortable.
+正如我所建议的，要提高它的可读性，并最小化或消除导致bug的许多错误，需要付出更多的努力，有时还需要编写更多的代码。坦白地说，当我开始写这本书的时候，我可能还完全写不出(甚至完全理解)第二段。当我更深入学习的时候，一切都变得自然与舒适。
 
-If you're hoping that FP refactoring, like a magic silver bullet, will quickly transform your code to be more graceful, elegant, clever, resilient, and concise -- that it will come easy in the short term -- unfortunately that's just not a realistic expectation.
+如果您希望使用函数式编程重构，那这就像一个神奇的银弹，能够快速地将您的代码转换为更优雅、更优雅、更聪明、更有弹性、更简洁的代码(短期内很容易实现)，万幸的是，这是一个现实的期望不难实现。
 
-FP is a very different way of thinking about how code should be structured, to make the flow of data much more obvious and to help your reader follow your thinking. It will take time. This effort is eminently worthwhile, but it can be an arduous journey.
+函数式编程是一种非常不同的方式来考虑代码应该如何构造，从而使数据流更加明显，并帮助读者跟随您的想法。这需要时间。这一努力非常值得，但可能是一段艰苦的旅程。
 
-It still often takes me multiple attempts at refactoring a snippet of imperative code into more declarative FP, before I end up with something that's clear enough for me to understand later. I've found converting to FP is a slow iterative process rather than a quick binary flip from one paradigm to another.
+通常，我仍然需要多次尝试将命令式代码片段重构为更具声明性的函数式编程模式的代码，然后才能得到一些足够清晰的代码，以便以后能够理解。我发现转换到函数式编程模式是一个缓慢的迭代过程，不像从一个范例到另一个范例的二进制转换那样快速。
 
-I also apply the "teach it later" test to every piece of code I write. After I've written a piece of code, I leave it alone for a few hours or days, then come back and try to read it with fresh eyes, and pretend as if I need to teach or explain it to someone else. Usually, it's jumbled and confusing the first few passes, so I tweak it and repeat!
+我还将“以后再教”测试应用到我编写的每段代码中。在我写完一段代码后，我会把它放在一边几个小时或几天，然后回来，试着用新的眼光来读它，假装我需要教别人或向别人解释它。通常，这样给别人解释的时候相当混乱，而且要不断的调整那些代码!
 
-I'm not trying to dampen your spirits. I really want you to hack through these weeds. I am glad I did it. I can finally start to see the curve bending upward toward improved readability. The effort has been worth it. It will be for you, too.
+我不是想让你扫兴。我真希望你能解开疑惑。我很高兴我做到了。我最终可以看到上面图像解释的曲线向上弯曲的状态，改造代码以提高可读性。这些努力是值得的。
 
-## Perspective
+## 客观判断
 
 Most other FP texts seem to take a top-down approach, but we're going to go the opposite direction: working from the ground up, we'll uncover the basic foundational principles that I believe formal FPers would admit are the scaffolding for everything they do. But for the most part we'll stay arm's length away from most of the intimidating terminology or mathematical notation that can so easily frustrate learners.
 
