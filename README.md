@@ -1,4 +1,4 @@
-# JavaScript中的轻量函数式编程
+# JavaScript轻量级函数式编程
 
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-blue.svg)](http://creativecommons.org/licenses/by-nc-nd/4.0/)
 
@@ -16,7 +16,7 @@
 
 让我们看看现实中是怎么写的吧：“一个单元只是内函数类中的一个单位半群（又名:幺半群）”，这句话对我们来说是没有任何帮助的，除非你已经是基础函数中佼佼者（可惜我不是！）。
 
-上面这并不是说这些术语没有意义，或者说函数式程序设计的理念不适用于他们。一旦你掌握了JavaScript中的轻量函数式编程，你可能会希望能更正式地学习函数式的程序设计（FP），你肯定会接触到它们的含义和其中的原因。
+上面这并不是说这些术语没有意义，或者说函数式程序设计的理念不适用于他们。一旦你掌握了JavaScript轻量级函数式编程，你可能会希望能更正式地学习函数式的程序设计（FP），你肯定会接触到它们的含义和其中的原因。
 
 但我希望您现在能够将函数式程序设计（fp）的一些基本原理应用到您的javascript中，因为我相信它将帮助您编写更好、更合理的代码。
 
@@ -29,12 +29,12 @@
 * [序言](manuscript/foreword.md/#foreword) ([Brian Lonsdorf, aka "Prof Frisby"](https://twitter.com/DrBoolean))
 * [前言](manuscript/preface.md/#preface)
 * [章节 1: 为什么要函数式编程?](manuscript/ch1.md/#chapter-1-why-functional-programming)
-* [章节 2: 函数的性质](manuscript/ch2.md/#chapter-2-the-nature-of-functions)
+* [章节 2: 函数的本质](manuscript/ch2.md/#chapter-2-the-nature-of-functions)
 * [章节 3: 管理函数输入](manuscript/ch3.md/#chapter-3-managing-function-inputs)
 * [章节 4: 组合函数](manuscript/ch4.md/#chapter-4-composing-functions)
 * [章节 5: 减少副作用影响](manuscript/ch5.md/#chapter-5-reducing-side-effects)
 * [章节 6: 值的不变性质](manuscript/ch6.md/#chapter-6-value-immutability)
-* [章节 7: 闭合与对象](manuscript/ch7.md/#chapter-7-closure-vs-object)
+* [章节 7: 闭包与对象](manuscript/ch7.md/#chapter-7-closure-vs-object)
 * [章节 8: 递归](manuscript/ch8.md/#chapter-8-recursion)
 * [章节 9: 列表的操作](manuscript/ch9.md/#chapter-9-list-operations)
 * [章节 10: 函数的异步](manuscript/ch10.md/#chapter-10-functional-async)
@@ -72,6 +72,7 @@
 你为这项工作所做的任何贡献当然都会受到**莫大感激** 。
 
 但**请**在提交项目前仔细阅读[投稿指南](CONTRIBUTING.md)。
+But **PLEASE** read the [Contributions Guidelines](CONTRIBUTING.md) carefully before submitting a PR.
 
 ## 许可证和版权
 
