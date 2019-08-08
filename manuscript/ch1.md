@@ -174,13 +174,13 @@ By having more code that's recognizable at a glance, and thus spending less time
 
 ## 客观判断
 
-Most other FP texts seem to take a top-down approach, but we're going to go the opposite direction: working from the ground up, we'll uncover the basic foundational principles that I believe formal FPers would admit are the scaffolding for everything they do. But for the most part we'll stay arm's length away from most of the intimidating terminology or mathematical notation that can so easily frustrate learners.
+大多数FP文本似乎都采取了自上而下的方法，但我们会以相反的方向：从头开始，我们将揭示基本的基本原则，我相信正式的FP使用者会承认这是他们所做一切的脚手架。但在很大程度上，我们会与大多数吓人的术语或数学符号保持一定距离，因为这些术语或数学符号很容易让学习者感到沮丧。
 
-I believe it's less important what you call something and more important that you understand what it is and how it works. That's not to say there's no importance to shared terminology -- it undoubtedly eases communication among seasoned professionals. But for the learner, I've found it can be distracting.
+我相信你所说的东西不那么重要，更重要的是你要了解它是什么以及它是如何工作的。这并不是说共享术语不重要——毫无疑问，它简化了经验丰富的专业人员之间的交流。但对于学习者来说，我发现这会分散注意力。
 
-So this book will try to focus more on the base concepts and less on the fancy fluff. That's not to say there won't be terminology; there definitely will be. But don't get too wrapped up in the sophisticated words. Wherever necessary, look beyond them to the ideas.
+因此，这本书将会更多地集中在基本概念，而不是花里胡哨的说些无意义的事情上。这并不是说没有术语，而是肯定会有术语。但不要过于沉溺于复杂的语言中。在必要的时候，超越他们去考虑这些想法。
 
-I call the less formal practice herein "Functional-Light Programming" because I think where the formalism of true FP suffers is that it can be quite overwhelming if you're not already accustomed to formal thought. I'm not just guessing; this is my own personal story. Even after teaching FP and writing this book, I can still say that the formalism of terms and notation in FP is very, very difficult for me to process. I've tried, and tried, and I can't seem to get through much of it.
+我把这些不太正式的实践称为“轻量编程”，我认为真正的FP的形式主义所受害的地方是，如果你还不习惯于正式的思想，它可能是非常压倒性的。我不只是简单猜测，从我自己的故事中可以说明。即使在教过FP和写过这本书之后，我仍然可以说，FP中的术语和符号的形式主义对我来说是非常难以处理的。我试过又试，但还是觉得难以处理。
 
 I know many FPers who believe that the formalism itself helps learning. But I think there's clearly a cliff where that only becomes true once you reach a certain comfort with the formalism. If you happen to already have a math background or even some flavors of CS experience, this may come more naturally to you. But some of us don't, and no matter how hard we try, the formalism keeps getting in the way.
 
