@@ -260,5 +260,3 @@ By having more code that's recognizable at a glance, and thus spending less time
 学习函数编程从深入了解函数的本质开始。这就是我们在下一章要讨论的问题。
 
 ----
-
-<a name="footnote-1"><sup>1</sup></a>Buse, Raymond P. L., and Westley R. Weimer. “Learning a Metric for Code Readability.” IEEE Transactions on Software Engineering, IEEE Press, July 2010, dl.acm.org/citation.cfm?id=1850615.
