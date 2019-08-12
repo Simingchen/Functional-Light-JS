@@ -220,9 +220,9 @@ By having more code that's recognizable at a glance, and thus spending less time
 * [JavaScript Allongé](https://leanpub.com/javascriptallongesix) by [Reg Braithwaite](https://twitter.com/raganwald)
 * [Functional JavaScript](http://shop.oreilly.com/product/0636920028857.do) by [Michael Fogus](https://twitter.com/fogus)
 
-### Blogs/sites
+### 博客/网站
 
-Some other authors and content you should check out:
+一些作者和内容:
 
 * [Fun Fun Function Videos](https://www.youtube.com/watch?v=BMUiFMZr7vk) by [Mattias P Johansson](https://twitter.com/mpjme)
 * [Awesome FP JS](https://github.com/stoeffel/awesome-fp-js)
@@ -234,13 +234,13 @@ Some other authors and content you should check out:
 * [Functional Programming Jargon](https://github.com/hemanth/functional-programming-jargon#functional-programming-jargon)
 * [Functional Programming Exercises](https://github.com/InceptionCode/Functional-Programming-Exercises)
 
-### Libraries
+### 资源库
 
-The code snippets in this book largely do not rely on libraries. Each operation that we discover, we'll derive how to implement it in standalone, plain ol' JavaScript. However, as you begin to build more of your real code with FP, you'll soon want a library to provide optimized and highly reliable versions of these commonly accepted utilities.
+这本书中的代码片段在很大程度上不依赖于库。我们发现的每一个操作，都将派生出如何在独立的纯javascript中实现它。但是，当您开始使用函数式编程构建更多的实际代码时，您很快就会希望库能够提供这些常见的实用程序的优化和高度可靠的版本。
 
-By the way, you need to check the documentation for the library functions you use to ensure you know how they work. There will be a lot of similarities in many of them to the code we build on in this text, but there will undoubtedly be some differences, even between popular libraries.
+顺便说一下，您需要检查文档中所使用的库函数，以确保您知道它们是如何工作的。它们中的许多与我们在本文中构建的代码有很多相似之处，但毫无疑问，即使在流行的库之间，也会存在一些差异。
 
-Here are a few popular FP libraries for JavaScript that are a great place to start your exploration with:
+下面是几个流行的JavaScript FP库，是您开始探索的好地方:
 
 * [Ramda](http://ramdajs.com)
 * [lodash/fp](https://github.com/lodash/lodash/wiki/FP-Guide)
