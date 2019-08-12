@@ -247,7 +247,7 @@ By having more code that's recognizable at a glance, and thus spending less time
 * [functional.js](http://functionaljs.com/)
 * [Immutable.js](https://github.com/facebook/immutable-js)
 
-[Appendix C takes a deeper look at these libraries](apC.md/#stuff-to-investigate) and others.
+[附录C](apC.md/#stuff-to-investigate) 对这些库和其他库进行了更深入的研究.
 
 ## 总结
 
