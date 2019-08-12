@@ -182,41 +182,39 @@ By having more code that's recognizable at a glance, and thus spending less time
 
 我把这些不太正式的实践称为“轻量编程”，我认为真正的FP的形式主义所受害的地方是，如果你还不习惯于正式的思想，它可能是非常压倒性的。我不只是简单猜测，从我自己的故事中可以说明。即使在教过FP和写过这本书之后，我仍然可以说，FP中的术语和符号的形式主义对我来说是非常难以处理的。我试过又试，但还是觉得难以处理。
 
-I know many FPers who believe that the formalism itself helps learning. But I think there's clearly a cliff where that only becomes true once you reach a certain comfort with the formalism. If you happen to already have a math background or even some flavors of CS experience, this may come more naturally to you. But some of us don't, and no matter how hard we try, the formalism keeps getting in the way.
+我知道许多人相信形式主义的方式有助于学习。但我认为很明显这是一个误解，只有当你对形式主义有了一定的了解后，才会认识到。如果你恰好已经有了数学背景，甚至是一些CS经验，这对你来说可能更自然。但是我们中的一些人没有，不管我们多么努力，形式主义总是阻碍我们。
 
-So this book introduces the concepts that I believe FP is built on, but comes at it by giving you a boost from below to climb up the cliff wall, rather than condescendingly shouting down at you from the top, prodding you to just figure out how to climb as you go.
+所以这本书介绍了我相信函数编程是建立在其基础上的概念，但它是通过从下面给你一个动力来爬上悬崖峭壁，而不是屈尊地从顶部冲你喊叫，督促你去弄清楚怎么爬。
 
-## How to Find Balance
+## 如何找到平衡
 
-If you've been around programming for very long, chances are you've heard the phrase "YAGNI" before: "You Ain't Gonna Need It". This principle primarily comes from extreme programming, and stresses the high risk and cost of building a feature before it's needed.
+如果你已经在编程方面工作很长时间了，很可能你以前听过“YAGNI”这个缩写：“You Ain’t Gonna Need It”（“你不需要它”）。这个原则主要来自于极端编程，强调在需要之前构建一个特性的高风险和成本。.
 
-Sometimes we guess we'll need a feature in the future, build it now believing it'll be easier to do as we build other stuff, then realize we guessed wrong and the feature wasn't needed, or needed to be quite different. Other times we guess right, but build a feature too early, and suck up time from the features that are genuinely needed now; we incur an opportunity cost in diluting our energy.
+“YAGNI”挑战让我们要记住：即使在某种情况下这是违反直觉的，我们通常也应该推迟建造一些东西，直到目前需要它为止。我们倾向于夸大我们对未来重构的估计，即在需要时稍后添加重构的成本。很可能，以后做起来并不像我们想象的那么困难。
 
-YAGNI challenges us to remember: even if it's counterintuitive in a situation, we often should postpone building something until it's presently needed. We tend to exaggerate our mental estimates of the future refactoring cost of adding it later when it is needed. Odds are, it won't be as hard to do later as we might assume.
+当它应用于函数式编程时，我会给出这样的警告：在本文中会讨论许多有趣的模式，但只因为您发现一些令人兴奋的模式可以应用，在您的代码的应用这些模式可能未必合适。
 
-As it applies to functional programming, I would offer this admonition: there will be plenty of interesting and compelling patterns discussed in this text, but just because you find some pattern exciting to apply, it may not necessarily be appropriate to do so in a given part of your code.
+这就是我不同于许多正式的函数编程人员的地方：仅仅是因为您*可以*将函数编程模式应用于某个东西，但并不意味着您就*应该*将函数编程模式应用于到你的代码上。此外，有很多方法可以分割一个问题，即使您可能已经学习了一种更为复杂的方法，这种方法对维护和可扩展性来说更具“未来证明”，但在这一点上，更简单的函数编程模式可能就足够了。
 
-This is where I will differ from many formal FPers: just because you *can* apply FP to something doesn't mean you *should* apply FP to it. Moreover, there are many ways to slice a problem, and even though you may have learned a more sophisticated approach that is more "future-proof" to maintenance and extensibility, a simpler FP pattern might be more than sufficient in that spot.
+一般来说，我建议您在编写代码时寻求平衡，并在掌握了一些技巧后，在应用函数编程概念时保持保守。在决定某个特定的模式或抽象的时候，考虑是否有助于该部分代码更具可读性，或者它只是引入了尚不保证的巧妙的复杂性时，默认了“YAGNI”原则。
 
-Generally, I'd recommend seeking balance in what you code, and to be conservative in your application of FP concepts as you get the hang of things. Default to the YAGNI principle in deciding if a certain pattern or abstraction will help that part of the code be more readable or if it's just introducing clever sophistication that isn't (yet) warranted.
-
-> Reminder, any extensibility point that’s never used isn’t just wasted effort, it’s likely to also get in your way as well
+> 提醒一下，任何从未使用过的扩展点不仅仅是浪费精力，还可能妨碍您的工作。
 >
 > Jeremy D. Miller @jeremydmiller 2/20/15
 >
 > https://twitter.com/jeremydmiller/status/568797862441586688
 
-Remember, every single line of code you write has a reader cost associated with it. That reader may be another team member, or even your future self. Neither of those readers will be impressed with overly clever, unnecessary sophistication just to show off your FP prowess.
+记住，您编写的每一行代码都会有相应的阅读成本。看这代码的人可能是团队的成员，甚至是你未来的自己。谁都不会对看起来老练的代码印象深刻，代码只是为了炫耀你的函数编程能力罢了。
 
-The best code is the code that is most readable in the future because it strikes exactly the right balance between what it can/should be (idealism) and what it must be (pragmatism).
+最好的代码是未来可读性最高的代码，因为它在理想与实用之间达到了正确的平衡。
 
-## Resources
+## 资源
 
-I have drawn on a great many different resources to be able to compose this text. I believe you, too, may benefit from them, so I wanted to take a moment to point them out.
+我利用了大量不同的资源来撰写这篇文章。我相信你也会从中受益，下面花点时间简单介绍一下。
 
-### Books
+### 相关书籍
 
-Some FP/JavaScript books that you should definitely read:
+一些你不可错过的函数编程/JS书籍:
 
 * [Professor Frisby's Mostly Adequate Guide to Functional Programming](https://drboolean.gitbooks.io/mostly-adequate-guide/content/ch1.html) by [Brian Lonsdorf](https://twitter.com/drboolean)
 * [JavaScript Allongé](https://leanpub.com/javascriptallongesix) by [Reg Braithwaite](https://twitter.com/raganwald)
@@ -251,15 +249,15 @@ Here are a few popular FP libraries for JavaScript that are a great place to sta
 
 [Appendix C takes a deeper look at these libraries](apC.md/#stuff-to-investigate) and others.
 
-## Summary
+## 总结
 
-You may have a variety of reasons for starting to read this book, and different expectations of what you'll get out of it. This chapter has explained why I want you to read the book and what I want you to get out of the journey. It also helps you articulate to others (like your fellow developers) why they should come on the journey with you!
+你可能有各种各样的理由开始读这本书，以及对你能从中得到什么的不同期望。这一章解释了为什么我要你读这本书，以及我要你从中得到什么。它还可以帮助您向其他人（如您的开发伙伴）清楚地表达为什么他们应该与您一起读这本书！
 
-Functional programming is about writing code that is based on proven principles so we can gain a level of confidence and trust over the code we write and read. We shouldn't be content to write code that we anxiously *hope* works, and then abruptly breathe a sigh of relief when the test suite passes. We should *know* what it will do before we run it, and we should be absolutely confident that we've communicated all these ideas in our code for the benefit of other readers (including our future selves).
+函数式编程是关于编写基于经验证的原则的代码，这样我们就可以对编写和读取的代码有自信。我们不应该满足于编写揣测的工作代码，然后测试通过后松了一口气的状态。在运行它之前，我们应该*知道*它将做什么，并且我们应该确信我们已经在代码中为其他读者（包括我们未来的自己）传达了所有这些想法。
 
-This is the heart of Functional-Light JavaScript. The goal is to learn to effectively communicate with our code but not have to suffocate under mountains of notation or terminology to get there.
+这是该书的核心。我们的目标是学会有效地与我们的代码通信，但不必为了达到目的而困惑在符号或术语的复杂中。
 
-The journey to learning functional programming starts with deeply understanding the nature of what a function is. That's what we tackle in the next chapter.
+学习函数编程从深入了解函数的本质开始。这就是我们在下一章要讨论的问题。
 
 ----
 
