@@ -1,27 +1,26 @@
-# Functional-Light JavaScript
-# Chapter 2: The Nature Of Functions
+# 章节2: 函数的性质
 
-Functional Programming is **not just programming with the `function` keyword.** Oh, if only it was that easy -- I could end the book right here! Nevertheless, functions really *are* at the center of FP. And it's how we use functions that makes our code *functional*.
+函数式编程不仅仅是用“function”关键字进行定义来编程。如果这么简单的话，我可以在这里结束这本书！函数确实是函数式编程的核心。而且函数的方式使我们的代码*起作用*。
 
-But how sure are you that you know what *function* really means?
+但是你有多确定“函数”的真正含义？
 
-In this chapter, we're going to lay the groundwork for the rest of the book by exploring all the foundational aspects of functions. Actually, this is a review of all the things even a non-FP programmer should know about functions. But certainly if we want to get the most out of FP concepts, it's essential we *know* functions inside and out.
+在这一章中，我们将通过探索函数的所有基本面，为本书的其余部分奠定基础。实际上，这是对所有内容的回顾，即使是非函数式编程程序员也应该了解函数。但当然，如果我们想从函数式编程的概念中得到最大的好处，我们就必须了解内部和外部的函数。
 
-Brace yourself, because there's a lot more to the function than you may have realized.
+打起精神来，因为这个功能比你想象的要多得多。
 
-## What Is a Function?
+## 什么是函数？
 
-The question "What is a function?" superficially seems to have an obvious answer: a function is a collection of code that can be executed one or more times.
+这个问题，从表面上看，似乎有一个显而易见的答案：函数是可以执行一次或多次的代码集合。
 
-While this definition is reasonable, it's missing some very important essence that is the core of a *function* as it applies to FP. So let's dig below the surface to understand functions more completely.
+虽然这个定义看起来很合理，但它缺少一些非常重要的本质，即*函数*的核心，因为它适用于函数式编程。因此，让我们从表面开始挖掘，以更全面地理解函数。
 
-### Brief Math Review
+### 简单的数学复习
 
-I know I've promised we'd stay away from math as much as possible, but bear with me for a moment as we quickly observe some fundamental things about functions and graphs from algebra before we proceed.
+我知道我答应过我们会尽量远离数学，但是在我们继续之前，请稍等片刻，因为我们很快就能从代数中观察到一些关于函数和图的基本知识。
 
-Do you remember learning anything about `f(x)` back in school? What about the equation `y = f(x)`?
+你记得在学校里学过“f（x）”或者“y=f（x）”吗？
 
-Let's say an equation is defined like this: <code>f(x) = 2x<sup>2</sup> + 3</code>. What does that mean? What does it mean to graph that equation? Here's the graph:
+假设一个方程是这样定义的: <code>f(x) = 2x<sup>2</sup> + 3</code>. 那是什么意思？用图表表示这个方程意味着什么？下面是图表:
 
 <p align="center">
     <img src="images/fig1.png" width="40%">
