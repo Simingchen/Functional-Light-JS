@@ -96,7 +96,7 @@ function foo(x,y,z) {
     // ..
 }
 ```
-` foo（..）`需要三个参数，因为它有三个已声明的参数。这个计数有一个特殊的术语：参数数量。参数数量是指函数声明中的参数数。“foo（…）”的参数数量为“3”。
+` foo（..）`需要三个参数，因为它有三个已声明的参数。这个计数有一个特殊的术语：参数数量。参数数量是指函数声明中的参数个数。“foo（…）”的参数数量为“3”。
 
 Furthermore, a function with arity 1 is also called "unary", a function with arity 2 is also called "binary", and a function with arity 3 or higher is called "n-ary".
 
