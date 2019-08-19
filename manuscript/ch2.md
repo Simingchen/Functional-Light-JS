@@ -132,7 +132,6 @@ else if (fn.length == 3) {
 
 需要注意的一点是，某些类型的参数列表可能会使函数的“length”属性与您可能期望的不同：
 
-One gotcha to be aware of is that certain kinds of parameter list variations can make the `length` property of the function report something different than you might expect:
 
 ```js
 function foo(x,y = 2) {
@@ -211,9 +210,9 @@ function foo(...args) {
 ```
 现在，“args”将是参数的完整数组，不管它们是什么，您可以使用“args.length”来确切知道传入了多少个参数。如果你这样做的话，使用“args[1]”或“args[317]”是安全的。不过，请不要传递318个参数。
 
-### Arrays of Arguments
+### 参数数组
 
-What if you wanted to pass along an array of values as the arguments to a function call?
+如果您想将一个数组作为参数传递给函数调用，该怎么办？
 
 ```js
 function foo(...args) {
@@ -225,21 +224,20 @@ var arr = [ 1, 2, 3, 4, 5 ];
 foo( ...arr );                      // 4
 ```
 
-Our new friend `...` is used, but now not just in the parameter list; it's also used in the argument list at the call-site. It has the opposite behavior in this context. In a parameter list, we said it *gathered* arguments together. In an argument list, it *spreads* them out. So the contents of `arr` are actually spread out as individual arguments to the `foo(..)` call. Do you see how that's different from just passing in a reference to the whole `arr` array?
+上面“…”被使用了，但现在不仅在参数列表中；它也在调用函数的参数列表中使用。在这种情况下，它有相反的行为。在参数列表中，我们说它*收集*参数个数。在参数列表中，`...`是*展开*了数组的参数。所以“arr”的内容实际上是作为“foo（…）”调用的单个参数展开的。那这和仅仅传递一个对整个“arr”数组的引用有什么不同吗？
 
-By the way, multiple values and `...` spreadings can be interleaved, as you see fit:
+还有，多个值和`…`扩展参数可以交错：
 
 ```js
 var arr = [ 2 ];
 
 foo( 1, ...arr, 3, ...[4,5] );      // 4
 ```
+思考这个“…”：在值列表位置，它是*展开*的功能。在赋值位置的参数列表收集参数，赋值给使用参数。
 
-Think of `...` in this symmetric sense: in a value-list position, it *spreads*. In an assignment position -- like a parameter list, because arguments get *assigned to* parameters -- it *gathers*.
+无论您调用哪种行为，`…`都会使处理参数数组更加容易。“slice（…）”、“concat（…）”和“apply（…）”的日子已经变得没有用了，这些方法都需要数组参数值。
 
-Whichever behavior you invoke, `...` makes working with arrays of arguments much easier. Gone are the days of `slice(..)`, `concat(..)`, and `apply(..)` to wrangle our argument value arrays.
-
-**Tip:** Actually, these methods are not entirely useless. There will be a few places we rely on them throughout the code in this book. But certainly in most places, `...` will be much more declaratively readable, and preferable as a result.
+**提示：**实际上，这些方法并不是完全无用的。在本书的整个代码中，我们将有一些地方依赖它们。但是，在大多数地方，`…`将会更加声明性地可读，因此更可取。
 
 ### Parameter Destructuring
 
