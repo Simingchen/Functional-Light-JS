@@ -98,9 +98,10 @@ function foo(x,y,z) {
 ```
 ` foo（..）`需要三个参数，因为它有三个已声明的参数。这个计数有一个特殊的术语：参数数量。参数数量是指函数声明中的参数个数。“foo（…）”的参数数量为“3”。
 
-Furthermore, a function with arity 1 is also called "unary", a function with arity 2 is also called "binary", and a function with arity 3 or higher is called "n-ary".
+此外，一个参数的函数也称为“一元”函数，二个参数的函数也称为“二元”函数，n个参数或更高的函数称为“n元”函数。
 
-You may wish to inspect a function reference during the runtime of a program to determine its arity. This can be done with the `length` property of that function reference:
+
+您可能希望在程序运行时检查函数引用以确定其参数个数。这可以通过函数引用的“length”属性来实现：
 
 ```js
 function foo(x,y,z) {
@@ -109,14 +110,13 @@ function foo(x,y,z) {
 
 foo.length;             // 3
 ```
+在执行期间确定参数个数的一个原因是，一段代码可以从多个地方引用一个函数，并根据参数个数的不同发送不同的值。
 
-One reason for determining the arity during execution would be if a piece of code received a function reference from multiple sources, and sent different values depending on the arity of each.
-
-For example, imagine a case where an `fn` function reference could expect one, two, or three arguments, but you always want to just pass a variable `x` in the last position:
+例如，假设一个情况，一个“fn”函数引用可能需要一个、两个或三个参数，但您总是希望在最后一个位置传递一个变量“x”:
 
 ```js
-// `fn` is set to some function reference
-// `x` exists with some value
+// `fn` 设置为某个函数引用
+// `x` 存在一些值
 
 if (fn.length == 1) {
     fn( x );
@@ -128,8 +128,9 @@ else if (fn.length == 3) {
     fn( undefined, undefined, x );
 }
 ```
+**提示：**函数的“length”属性是只读的，声明函数时就已经确定。它被看作是一段描述函数预期用途的元数据。
 
-**Tip:** The `length` property of a function is read-only and it's determined at the time you declare the function. It should be thought of as essentially a piece of metadata that describes something about the intended usage of the function.
+需要注意的一点是，某些类型的参数列表可能会使函数的“length”属性与您可能期望的不同：
 
 One gotcha to be aware of is that certain kinds of parameter list variations can make the `length` property of the function report something different than you might expect:
 
@@ -150,8 +151,7 @@ foo.length;             // 1
 bar.length;             // 1
 baz.length;             // 1
 ```
-
-What about counting the number of arguments the current function call received? This was once trivial, but now the situation is slightly more complicated. Each function has an `arguments` object (array-like) available that holds a reference to each of the arguments passed in. You can then inspect the `length` property of `arguments` to figure out how many were actually passed:
+要计算当前函数调用接收到的参数个数？这曾经是微不足道的，但现在情况稍微复杂一些。每个函数都有一个“arguments”对象（类似于数组），用于保存对传入的每个参数的引用。然后可以检查“arguments”的“length”属性，以确定实际传递了多少个:
 
 ```js
 function foo(x,y,z) {
@@ -161,23 +161,23 @@ function foo(x,y,z) {
 foo( 3, 4 );    // 2
 ```
 
-As of ES5 (and strict mode, specifically), `arguments` is considered by some to be sort of deprecated; many avoid using it if possible. In JS, we "never" break backward compatibility no matter how helpful that may be for future progress, so `arguments` will never be removed. But it's now commonly suggested that you avoid using it whenever possible.
+从ES5（特别是严格模式）开始，“arguments”被一些人认为是不赞成使用的；许多人会避免使用它。在JS中，我们“从不”破坏向后兼容性，不管这对将来的进展有多大帮助，所以“arguments”永远不会被删除。但现在普遍建议尽可能避免使用它
 
-However, I suggest that `arguments.length`, and only that, is OK to keep using for those cases where you need to care about the passed number of arguments. A future version of JS might possibly add a feature that offers the ability to determine the number of arguments passed without consulting `arguments.length`; if that happens, then we can fully drop usage of `arguments`!
+但是，我建议“arguments.length”，仅用于可以需要传递的参数数量的情况。未来版本的JS可能会添加一个功能，该功能可以确定传递的参数的数量，而不需要查询“arguments.length”；如果发生这种情况，那么我们可以完全放弃使用“arguments”！
 
-Be careful: **never** access arguments positionally, like `arguments[1]`. Stick to `arguments.length` only, and only if you must.
+小心：**从不**按位置访问参数，如“arguments[1]”。如果必须的话，只保留对“arguments.length”的引用。
 
-Except, how will you access an argument that was passed in a position beyond the declared parameters? I'll answer that in a moment; but first, take a step back and ask yourself, "Why would I want to do that?" Seriously. Think about that closely for a minute.
+另外，如何在声明参数之外的位置访问传递的参数？我稍后回答；但首先仔细考虑一下问问自己，“我为什么要这样做？”。
 
-It should be pretty rare that this occurs; it shouldn't be something you regularly expect or rely on when writing your functions. If you find yourself in such a scenario, spend an extra 20 minutes trying to design the interaction with that function in a different way. Name that extra argument even if it's exceptional.
+这种情况应该很少发生；它不应该是您在编写函数时经常需要使用的方式。如果您发现自己处于这样的场景中，请花费额外的20分钟尝试以不同的方式设计与该函数的交互。命名这个额外的论点，即使它是例外的。
 
-A function signature that accepts an indeterminate amount of arguments is referred to as a variadic function. Some people prefer this style of function design, but I think you'll find that often the FPer wants to avoid these where possible.
+接受不确定数量参数的函数称为可变函数。有些人更喜欢这种类型的功能设计，但我认为您会发现，一般情况下，函数编程人员通常会避免这样设计。
 
-OK, enough harping on that point.
+好吧，就这一点说得够多了。
 
-Say you do need to access the arguments in a positional array-like way, possibly because you're accessing an argument that doesn't have a formal parameter at that position. How do we do it?
+假设您确实需要以类数组的方式访问参数，可能是您访问的参数在该位置没有正式参数的需要。那我们要怎么做？
 
-ES6 to the rescue! Let's declare our function with the `...` operator -- variously referred to as "spread", "rest", or (my preference) "gather":
+ES6可以解决这一点！可以用`…`操作符来声明我们的函数——各种各样地称为“spread”、“rest”或“gather”（我的首选项）：
 
 ```js
 function foo(x,y,z,...args) {
@@ -185,7 +185,7 @@ function foo(x,y,z,...args) {
 }
 ```
 
-See the `...args` in the parameter list? That's an ES6 declarative form that tells the engine to collect (ahem, "gather") all remaining arguments (if any) not assigned to named parameters, and put them in a real array named `args`. `args` will always be an array, even if it's empty. But it **will not** include values that are assigned to the `x`, `y`, and `z` parameters, only anything else that's passed in beyond those first three values:
+看到参数列表中的“…args”？这是一个ES6声明形式，它告诉引擎收集所有未分配给命名参数的剩余参数，并将它们放入名为“args”的实数数组中。` args`将始终是一个数组，即使它是空的。但它**不会**包括分配给“x”、“y”和“z”参数的值，只包括超出前三个值的其他值：
 
 ```js
 function foo(x,y,z,...args) {
@@ -198,19 +198,18 @@ foo( 1, 2, 3, 4 );      // 1 2 3 [ 4 ]
 foo( 1, 2, 3, 4, 5 );   // 1 2 3 [ 4, 5 ]
 ```
 
-So, if you *really* want to design a function that can account for an arbitrary number of arguments to be passed in, use `...args` (or whatever name you like) on the end. Now, you'll have a real, non-deprecated, non-yucky array to access those argument values from.
+因此，如果您*真的*想设计一个函数来解释要传入的任意数量的参数，请在末尾使用“…args”（也可以使用其他变量名称）。现在，您将拥有一个真正的、不推荐使用的、不易出错的数组来访问这些参数值。
 
-Just pay attention to the fact that the value `4` is at position `0` of that `args`, not position `3`. And its `length` value won't include those three `1`, `2`, and `3` values. `...args` gathers everything else, not including the `x`, `y`, and `z`.
+注意值“4”位于“args”的“0”位置，而不是“3”位置。它的“length”值不包括这三个“1”、“2”和“3”值。`…args'收集其他所有的参数，不包括'x'、'y'和'z'。
 
-You *can* use the `...` operator in the parameter list even if there's no other formal parameters declared:
+您*可以*使用参数列表中的“…”扩展运算符，即使没有声明其他正式参数：
 
 ```js
 function foo(...args) {
     // ..
 }
 ```
-
-Now `args` will be the full array of arguments, whatever they are, and you can use `args.length` to know exactly how many arguments have been passed in. And you're safe to use `args[1]` or `args[317]` if you so choose. Please don't pass in 318 arguments, though.
+现在，“args”将是参数的完整数组，不管它们是什么，您可以使用“args.length”来确切知道传入了多少个参数。如果你这样做的话，使用“args[1]”或“args[317]”是安全的。不过，请不要传递318个参数。
 
 ### Arrays of Arguments
 
