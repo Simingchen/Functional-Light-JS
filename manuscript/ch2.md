@@ -239,9 +239,9 @@ foo( 1, ...arr, 3, ...[4,5] );      // 4
 
 **提示：**实际上，这些方法并不是完全无用的。在本书的整个代码中，我们将有一些地方依赖它们。但是，在大多数地方，`…`将会更加声明性地可读，因此更可取。
 
-### Parameter Destructuring
+### 参数的解构
 
-Consider the variadic `foo(..)` from the previous section:
+考虑上一节中的变量“foo（..）”：
 
 ```js
 function foo(...args) {
@@ -251,7 +251,7 @@ function foo(...args) {
 foo( ...[1,2,3] );
 ```
 
-What if we wanted to change that interaction so the caller of our function passes in an array of values instead of individual argument values? Just drop the two `...` usages:
+如果我们想改变这种交互，让函数的调用者传递一个数组，而不是单个参数值，该怎么办？试下这两种用法：
 
 ```js
 function foo(args) {
@@ -261,11 +261,11 @@ function foo(args) {
 foo( [1,2,3] );
 ```
 
-Simple enough. But what if now we wanted to give a parameter name to each of the first two values in the passed-in array? We aren't declaring individual parameters anymore, so it seems we lost that ability.
+很简单。但是，如果现在我们想给传入数组中前两个值中的每一个都提供一个参数名呢？我们不再声明单个参数，我们似乎实现不了。
 
-Thankfully, ES6 destructuring is the answer. Destructuring is a way to declare a *pattern* for the kind of structure (object, array, etc.) that you expect to see, and how decomposition (assignment) of its individual parts should be processed.
+感谢ES6给出了答案。解构是一种为您希望看到的结构类型（对象、数组等）声明*模式*的方法，以及如何处理其各个部分的分解（分配）。
 
-Consider:
+想一想:
 
 <a name="funcparamdestr"></a>
 
@@ -277,13 +277,13 @@ function foo( [x,y,...args] = [] ) {
 foo( [1,2,3] );
 ```
 
-Do you spot the `[ .. ]` brackets around the parameter list now? This is called array parameter destructuring.
+你看到`[ .. ]`参数列表的括号了吗？这称为数组参数解构。
 
-In this example, destructuring tells the engine that an array is expected in this assignment position (aka parameter). The pattern says to take the first value of that array and assign to a local parameter variable called `x`, the second to `y`, and whatever is left is *gathered* into `args`.
+在这个例子中，解构函数告诉引擎在这个分配位置需要一个数组。该模式表示取数组的第一个值并将其赋给名为“x”的局部参数变量，将第二个值赋给“y”，剩下的值将赋给“args”。
 
-### The Importance of Declarative Style
+### 声明风格的重要性
 
-Considering the destructured `foo(..)` we just looked at, we could instead have processed the parameters manually:
+思考下我们刚才被解构的“foo（…）”，我们可以手动处理参数：
 
 ```js
 function foo(params) {
@@ -294,46 +294,20 @@ function foo(params) {
     // ..
 }
 ```
+但在这里，我们强调一个我们在[第1章](ch1.md/#readability)中提到的原则：声明性代码比命令式代码更有效地通信。
 
-But here we highlight a principle we only briefly introduced in [Chapter 1](ch1.md/#readability): declarative code communicates more effectively than imperative code.
+声明性代码（例如，前一个“foo（…）”代码段中的解构函数，或“…”运算符用法）将重点放在代码的结果上。
 
-Declarative code (for example, the destructuring in the former `foo(..)` snippet, or the `...` operator usages) focuses on what the outcome of a piece of code should be.
+命令式代码（如后一段中的手动处理的函数）更关注如何获得结果。如果你以后读到这样的命令式代码，你必须关注执行所有的代码，以理解期望的结果。变得在那里被“编码”，很容易被细节所模糊。
 
-Imperative code (such as the manual assignments in the latter snippet) focuses more on how to get the outcome. If you later read such imperative code, you have to mentally execute all of it to understand the desired outcome. The outcome is *coded* there, but it's not as clear because it's clouded by the details of *how* we get there.
+前面的“foo（…）”被认为更具可读性，因为解构的方法隐藏了不必要的参数输入的细节；读者可以自由地只关注处理这些参数。这显然是最重要的关注点，所以读者应该集中精力来最全面地理解代码。
 
-The earlier `foo(..)` is regarded as more readable, because the destructuring hides the unnecessary details of *how* to manage the parameter inputs; the reader is free to focus only on *what* we will do with those parameters. That's clearly the most important concern, so it's what the reader should be focused on to understand the code most completely.
+无论我们使用的语言和库/框架的允许程度怎样，只要可能，**我们都应该努力实现声明性、自解释的代码。**
 
-Wherever possible, and to whatever degrees our language and our libraries/frameworks will let us, **we should be striving for declarative, self-explanatory code.**
 
-## Named Arguments
+## 命名参数
 
-Just as we can destructure array parameters, we can destructure object parameters:
-
-```js
-function foo( {x,y} = {} ) {
-    console.log( x, y );
-}
-
-foo( {
-    y: 3
-} );                    // undefined 3
-```
-
-We pass in an object as the single argument, and it's destructured into two separate parameter variables `x` and `y`, which are assigned the values of those corresponding property names from the object passed in. It didn't matter that the `x` property wasn't on the object; it just ended up as a variable with `undefined` like you'd expect.
-
-But the part of parameter object destructuring I want you to pay attention to is the object being passed into `foo(..)`.
-
-With a normal call-site like `foo(undefined,3)`, position is used to map from argument to parameter; we put the `3` in the second position to get it assigned to a `y` parameter. But at this new kind of call-site where parameter destructuring is involved, a simple object-property indicates which parameter (`y`) the argument value `3` should be assigned to.
-
-We didn't have to account for `x` in *that* call-site because in effect we didn't care about `x`. We just omitted it, instead of having to do something distracting like passing `undefined` as a positional placeholder.
-
-Some languages have an explicit feature for this: named arguments. In other words, at the call-site, labeling an input value to indicate which parameter it maps to. JavaScript doesn't have named arguments, but parameter object destructuring is the next best thing.
-
-Another FP-related benefit of using an object destructuring to pass in potentially multiple arguments is that a function that only takes one parameter (the object) is much easier to compose with another function's single output. Much more on that in [Chapter 4](ch4.md).
-
-### Unordered Parameters
-
-Another key benefit is that named arguments, by virtue of being specified as object properties, are not fundamentally ordered. That means we can specify inputs in whatever order we want:
+正如我们可以解构数组参数一样，我们也可以解构对象参数：
 
 ```js
 function foo( {x,y} = {} ) {
@@ -345,11 +319,37 @@ foo( {
 } );                    // undefined 3
 ```
 
-We're skipping the `x` parameter by simply omitting it. Or we could specify an `x` argument if we cared to, even if we listed it after `y` in the object literal. The call-site is no longer cluttered by ordered-placeholders like `undefined` to skip a parameter.
+我们将一个对象作为单个参数传入，它被分解为两个单独的参数变量“x”和“y”，它们从传入的对象中分配相应属性名的值。“x”属性不在对象上并不重要；它只是像您所期望的那样，以一个带有“undefined”的变量结束。
 
-Named arguments are much more flexible, and attractive from a readability perspective, especially when the function in question can take three, four, or more inputs.
+但是我希望您注意的是,参数对象解构的一部分对象被传递到“foo（…）”。
 
-**Tip:** If this style of function arguments seems useful or interesting to you, check out coverage of my [FPO library in Appendix C](apC.md/#bonus-fpo).
+对于“foo（undefined，3）”这样的普通调用，位置表明了如何映射到函数的参数上；我们将“3”放在第二个位置，以将其分配给“y”参数。但是在参数解构的这种新的调用上，一个简单的对象参数值“3”对应分配给哪个参数（`Y`）。
+
+我们不用解释那个调用的“x”，因为我们不关心“x”的使用。我们可以省略它，就不必做一些分散注意力的事情，比如将“undefined”作为位置占位符传递。
+
+有些语言有一个明确的特性：命名参数。换句话说，在调用中，标记输入值以指示它映射到哪个参数。javascript没有命名参数，但参数对象解构是下一个最好的方法。
+
+使用对象析构函数传递潜在多个参数的方法对函数式编程的好处是，只接受一个参数的函数更容易与另一个函数的单个输出组合。在[第4章](ch4.md)中有阐述的更详细。
+
+### 无序参数
+
+另一个重要的好处是，命名参数由于被指定为对象属性，所以没有从根本上进行排序。这意味着我们可以按照我们想要的任何顺序输入：
+
+```js
+function foo( {x,y} = {} ) {
+    console.log( x, y );
+}
+
+foo( {
+    y: 3
+} );                    // undefined 3
+```
+
+我们只是简单地省略了'x'参数。当然我们也可以指定一个'x'参数，可以放在'y'的后面。这样调用的时候不用考虑x为“undefined”的有序占位符而忽略了参数。
+
+从可读性的角度来看，命名参数更灵活，更具吸引力，尤其是当相关函数可以接受三个、四个或更多输入时。
+
+**提示：**如果这种类型的函数参数对您有用或感兴趣，请查看 [附录C的函数式编程对象](apC.md/#bonus-fpo)。
 
 ## Function Output
 
