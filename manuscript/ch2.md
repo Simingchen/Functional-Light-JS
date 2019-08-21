@@ -351,11 +351,11 @@ foo( {
 
 **提示：**如果这种类型的函数参数对您有用或感兴趣，请查看 [附录C的函数式编程对象](apC.md/#bonus-fpo)。
 
-## Function Output
+## 函数的输出
 
-Let's shift our attention from a function's inputs to its output.
+让我们把注意力从函数的输入转移到函数的输出吧。
 
-In JavaScript, functions always return a value. These three functions all have identical `return` behavior:
+在JavaScript中，函数总是返回一个值。这三个函数都具有相同的“返回”行为：
 
 ```js
 function foo() {}
@@ -369,11 +369,11 @@ function baz() {
 }
 ```
 
-The `undefined` value is implicitly `return`ed if you have no `return` or if you just have an empty `return;`.
+如果没有“return”，或者只有空的“return；”，则“undefined”值是隐式的“return”。
 
-But keeping as much with the spirit of FP function definition as possible -- using functions and not procedures -- our functions should always have outputs, which means they should explicitly `return` a value, and usually not `undefined`.
+但是尽可能多地遵循函数编程定义的精神——使用函数而不是过程——我们的函数应该总是有输出，这意味着它们应该显式地“返回”一个值，而不是返回隐式的返回“undefined”。
 
-A `return` statement can only return a single value. So if your function needs to return multiple values, your only viable option is to collect them into a compound value like an array or an object:
+“return”语句只能返回单个值。因此，如果函数需要返回多个值，唯一可行的选择是将它们收集到数组或对象这样的复合值中：
 
 ```js
 function foo() {
@@ -382,23 +382,22 @@ function foo() {
     return [ retValue1, retValue2 ];
 }
 ```
-
+然后，我们从“foo（）”返回的两个对应项分配给“x”和“y”：
 Then, we'll assign `x` and `y` from two respective items in the array that comes back from `foo()`:
 
 ```js
 var [ x, y ] = foo();
 console.log( x + y );           // 42
 ```
+将多个值收集到数组（或对象）中以返回，然后将这些值解构回不同的赋值，是透明地表示函数的多个输出的一种方法。
 
-Collecting multiple values into an array (or object) to return, and subsequently destructuring those values back into distinct assignments, is a way to transparently express multiple outputs for a function.
+**提示:**如果我不建议您花时间来考虑一个需要多个输出的函数是否可以重构来避免这种情况，或者将其分解为两个或更多更小的单用途函数，那就是我的疏忽了。有时是可能的，有时不是;但你至少应该考虑一下这种情况的存在。
 
-**Tip:** I'd be remiss if I didn't suggest you take a moment to consider if a function needing multiple outputs could be refactored to avoid that, perhaps separated into two or more smaller single-purpose functions? Sometimes that will be possible, sometimes not; but you should at least consider it.
+### 提前返回
 
-### Early Returns
+“return”语句不仅返回函数的值。它也是一个流控制结构；它在该点结束了函数的执行。因此，具有多个“return”语句的函数具有多个可能的退出点，这意味着如果有多条路径可以生成该输出，则可能难以读取函数以了解其输出行为。
 
-The `return` statement doesn't just return a value from a function. It's also a flow control structure; it ends the execution of the function at that point. A function with multiple `return` statements thus has multiple possible exit points, meaning that it may be harder to read a function to understand its output behavior if there are many paths that could produce that output.
-
-Consider:
+想一想:
 
 ```js
 function foo(x) {
@@ -415,16 +414,15 @@ function foo(x) {
     return x;
 }
 ```
+小测验：如果不作弊，也不在浏览器中运行此代码，那么'foo（2）'返回什么？那么“foo（4）”呢？还有“foo（8）”？还有“foo（12）”？
 
-Pop quiz: without cheating and running this code in your browser, what does `foo(2)` return? What about `foo(4)`? And `foo(8)`? And `foo(12)`?
+你对自己的答案有信心吗?为了得到这些答案，你付了多少精神税?前两次我都想错了!
 
-How confident are you in your answers? How much mental tax did you pay to get those answers? I got it wrong the first two times I tried to think it through, and I wrote it!
+我认为可读性也是一部分问题，我们使用“return”不仅返回不同的值，而且作为流控制结构在某些情况下提前退出函数的执行。显然有更好的方法来编写流控制(“if”逻辑，等等)，但是我也认为有一些方法可以使输出路径更加明显。
 
-I think part of the readability problem here is that we're using `return` not just to return different values, but also as a flow control construct to quit a function's execution early in certain cases. There are obviously better ways to write that flow control (the `if` logic, etc.), but I also think there are ways to make the output paths more obvious.
+**注：**小测验的答案是'2`、'2`、'8`和'13`。
 
-**Note:** The answers to the pop quiz are `2`, `2`, `8`, and `13`.
-
-Consider this version of the code:
+考虑下该版本的代码：
 
 ```js
 function foo(x) {
@@ -453,18 +451,17 @@ function foo(x) {
     return retValue;
 }
 ```
+这个版本无疑更加冗长。但我认为遵循这种逻辑稍微简单一些，因为可以设置“retValue”的每个分支都由检查它是否已经设置的条件“保护”。
 
-This version is unquestionably more verbose. But I would argue it's slightly simpler logic to follow, because every branch where `retValue` can get set is *guarded* by the condition that checks if it's already been set.
+我们使用常规流控制(' if '逻辑)来确定' retValue '的赋值，而不是从函数提前'返回'。最后，我们简单地返回“retValue”。
 
-Rather than `return`ing from the function early, we used normal flow control (`if` logic) to determine the `retValue`'s assignment. At the end, we simply `return retValue`.
+我并不是无条件地说您应该总是有一个单一的“返回”，或者您永远不应该做提前的“返回”，但是我确实认为您应该注意“返回”的流控制部分，它在函数定义中创建了更多的含义。试着找出最明确的表达逻辑的方法;这通常是最好的方法。
 
-I'm not unconditionally saying that you should always have a single `return`, or that you should never do early `return`s, but I do think you should be careful about the flow control part of `return` creating more implicitness in your function definitions. Try to figure out the most explicit way to express the logic; that will often be the best way.
+### Un`return`ed Outputs 取消返回的输出
 
-### Un`return`ed Outputs
+您可能已经在编写的大多数代码中使用了一种技术，甚至可能没有考虑太多，就是让一个函数通过简单地改变自身外部的变量来输出其部分或全部值。
 
-One technique that you've probably used in most code you've written, and maybe didn't even think about it much, is to have a function output some or all of its values by simply changing variables outside itself.
-
-Remember our <code>f(x) = 2x<sup>2</sup> + 3</code> function from earlier in the chapter? We could have defined it like this in JS:
+还记得我们在本章前面<code>f(x) = 2x<sup>2</sup> + 3</code>的函数吗？我们可以在JS中这样定义它：
 
 ```js
 var y;
@@ -478,7 +475,7 @@ f( 2 );
 y;                      // 11
 ```
 
-I know this is a silly example; we could just as easily have `return`d the value instead of setting it into `y` from within the function:
+我知道这是一个愚蠢的例子；我们可以很容易地将值返回，而不是从函数中将其设置为“y”：
 
 ```js
 function f(x) {
@@ -490,13 +487,13 @@ var y = f( 2 );
 y;                      // 11
 ```
 
-Both functions accomplish the same task, so is there any reason we should pick one version over the other? **Yes, absolutely.**
+两个函数都完成了相同的任务，所以我们有理由选择这个版本而不是另一个版本吗？回答：**是的，当然可以。**
 
-One way to explain the difference is that the `return` in the latter version signals an explicit output, whereas the `y` assignment in the former is an implicit output. You may already have some intuition that guides you in such cases; typically, developers prefer explicit patterns over implicit ones.
+解释差异的一种方法是，后一个版本中的“返回”表示显式输出，而前一个版本中的“y”赋值是隐式输出。这么说的话，估计你知道怎么做了；通常，开发人员更喜欢显式模式而不是隐式模式。
 
-But changing a variable in an outer scope, as we did with the `y` assignment inside of `foo(..)`, is just one way of achieving an implicit output. A more subtle example is making changes to non-local values via reference.
+但是，在外部作用域中更改变量，正如我们在“foo（…）”中使用“y”赋值所做的那样，这只是实现隐式输出的一种方法。一个更微妙的例子是通过引用对非本地值进行更改。
 
-Consider:
+想一想:
 
 ```js
 function sum(list) {
@@ -515,19 +512,17 @@ var nums = [ 1, 3, 9, 27, , 84 ];
 sum( nums );            // 124
 ```
 
-The most obvious output from this function is the sum `124`, which we explicitly `return`ed. But do you spot the other output? Try that code and then inspect the `nums` array. Now do you spot the difference?
+这个最明显是sum函数的输出`124`，我们显式地‘返回’。但是您发现了其他输出吗？尝试该代码，然后检查“nums”数组。现在你发现区别了吗？
 
-Instead of an `undefined` empty slot value in position `4`, now there's a `0`. The harmless looking `list[i] = 0` operation ended up affecting the array value on the outside, even though we operated on a local `list` parameter variable.
+数组位置“4”中现在有一个“0”而不是“undefined”空值，看起来无害的' list[i] = 0 '操作最终影响了外部的数组值，即使我们在本地的“list”参数变量上操作。
 
-Why? Because `list` holds a reference-copy of the `nums` reference, not a value-copy of the `[1,3,9,..]` array value. JavaScript uses references and reference-copies for arrays, objects, and functions, so we may create an accidental output from our function all too easily.
+为什么？因为从函数中创建了异常输出，'list'保存了'nums'引用的引用副本，而不是`[1,3,9，..]`数组值的值副本。通常javascript使用数组、对象和函数的引用和引用副本。
 
-This implicit function output has a special name in the FP world: side effects. And a function that has *no side effects* also has a special name: pure function. We'll talk a lot more about these in [Chapter 5](ch5.md), but the punchline is that we'll want to prefer pure functions and avoid side effects wherever possible.
+## 函数的功能
 
-## Functions of Functions
+函数可以接收和返回任何类型的值。接收或返回一个或多个其他函数值的函数具有特殊名称：高阶函数。
 
-Functions can receive and return values of any type. A function that receives or returns one or more other function values has the special name: higher-order function.
-
-Consider:
+想一想:
 
 ```js
 function forEach(list,fn) {
@@ -542,9 +537,9 @@ forEach( [1,2,3,4,5], function each(val){
 // 1 2 3 4 5
 ```
 
-`forEach(..)` is a higher-order function because it receives a function as an argument.
+` foreach（..）`是一个高阶函数，因为它接收一个函数作为了参数。
 
-A higher-order function can also output another function, like:
+高阶函数也可以输出另一个函数，例如：
 
 ```js
 function foo() {
@@ -558,7 +553,7 @@ var f = foo();
 f( "Hello!" );          // HELLO!
 ```
 
-`return` is not the only way to "output" an inner function:
+`return`不是“输出”内部函数的唯一方法：
 
 ```js
 function foo() {
@@ -574,17 +569,17 @@ function bar(func) {
 foo();                  // HELLO!
 ```
 
-Functions that treat other functions as values are higher-order functions by definition. FPers write these all the time!
+根据定义，将其他函数视为值的函数是高阶函数。函数式编程人员一直在写这些！
 
-### Keeping Scope
+### 作用域的保持
 
-One of the most powerful things in all of programming, and especially in FP, is how a function behaves when it's inside another function's scope. When the inner function makes reference to a variable from the outer function, this is called closure.
+在所有编程中，尤其是在函数式编程中，最强大的功能之一就是一个函数在另一个函数的作用域中时的行为。当内部函数引用外部函数中的变量时，这称为闭包。
 
-Defined pragmatically:
+实用性的定义:
 
-> Closure is when a function remembers and accesses variables from outside of its own scope, even when that function is executed in a different scope.
+> 闭包是指当一个函数从它自己的作用域之外记住和访问变量时，即使这个函数是在另一个作用域中执行的。
 
-Consider:
+想一想:
 
 ```js
 function foo(msg) {
@@ -600,11 +595,11 @@ var helloFn = foo( "Hello!" );
 helloFn();              // HELLO!
 ```
 
-The `msg` parameter variable in the scope of `foo(..)` is referenced inside the inner function. When `foo(..)` is executed and the inner function is created, it captures the access to the `msg` variable, and retains that access even after being `return`ed.
+'foo（..）'作用域内的'msg'参数变量在内部函数内被引用。当执行“foo（..）”并创建内部函数时，它捕获对“msg”变量的访问，并且即使在“return”之后仍然保留该访问。
 
-Once we have `helloFn`, a reference to the inner function, `foo(..)` has finished and it would seem as if its scope should have gone away, meaning the `msg` variable would no longer exist. But that doesn't happen, because the inner function has a closure over `msg` that keeps it alive. The closed over `msg` variable survives for as long as the inner function (now referenced by `helloFn` in a different scope) stays around.
+一旦我们定义了“hellofn”，对内部函数“foo（…）”的引用就结束了，它的作用域似乎应该消失了，这意味着“msg”变量将不再存在。但并不是这样，因为内部函数在“msg”上有一个闭包，使其保持活动状态。只要内部函数（现在由另一个作用域中的“hellofn”引用）保持不变，封闭的“msg”变量就会一直存在。
 
-Let's look at a few more examples of closure in action:
+让我们再看几个实际中的闭包示例：
 
 ```js
 function person(name) {
@@ -620,9 +615,9 @@ fred();                 // I am Fred
 susan();                // I am Susan
 ```
 
-The inner function `identify()` has closure over the parameter `name`.
+在参数为“name”的内部函数“identify（）”存在闭包。
 
-The access that closure enables is not restricted to merely reading the variable's original value -- it's not just a snapshot but rather a live link. You can update the value, and that new current state remains remembered until the next access:
+闭包启用的访问不仅限于读取变量的原始值——它不仅仅是一个快照，而是一个活动链接。您可以更新该值，并且新的状态将一直保留到下一次访问：
 
 ```js
 function runningCounter(start) {
@@ -641,9 +636,9 @@ score();                // 2
 score( 13 );            // 15
 ```
 
-**Warning:** For reasons that we'll explore in more depth later in the book, this example of using closure to remember a state that changes (`val`) is probably something you'll want to avoid where possible.
+**警告：**我们将在本书后面更深入地探讨这个问题，这个使用闭包来记住更改（`val`）的状态的示例可能是您希望尽可能避免的。
 
-If you have an operation that needs two inputs, one of which you know now but the other will be specified later, you can use closure to remember the first input:
+如果有一个操作需要两个输入，其中一个现在知道，另一个稍后将被指定，则可以使用闭包记住第一个输入：
 
 ```js
 function makeAdder(x) {
@@ -652,22 +647,22 @@ function makeAdder(x) {
     };
 }
 
-// we already know `10` and `37` as first inputs, respectively
+// 我们已经知道“10”和“37”分别作为第一个输入
 var addTo10 = makeAdder( 10 );
 var addTo37 = makeAdder( 37 );
 
-// later, we specify the second inputs
+// 稍后，我们将指定第二个输入
 addTo10( 3 );           // 13
 addTo10( 90 );          // 100
 
 addTo37( 13 );          // 50
 ```
 
-Normally, a `sum(..)` function would take both an `x` and `y` input to add them together. But in this example we receive and remember (via closure) the `x` value(s) first, while the `y` value(s) are separately specified later.
+通常，“sum（..）”函数会同时使用“x”和“y”输入将它们添加到一起。但在本例中，我们首先接收并记住（通过闭包）x值，而y值则在后面单独指定。
 
-**Note:** This technique of specifying inputs in successive function calls is very common in FP, and comes in two forms: partial application and currying. We'll dive into them more thoroughly in [Chapter 3](ch3.md/#some-now-some-later).
+**注:**这种在连续函数调用中指定输入的技术在函数式编程中非常常见，有两种形式:局部应用和局部套用。我们将在[第三章](ch3.md/#some-now-some-later)中更深入地研究它们。
 
-Of course, since functions are just values in JS, we can remember function values via closure:
+当然，由于函数只是JS中的值，我们可以通过闭包来记住函数值:
 
 ```js
 function formatter(formatFn) {
@@ -688,25 +683,25 @@ lower( "WOW" );             // wow
 upperFirst( "hello" );      // Hello
 ```
 
-Instead of distributing/repeating the `toUpperCase()` and `toLowerCase()` logic all over our code, FP encourages us to create simple functions that encapsulate -- a fancy way of saying wrapping up -- that behavior.
+函数式编程鼓励我们创建简单的函数来封装这种行为，而不是在代码中到处分发/重复“toUpperCase()”和“toLowerCase()”逻辑。
 
-Specifically, we create two simple unary functions `lower(..)` and `upperFirst(..)`, because those functions will be much easier to wire up to work with other functions in the rest of our program.
+具体来说，我们创建了两个简单的一元函数“lower(..)”和“upperFirst(..)”，因为这些函数将更容易与程序其余部分中的其他函数连接起来。
 
-**Tip:** Did you spot how `upperFirst(..)` could have used `lower(..)`?
+**提示：**您是否发现“upperfirst（..）”如何使用“lower（..）”？
 
-We'll use closure heavily throughout the rest of the text. It may just be the most important foundational practice in all of FP, if not programming as a whole. Make sure you're really comfortable with it!
+我们将在本文的其余部分大量使用闭包。它可能只是所有函数式编程中最重要的基础实践，如果不是作为一个整体进行编程的话。相信你很满意！
 
-## Syntax
+## 语法
 
-Before we move on from this primer on functions, let's take a moment to discuss their syntax.
+在我们从这个函数入门开始之前，让我们花点时间来讨论它们的语法。
 
-More than many other parts of this text, the discussions in this section are mostly opinion and preference, whether you agree with the views presented here or take opposite ones. These ideas are highly subjective, though many people seem to feel rather absolutely about them.
+与本文的许多其他部分相比，本节中的讨论大多是意见和偏好，无论您是否同意此处提出的观点或采取相反的观点。这些想法是非常主观的，尽管许多人似乎对它们有相当绝对的感觉。
 
-Ultimately, you get to decide.
+不过，最后你要做决定。
 
-### What's in a Name?
+### 命名
 
-Syntactically speaking, function declarations require the inclusion of a name:
+从语法上讲，函数声明需要包含一个名称：
 
 ```js
 function helloMyNameIs() {
@@ -714,27 +709,28 @@ function helloMyNameIs() {
 }
 ```
 
-But function expressions can come in both named and anonymous forms:
+但是函数表达式可以有命名和匿名两种形式：
 
 ```js
 foo( function namedFunctionExpr(){
     // ..
 } );
 
-bar( function(){    // <-- look, no name!
+bar( function(){    // <-- 看这, 未进行命名!
     // ..
 } );
 ```
 
-What exactly do we mean by anonymous, by the way? Specifically, functions have a `name` property that holds the string value of the name the function was given syntactically, such as `"helloMyNameIs"` or `"namedFunctionExpr"`. This `name` property is most notably used by the console/developer tools of your JS environment to list the function when it participates in a stack trace (usually from an exception).
+顺便问一下，匿名到底是什么意思？具体地说，函数有一个“name”属性，它保存函数语法上给定的名称的字符串值，例如“hellomyname”或“namedfunctionexpr”。JS环境中的控制台/开发人员工具最显著地使用此“name”属性来列出函数参与堆栈跟踪时的列表（通常来自异常）。
 
-Anonymous functions are generally displayed as `(anonymous function)`.
+匿名函数通常显示为`(anonymous function)`。
 
-If you've ever had to debug a JS program from nothing but a stack trace of an exception, you probably have felt the pain of seeing `(anonymous function)` appear line after line. This listing doesn't give a developer any clue whatsoever as to the path the exception came from. It's not doing the developer any favors.
+如果您必须从异常的堆栈跟踪中调试JS程序，那么您可能会感到看到`（匿名函数）`一行接一行出现的痛苦。并没有给开发人员任何关于异常来源路径的线索。它对开发人员没有任何帮助。
 
-If you name your function expressions, the name is always used. So if you use a good name like `handleProfileClicks` instead of `foo`, you'll get much more helpful stack traces.
+如果你是想使用命名函数表达式，一定要定义名称。因此，如果您使用像“handleprofileclicks”这样的好名称而不是“foo”，您将得到更多有用的堆栈跟踪。
 
-As of ES6, anonymous function expressions are in certain cases aided by *name inferencing*. Consider:
+从ES6开始，在某些情况下，匿名函数表达式由定义的名字辅助
+想一想:
 
 ```js
 var x = function(){};
@@ -742,9 +738,9 @@ var x = function(){};
 x.name;         // x
 ```
 
-If the engine is able to guess what name you *probably* want the function to take, it will go ahead and do so.
+如果引擎能够猜出您*可能*想要函数取什么名称，它将继续执行并执行此操作。
 
-But beware, not all syntactic forms benefit from name inferencing. Probably the most common place a function expression shows up is as an argument to a function call:
+但要注意，并非所有的句法形式都能从名称推断中受益。函数表达式出现的最常见地方可能是作为函数调用的参数：
 
 ```js
 function foo(fn) {
@@ -757,14 +753,14 @@ foo( x );               // x
 foo( function(){} );    //
 ```
 
-When the name can't be inferred from the immediate surrounding syntax, it remains an empty string. Such a function will be reported as `(anonymous function)` in a stack trace should one occur.
+当不能从直接的周围语法推断出名称时，它仍然是一个空字符串。这样的函数将在堆栈跟踪中报告为“匿名函数”（anonymous function）。
 
-There are other benefits to a function being named besides the debugging question. First, the syntactic name (aka lexical name) is useful for internal self-reference. Self-reference is necessary for recursion (both sync and async) and also helpful with event handlers.
+除了调试问题外，对正在命名的函数还有其他好处。首先，句法名称（又称词汇名称）对于内部自引用很有用。自引用对于递归（同步和异步）是必需的，并且对事件处理程序也很有帮助。
 
-Consider these different scenarios:
+考虑这些不同的场景：
 
 ```js
-// sync recursion:
+// 同步递归：
 function findPropIn(propName,obj) {
     if (obj == undefined || typeof obj != "object") return;
 
@@ -783,7 +779,7 @@ function findPropIn(propName,obj) {
 ```
 
 ```js
-// async recursion:
+// 异步递归：
 setTimeout( function waitForIt(){
     // does `it` exist yet?
     if (!o.it) {
@@ -794,19 +790,19 @@ setTimeout( function waitForIt(){
 ```
 
 ```js
-// event handler unbinding
+// 事件处理解除绑定
 document.getElementById( "onceBtn" )
     .addEventListener( "click", function handleClick(evt){
-        // unbind event
+        // 解除绑定
         evt.target.removeEventListener( "click", handleClick, false );
 
         // ..
     }, false );
 ```
 
-In all these cases, the named function's lexical name was a useful and reliable self-reference from inside itself.
+在所有这些情况下，命名函数的词法名称从内部来说是一个有用且可靠的自引用。
 
-Moreover, even in simple cases with one-liner functions, naming them tends to make code more self-explanatory and thus easier to read for those who haven't read it before:
+此外，即使在只有一个线性函数的简单情况下，命名它们也会使代码更易于解释，因此对于以前没有阅读过它的人来说，更容易阅读：
 
 ```js
 people.map( function getPreferredName(person){
@@ -815,43 +811,42 @@ people.map( function getPreferredName(person){
 // ..
 ```
 
-The function name `getPreferredName(..)` tells the reader something about what the mapping operation is intending to do that is not entirely obvious from just its code. This name label helps the code be more readable.
+函数命名为“getpreferredname（..）”告诉读者一些关于映射操作要做什么的事情，而不仅仅是从其代码中看是显而易见的。此名称标签有助于代码更易于阅读。
 
-Another place where anonymous function expressions are common is with immediately invoked function expressions (IIFEs):
+匿名函数表达式常见的另一个地方是立即调用的函数表达式（IIFES）：
 
 ```js
 (function(){
 
-    // look, I'm an IIFE!
+    // 看，这是立即调用函数
 
 })();
 ```
-
-You virtually never see IIFEs using names for their function expressions, but they should. Why? For all the same reasons we just went over: stack trace debugging, reliable self-reference, and readability. If you can't come up with any other name for your IIFE, at least use the word IIFE:
+实际上，您不会看到IIFEs在函数表达式中使用名称，但它们应该使用名称。为什么？出于所有相同的原因，我们刚刚讨论了：堆栈跟踪调试、可靠的自引用和可读性。如果你想不出你的生活的其他名字，至少要用“IIFE”这个词：
 
 ```js
 (function IIFE(){
 
-    // You already knew I was an IIFE!
+    // 你已经知道我是立即调用函数
 
 })();
 ```
 
-What I'm getting at is there are multiple reasons why **named functions are always more preferable to anonymous functions.** As a matter of fact, I'd go so far as to say that there's basically never a case where an anonymous function is more preferable. They just don't really have any advantage over their named counterparts.
+我的意思是，为什么**命名函数总是比匿名函数更可取，原因有很多。**事实上，我想说的是，基本上没有比匿名函数更好的情况了。他们只是没有任何优势比他们的命名对手。
 
-It's incredibly easy to write anonymous functions, because it's one less name we have to devote our mental attention to figuring out.
+编写匿名函数是非常容易的，因为这样我们就少了一个名字来花心思去计算。
 
-I'll be honest; I'm as guilty of this as anyone. I don't like to struggle with naming. The first few names I come up with for a function are usually bad. I have to revisit the naming over and over. I'd much rather just punt with a good ol' anonymous function expression.
+我将诚实;我和其他人一样对此感到内疚。我不喜欢纠结于命名。我为函数想到的头几个名字通常都不好。我得一遍又一遍地重新考虑这个名字。我宁愿使用一个好的匿名函数表达式。
 
-But we're trading ease-of-writing for pain-of-reading. This is not a good trade-off. Being lazy or uncreative enough to not want to figure out names for your functions is an all too common, but poor, excuse for using anonymous functions.
+但我们正在用写作的简单性来换取阅读的痛苦。这不是一个好的权衡。懒惰或缺乏创造性，以至于不想为函数指定名称，这是使用匿名函数的常见但糟糕的借口。
 
-**Name every single function.** And if you sit there stumped, unable to come up with a good name for some function you've written, I'd strongly suggest you don't fully understand that function's purpose yet -- or it's just too broad or abstract. You need to go back and re-design the function until this is more clear. And by that point, a name will become more apparent.
+**为每个函数命名。**如果你坐在那里手足无措，想不出一个适合你写的函数的好名字，我强烈建议你还没有完全理解这个函数的用途——或者它太宽泛或太抽象了。您需要返回并重新设计函数，直到这一点变得更加清晰。到那时，名字就会变得更加明显。
 
-In my practice, if I don't have a good name to use for a function, I name it `TODO` initially. I'm certain that I'll at least catch that later when I search for "TODO" comments before committing code.
+在我的实践中，如果我没有一个好的函数名可以使用，我最初将其命名为' TODO '。我确信，在提交代码之前搜索“TODO”注释时，我至少会捕捉到这一点。
 
-I can testify from my own experience that in the struggle to name something well, I usually have come to understand it better, later, and often even refactor its design for improved readability and maintainability.
+我可以从我自己的经验中证明，在努力为某个东西命名时，我通常会更好地理解它，甚至经常重构它的设计以提高可读性和可维护性。
 
-This time investment is well worth it.
+这次投资很值得。
 
 ### Functions Without `function`
 
