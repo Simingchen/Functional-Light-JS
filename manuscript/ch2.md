@@ -848,11 +848,11 @@ people.map( function getPreferredName(person){
 
 这次投资很值得。
 
-### Functions Without `function`
+### 不用function定义的函数`
 
-So far we've been using the full canonical syntax for functions. But you've no doubt also heard all the buzz around the ES6 `=>` arrow function syntax.
+到目前为止，我们一直在使用函数的完整规范语法。但毫无疑问，您也听到了有关es6 `=>`箭头函数语法的议论。
 
-Compare:
+对比:
 
 ```js
 people.map( function getPreferredName(person){
@@ -864,57 +864,56 @@ people.map( function getPreferredName(person){
 people.map( person => person.nicknames[0] || person.firstName );
 ```
 
-Whoa.
+哇。
 
-The keyword `function` is gone, so is `return`, the parentheses (`( )`), the curly braces (`{ }`), and the innermost semicolon (`;`). In place of all that, we used a so-called fat arrow symbol (`=>`).
+关键字“function”已经不存在了，还有“return”、括号（`( )`）、大括号（`{ }`）和最里面的分号（`;`）。代替所有这些，我们使用了一个所谓的箭头符号（`=>`）。
 
-But there's another thing we omitted. Did you spot it? The `getPreferredName` function name.
+但还有一件事我们忽略了。你发现了吗？'getpreferredname'函数名也不存在了。
 
-That's right; `=>` arrow functions are lexically anonymous; there's no way to syntactically provide it a name. Their names can be inferred like regular functions, but again, the most common case of function expression values passed as arguments won't get any assistance in that way. Bummer.
+没错;' => '箭头函数在词法上是匿名的;没有办法从语法上为它提供名称。它们的名称可以像常规函数一样进行推断，但是同样，作为参数传递的函数表达式值的最常见情况不会得到任何帮助。这点有些小失望。
 
-If `person.nicknames` isn't defined for some reason, an exception will be thrown, meaning this `(anonymous function)` will be at the top of the stack trace. Ugh.
+如果出于某种原因没有定义“person.nicknames”，则会引发异常，这意味着这个`（匿名函数）`将位于堆栈跟踪的顶部。
 
-Honestly, the anonymity of `=>` arrow functions is a `=>` dagger to the heart, for me. I cannot abide by the loss of naming. It's harder to read, harder to debug, and impossible to self-reference.
+老实说，对我来说，' => '箭头函数的匿名性就像一把' => '匕首刺向心脏。我不能忍受失去名字。它更难读，更难调试，也不可能自我引用。
 
-But if that wasn't bad enough, the other slap in the face is that there's a whole bunch of subtle syntactic variations that you must wade through if you have different scenarios for your function definition. I'm not going to cover all of them in detail here, but briefly:
+但是，如果这还不够糟糕，另一个问题是，如果函数定义有不同的场景，那么您必须处理一大堆微妙的语法变化。我不打算在这里详细介绍它们，但是简单地说:
 
 ```js
 people.map( person => person.nicknames[0] || person.firstName );
 
-// multiple parameters? need ( )
+// 如果有多个参数 需要 ( ) 括起来
 people.map( (person,idx) => person.nicknames[0] || person.firstName );
 
-// parameter destructuring? need ( )
+// 参数架构，需要 ( ) 括起来
 people.map( ({ person }) => person.nicknames[0] || person.firstName );
 
-// parameter default? need ( )
+// 参数默认，需要 ( ) 括起来
 people.map( (person = {}) => person.nicknames[0] || person.firstName );
 
-// returning an object? need ( )
+// 返回对象，需要 ( ) 括起来
 people.map( person =>
     ({ preferredName: person.nicknames[0] || person.firstName })
 );
 ```
+在函数编程领域中，“=>”之所以令人兴奋，主要是因为它几乎完全遵循函数的数学符号，尤其是在Haskell这样的函数编程语言中。' => '箭头函数语法的形状在数学上进行了通信。
 
-The case for excitement over `=>` in the FP world is primarily that it follows almost exactly from the mathematical notation for functions, especially in FP languages like Haskell. The shape of `=>` arrow function syntax communicates mathematically.
+更进一步来说，我建议支持' => '的论据是，通过使用更轻量级的语法，我们减少了函数之间的视觉边界，这使得我们可以使用简单的函数表达式，就像我们使用延迟表达式一样——这是函数编程人员的另一个喜欢它的原因。
 
-Digging even further, I'd suggest that the argument in favor of `=>` is that by using much lighter-weight syntax, we reduce the visual boundaries between functions which lets us use simple function expressions much like we'd use lazy expressions -- another favorite of the FPer.
+我认为大多数人都不会关注我不能忍受箭头函数的问题。他们喜欢匿名函数，喜欢节省语法。但就像我之前说的：由你决定。
 
-I think most FPers are going to wave off the concerns I'm sharing. They love anonymous functions and they love saving on syntax. But like I said before: you decide.
+**注意:**虽然我不喜欢在实际生产代码中使用' => '，但它们在快速代码探索中非常有用。此外，在本书的其余部分中，我们将在许多地方使用箭头函数——特别是在我们介绍典型的FP实用程序时——在这些地方，代码片段中，为了优化有限的物理空间，更倾向于使用简洁。确定这种方法是否会使您自己的生产就绪代码可读性更好或更差。
 
-**Note:** Though I do not prefer to use `=>` in practice in my production code, they are useful in quick code explorations. Moreover, we will use arrow functions in many places throughout the rest of this book -- especially when we present typical FP utilities -- where conciseness is preferred to optimize for the limited physical space in code snippets. Make your own determinations whether this approach will make your own production-ready code more or less readable.
+## this 指向的是什么?
 
-## What's This?
+如果你不熟悉JavaScript中的“this”绑定规则，我建议你看看我的书《you Don't Know JS: this & Object prototype》。对于本节的目的，我假设您知道如何为函数调用确定“this”(这是四个规则之一)。但即使你对“this”还不清楚，好消息是，我们将得出结论，如果你想做函数式编程，就不应该使用“this”。
 
-If you're not familiar with the `this` binding rules in JavaScript, I recommend checking out my book *You Don't Know JS: this & Object Prototypes*. For the purposes of this section, I'll assume you know how `this` gets determined for a function call (one of the four rules). But even if you're still fuzzy on *this*, the good news is we're going to conclude that you shouldn't be using `this` if you're trying to do FP.
+**注意：**我们正在讨论一个我们最终会得出结论不应该使用的主题。为什么！因为讨论“this”的主题对本书后面的其他主题有影响。例如，我们对函数纯度的概念受到“this”本质上是对函数的隐式输入的影响（见[第5章](ch5.md)）。此外，我们对“this”的看法会影响我们是否选择数组方法（`arr.map(..)`）与独立实用程序（`map(..,arr)`）（参见[第9章](ch9.md)）。理解“this”，理解“this”为什么真的不应该成为函数式编程的一部分是至关重要的！
 
-**Note:** We're tackling a topic that we'll ultimately conclude we shouldn't use. Why!? Because the topic of `this` has implications for other topics covered later in this book. For example, our notions of function purity are impacted by `this` being essentially an implicit input to a function (see [Chapter 5](ch5.md)). Additionally, our perspective on `this` affects whether we choose array methods (`arr.map(..)`) versus standalone utilities (`map(..,arr)`) (see [Chapter 9](ch9.md)). Understanding `this` is essential to understanding why `this` really should *not* be part of your FP!
+javascript的`function`有一个“this”关键字，每个函数调用都会自动绑定该关键字。“this”关键字可以用许多不同的方式描述，但我更愿意说它为运行函数提供了一个对象上下文。
 
-JavaScript `function`s have a `this` keyword that's automatically bound per function call. The `this` keyword can be described in many different ways, but I prefer to say it provides an object context for the function to run against.
+' this '是函数的隐式参数输入。
 
-`this` is an implicit parameter input for your function.
-
-Consider:
+想一想:
 
 ```js
 function sum() {
@@ -935,7 +934,7 @@ var s = sum.bind( context );
 s();                        // 3
 ```
 
-Of course, if `this` can be input into a function implicitly, the same object context could be sent in as an explicit argument:
+当然，如果可以将“this”隐式输入到函数中，则可以将相同的对象上下文作为显式参数发送：
 
 ```js
 function sum(ctx) {
@@ -950,9 +949,9 @@ var context = {
 sum( context );
 ```
 
-Simpler. And this kind of code will be a lot easier to deal with in FP. It's much easier to wire multiple functions together, or use any of the other input wrangling techniques we will get into in the next chapter, when inputs are always explicit. Doing them with implicit inputs like `this` ranges from awkward to nearly impossible depending on the scenario.
+这样显得更简单。这种代码在FP中更容易处理。当输入总是显式的时候，将多个函数连接在一起，或者使用我们将在下一章中讨论的任何其他输入争用技术都要容易得多。根据场景的不同，使用诸如“this”之类的隐式输入的操作也从尴尬的境地到了无所不能的地步。
 
-There are other tricks we can leverage in a `this`-based system, including prototype-delegation (also covered in detail in *You Don't Know JS: this & Object Prototypes*):
+在基于“this”的系统中，我们还可以利用其他一些技巧，包括原型委托（在《You don't know js:this & object prototype》中也有详细介绍）：
 
 ```js
 var Auth = {
@@ -985,11 +984,11 @@ var Login = Object.assign( Object.create( Auth ), {
 Login.doLogin( "fred", "123456" );
 ```
 
-**Note:** `Object.assign(..)` is an ES6+ utility for doing a shallow assignment copy of properties from one or more source objects to a single target object: `Object.assign( target, source1, ... )`.
+**注意：**`Object.assign(..)`是一个ES6+实用程序，用于将属性从一个或多个源对象浅赋值到单个目标对象：`Object.assign( target, source1, ... )'.
 
-In case you're having trouble parsing what this code does: we have two separate objects `Login` and `Auth`, where `Login` performs prototype-delegation to `Auth`. Through delegation and the implicit `this` context sharing, these two objects virtually compose during the `this.authorize()` function call, so that properties/methods on `this` are dynamically shared with the `Auth.authorize(..)` function.
+如果您在分析此代码的功能时遇到问题：我们有两个独立的对象“login”和“auth”，其中“login”执行对“auth”的原型委托。通过委托和隐式的“this”上下文共享，这两个对象实际上是在“this.authorize()”函数调用期间组成的，因此“this”上的属性/方法与“Auth.authorize(..)”函数动态共享。
 
-*This* code doesn't fit with various principles of FP for a variety of reasons, but one of the obvious hitches is the implicit `this` sharing. We could be more explicit about it and keep code closer to FP-friendly style:
+由于各种原因，这段代码不适合函数编程的各种原则，但其中一个明显的问题是隐含的“This”共享。我们可以更明确使用，并保持代码更接近函数编程友好的风格:
 
 ```js
 // ..
@@ -1013,19 +1012,18 @@ doLogin(user,pw) {
 
 // ..
 ```
+在我看来，问题不在于使用对象来组织行为。而是我们试图使用隐式输入而不是显式输入。当我使用函数式编程时，我就要明确这个“this”了。
 
-From my perspective, the problem is not with using objects to organize behavior. It's that we're trying to use implicit input instead of being explicit about it. When I'm wearing my FP hat, I want to leave `this` stuff on the shelf.
+## 总结
 
-## Summary
+函数是强大的。
 
-Functions are powerful.
+但是让我们清楚什么是函数。它不仅仅是语句/操作的集合。具体来说，一个函数需要一个或多个输入（理想情况下，只有一个！）和输出。
 
-But let's be clear what a function is. It's not just a collection of statements/operations. Specifically, a function needs one or more inputs (ideally, just one!) and an output.
+函数内部的函数可以在外部变量上有闭包，并在以后记住它们。这是所有编程中最重要的概念之一，也是函数式编程的基础。
 
-Functions inside of functions can have closure over outer variables and remember them for later. This is one of the most important concepts in all of programming, and a fundamental foundation of FP.
+注意匿名函数，尤其是`=>`箭头函数。他们写起来很方便，但他们把成本从作者转移到读者身上。我们在这里学习函数式编程的全部原因是为了写更可读的代码，所以不要那么快就跳上这股潮流。
 
-Be careful of anonymous functions, especially `=>` arrow functions. They're convenient to write, but they shift the cost from author to reader. The whole reason we're studying FP here is to write more readable code, so don't be so quick to jump on that bandwagon.
+不要使用“this”感知函数。不要这么做。
 
-Don't use `this`-aware functions. Just don't.
-
-You should now be developing a clear and colorful perspective in your mind of what *function* means in Functional Programming. It's time to start wrangling functions to get them to interoperate, and the next chapter teaches you a variety of critical techniques you'll need along the way.
+现在，您应该在脑海中形成一个清晰而丰富的视角，来理解函数编程中的*函数*的含义。现在是时候开始讨论让它们互操作的函数了，下一章将教给您一路上需要的各种关键技术。
