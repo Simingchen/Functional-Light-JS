@@ -1,19 +1,18 @@
-# Functional-Light JavaScript
-# Chapter 3: Managing Function Inputs
+# 章节3：管理函数的输入
 
-[Chapter 2](ch2.md) explored the core nature of JS `function`s, and laid the foundation for what makes a `function` an FP *function*. But to leverage the full power of FP, we also need patterns and practices for manipulating functions to shift and adjust their interactions -- to bend them to our will.
+[第2章](ch2.md)探讨了JS函数的核心性质，并为函数以及“FP函数”奠定了基础。但是，为了充分利用函数编程的力量，我们还需要模式和实践来操纵函数来改变和调整它们的交互——使它们按我们的意愿走。
 
-Specifically, our attention for this chapter will be on the parameter inputs of functions. As you bring functions of all different shapes together in your programs, you'll quickly face incompatibilities in the number/order/type of inputs, as well as the need to specify some inputs at different times than others.
+具体来说，我们这一章将集中在函数的参数输入上。当您将所有不同形状的函数放在一起时，您将很快面临输入的数量/顺序/类型的不兼容性，以及需要在不同的时间指定某些输入
 
-As a matter of fact, for stylistic purposes of readability, sometimes you'll want to define functions in a way that hides their inputs entirely!
+事实上，出于可读性的风格考虑，有时您需要以完全隐藏其输入的方式定义函数!
 
-These kinds of techniques are absolutely essential to making functions truly *function*-al.
+这些技术对于使函数真正的*function*是绝对必要的。
 
-## All for One
+## 多对一
 
-Imagine you're passing a function to a utility, where the utility will send multiple arguments to that function. But you may only want the function to receive a single argument.
+假设您将一个函数传递给一个实用程序，实用程序将向该函数发送多个参数。但是您可能只希望函数接收单个参数。
 
-We can design a simple helper that wraps a function call to ensure only one argument will pass through. Since this is effectively enforcing that a function is treated as unary, let's name it as such:
+我们可以设计一个简单的助手来包装一个函数调用，以确保只传递一个参数。由于这有效地强制将函数视为一元函数，我们将其命名为:
 
 <a name="unary"></a>
 
@@ -24,8 +23,7 @@ function unary(fn) {
     };
 }
 ```
-
-Many FPers tend to prefer the shorter `=>` arrow function syntax for such code (see [Chapter 2, "Functions without `function`"](ch2.md/#functions-without-function)), such as:
+对于这样的代码，许多函数编程使用者倾向于使用更短的' => '箭头函数语法(参见[第2章，“没有function定义的函数”](ch2.md/#functions-without-function))，例如:
 
 ```js
 var unary =
@@ -34,20 +32,20 @@ var unary =
             fn( arg );
 ```
 
-**Note:** No question this is more terse, sparse even. But I personally feel that whatever it may gain in symmetry with the mathematical notation, it loses more in overall readability with the functions all being anonymous, and by obscuring the scope boundaries, making deciphering closure a little more cryptic.
+**注意:**毫无疑问，这更简洁，甚至稀疏。但我个人觉得，无论它在数学符号的对称性上获得了什么，它在整体可读性上损失得更多，因为所有函数都是匿名的，而且模糊了范围边界，使得解密闭包变得更加神秘。
 
-A commonly cited example for using `unary(..)` is with the `map(..)` utility (see [Chapter 9, "Map"](ch9.md/#map)) and `parseInt(..)`. `map(..)` calls a mapper function for each item in a list, and each time it invokes the mapper function, it passes in three arguments: `value`, `idx`, `arr`.
+使用“unary(..)”的一个常见例子是使用“map(..)”实用程序(参见[章节 9，“map函数”](ch9.md/#map))和“parseInt(..)”。map(..)为列表中的每一项调用一个mapper函数，每次调用mapper函数时，都会传入三个参数:“value”、“idx”、“arr”。
 
-That's usually not a big deal, unless you're trying to use something as a mapper function that will behave incorrectly if it's passed too many arguments. Consider:
+这通常没什么大不了的，除非您试图使用某个东西作为映射函数，如果它传递了太多参数，那么它的行为就会不正确。
+想一想:
 
 ```js
 ["1","2","3"].map( parseInt );
 // [1,NaN,NaN]
 ```
+对于“parseInt(str,radix)”，很明显，当“map(..)”在第二个参数位置传递“index”时，它被“parseInt(..)”解释为进制“基数”，这是我们不想要的。
 
-For the signature `parseInt(str,radix)`, it's clear that when `map(..)` passes `index` in the second argument position, it's interpreted by `parseInt(..)` as the `radix`, which we don't want.
-
-`unary(..)` creates a function that will ignore all but the first argument passed to it, meaning the passed-in `index` is never received by `parseInt(..)` and mistaken as the `radix`:
+' unary(..) '创建一个函数，该函数将忽略传递给它的除第一个参数外的所有参数，这意味着传入的' index '不会被' parseInt(..) '接收，并被误认为'基数':
 
 <a name="mapunary"></a>
 
@@ -56,24 +54,24 @@ For the signature `parseInt(str,radix)`, it's clear that when `map(..)` passes `
 // [1,2,3]
 ```
 
-### One on One
+### 一对一
 
-Speaking of functions with only one argument, another common base utility in the FP toolbelt is a function that takes one argument and does nothing but return the value untouched:
+说到只有一个参数的函数，函数式编程工具库中的另一个公共基础实用程序是一个函数，它接受一个参数，只返回未触及的值：
 
 ```js
 function identity(v) {
     return v;
 }
 
-// or the ES6 => arrow form
+// 或者使用ES6箭头函数
 var identity =
     v =>
         v;
 ```
 
-This utility looks so simple as to hardly be useful. But even simple functions can be helpful in the world of FP. Like they say in acting: there are no small parts, only small actors.
+这个实用程序看起来非常简单，几乎没有什么用处。但是，即使是简单的函数，在函数式编程的世界中也是有用的。就像他们在表演中说的:没有小角色，只有小演员。
 
-For example, imagine you'd like to split up a string using a regular expression, but the resulting array may have some empty values in it. To discard those, we can use JS's `filter(..)` array operation (see [Chapter 9, "Filter"](ch9.md/#filter)) with `identity(..)` as the predicate:
+例如，假设您想使用正则表达式拆分一个字符串，但是结果数组中可能有一些空值。为了抛弃这些，我们可以使用JS的'filter(..) '数组操作(参见[章节 9, "filter函数"](ch9.md/#filter))和' identity(..) '作为参数回调:
 
 ```js
 var words = "   Now is the time for all...  ".split( /\s|\b/ );
@@ -83,12 +81,11 @@ words;
 words.filter( identity );
 // ["Now","is","the","time","for","all","..."]
 ```
+因为' identity(..) '只返回传递给它的值，JS强制每个值要么为' true '要么为' false '，这决定了是否保留或排除最后数组中的每个值。
 
-Because `identity(..)` simply returns the value passed to it, JS coerces each value into either `true` or `false`, and that determines whether to keep or exclude each value in the final array.
+提示：在前面的例子中，可以用作谓词的另一个一元函数是JS内置的“Boolean(..)”函数，它显式地强制一个值为“true”或“false”。
 
-**Tip:** Another unary function that can be used as the predicate in the previous example is JS's built-in `Boolean(..)` function, which explicitly coerces a value to `true` or `false`.
-
-Another example of using `identity(..)` is as a default function in place of a transformation:
+使用' identity(..) '的另一个例子是作为默认函数代替转换:
 
 ```js
 function output(msg,formatFn = identity) {
@@ -103,29 +100,27 @@ function upper(txt) {
 output( "Hello World", upper );     // HELLO WORLD
 output( "Hello World" );            // Hello World
 ```
+您还可以看到' identity(..) '用作' map(..) '调用的默认转换函数，或作为函数列表的' reduce(..) '中的初始值;这两个实用程序都将在[第9章](ch9.md)中讨论。
 
-You also may see `identity(..)` used as a default transformation function for `map(..)` calls or as the initial value in a `reduce(..)` of a list of functions; both of these utilities will be covered in [Chapter 9](ch9.md).
+### 不可更改的
 
-### Unchanging One
-
-Certain APIs don't let you pass a value directly into a method, but require you to pass in a function, even if that function literally just returns the value. One such API is the `then(..)` method on JS Promises:
+某些API不允许将值直接传递给方法，但要求传递函数，即使该函数实际上只是返回值。JS上的“then（..）”方法就是这样一个API：
 
 ```js
-// doesn't work:
+// 不起作用:
 p1.then( foo ).then( p2 ).then( bar );
 
-// instead:
+// 替换成:
 p1.then( foo ).then( function(){ return p2; } ).then( bar );
 ```
 
-Many claim that ES6 `=>` arrow functions are the best "solution":
+许多人声称ES6`=>`箭头函数是最好的“解决方案”：
 
 ```js
 p1.then( foo ).then( () => p2 ).then( bar );
 ```
 
-But there's an FP utility that's more well suited for the task:
-
+但是有一个fp实用程序更适合此任务：
 ```js
 function constant(v) {
     return function value(){
@@ -140,19 +135,19 @@ var constant =
             v;
 ```
 
-With this tidy little FP utility, we can solve our `then(..)` annoyance properly:
+有了这个整洁的小fp工具，我们可以正确地解决“then（…）”的烦恼：
 
 ```js
 p1.then( foo ).then( constant( p2 ) ).then( bar );
 ```
 
-**Warning:** Although the `() => p2` arrow function version is shorter than `constant(p2)`, I would encourage you to resist the temptation to use it. The arrow function is returning a value from outside of itself, which is a bit worse from the FP perspective. We'll cover the pitfalls of such actions later in the book (see [Chapter 5](ch5.md)).
+**警告：**虽然`（）=>p2`箭头函数版本比`constant(p2)`简短，但我建议你不要这么使用。arrow函数从自身外部返回一个值，从fp的角度来看，这有点糟糕。我们稍后将在本书中讨论这些行为的陷阱（见[第5章](ch5.md)）。
 
-## Adapting Arguments to Parameters
+## 使参数适应参数
 
-There are a variety of patterns and tricks we can use to adapt a function's signature to match the kinds of arguments we want to provide to it.
+我们可以使用多种模式和技巧来调整函数的签名，以匹配我们希望为其提供的参数类型。
 
-Recall [this function signature from Chapter 2](ch2.md/#user-content-funcparamdestr) which highlights using array parameter destructuring:
+回想一下[第2章中的这个函数签名]（ch2.md/user content funcparamdestr），它强调使用数组参数解构：
 
 ```js
 function foo( [x,y,...args] = [] ) {
