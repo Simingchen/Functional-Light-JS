@@ -104,7 +104,7 @@ output( "Hello World" );            // Hello World
 
 ### 不可更改的
 
-某些API不允许将值直接传递给方法，但要求传递函数，即使该函数实际上只是返回值。JS上的“then（..）”方法就是这样一个API：
+某些API不允许将值直接传递给方法，但要求传递函数，即使该函数实际上只是返回值。JS上的“then(..)”方法就是这样一个API：
 
 ```js
 // 不起作用:
@@ -141,21 +141,21 @@ var constant =
 p1.then( foo ).then( constant( p2 ) ).then( bar );
 ```
 
-**警告：**虽然`（）=>p2`箭头函数版本比`constant(p2)`简短，但我建议你不要这么使用。arrow函数从自身外部返回一个值，从fp的角度来看，这有点糟糕。我们稍后将在本书中讨论这些行为的陷阱（见[第5章](ch5.md)）。
+**警告：**虽然`() =>p2`箭头函数版本比`constant(p2)`简短，但我建议你不要这么使用。arrow函数从自身外部返回一个值，从fp的角度来看，这有点糟糕。我们稍后将在本书中讨论这些行为的陷阱（见[第5章](ch5.md)）。
 
 ## 使参数适应参数
 
 我们可以使用多种模式和技巧来调整函数的签名，以匹配我们希望为其提供的参数类型。
 
-回想一下[第2章中的这个函数签名]（ch2.md/user content funcparamdestr），它强调使用数组参数解构：
+回想一下[第2章中的这个函数签名](ch2.md/user content funcparamdestr)，它强调使用数组参数解构：
 
 ```js
 function foo( [x,y,...args] = [] ) {
 ```
 
-This pattern is handy if an array will be passed in but you want to treat its contents as individual parameters. `foo(..)` is thus technically unary -- when it's executed, only one argument (an array) will be passed to it. But inside the function, you get to address different inputs (`x`, `y`, etc) individually.
+如果传入数组，但希望将其内容视为单个参数，则此模式很方便。`因此，foo(..)`在技术上是一元的——当它被执行时，只有一个参数（数组）将被传递给它。但是在函数内部，您可以分别处理不同的输入（`x`，`y`，等等）。
 
-However, sometimes you won't have the ability to change the declaration of the function to use array parameter destructuring. For example, imagine these functions:
+但是，有时您无法将函数的声明更改为使用数组参数析构化。例如，假设这些函数：
 
 ```js
 function foo(x,y) {
@@ -166,16 +166,15 @@ function bar(fn) {
     fn( [ 3, 9 ] );
 }
 
-bar( foo );         // fails
+bar( foo );         // 失败
 ```
+你看出`bar(foo)`失败的原因了吗？
 
-Do you spot why `bar(foo)` fails?
+数组`[3,9]`作为单个值发送到'fn(..)`，但'foo(..)`需要分别为'x'和'y'。如果我们能把“foo(..)”的声明改为“function foo([x，y])”，我们就可以了。或者，如果我们可以更改“bar(…)”的行为，使调用成为“fn(…[3,9])”，则值“3”和“9”将分别传入。
 
-The array `[3,9]` is sent in as a single value to `fn(..)`, but `foo(..)` expects `x` and `y` separately. If we could change the declaration of `foo(..)` to be `function foo([x,y]) { ..`, we'd be fine. Or, if we could change the behavior of `bar(..)` to make the call as `fn(...[3,9])`, the values `3` and `9` would be passed in individually.
+有时，当您有两个函数以这种方式不兼容时，您将无法更改它们的声明/定义。那么，你怎么能同时使用它们呢？
 
-There will be occasions when you have two functions that are incompatible in this way, and you won't be able to change their declarations/definitions. So, how can you use them together?
-
-We can define a helper to adapt a function so that it spreads out a single received array as its individual arguments:
+我们可以定义一个中间函数来调整一个函数，这样它就会展开一个单独的接收数组作为它的参数:
 
 <a name="spreadargs"></a>
 
@@ -186,24 +185,24 @@ function spreadArgs(fn) {
     };
 }
 
-// or the ES6 => arrow form
+// 或者使用ES6箭头函数
 var spreadArgs =
     fn =>
         argsArr =>
             fn( ...argsArr );
 ```
 
-**Note:** I called this helper `spreadArgs(..)`, but in libraries like Ramda it's commonly called `apply(..)`.
+**注意:**我将这个中间函数称为“spreadArgs(..)”，但是在像Ramda这样的库中，它通常被称为“apply(..)”。
 
-Now we can use `spreadArgs(..)` to adapt `foo(..)` to work as the proper input to `bar(..)`:
+现在我们可以使用“spreadArgs(..)”来调整“foo(..)”作为“bar(..)”的正确输入:
 
 ```js
 bar( spreadArgs( foo ) );           // 12
 ```
 
-It won't seem clear yet why these occasions arise, but you will see them often. Essentially, `spreadArgs(..)` allows us to define functions that `return` multiple values via an array, but still have those multiple values treated independently as inputs to another function.
+现在还不清楚为什么会出现这种情况，但你会经常看到。实际上，“spreadArgs(..)”允许我们定义一些函数，这些函数通过数组“返回”多个值，但仍然将这些值作为另一个函数的输入单独处理。
 
-While we're talking about a `spreadArgs(..)` utility, let's also define a utility to handle the opposite action:
+当我们讨论一个“spreadArgs(..)”工具时，让我们也定义一个工具来处理相反的操作:
 
 ```js
 function gatherArgs(fn) {
@@ -212,16 +211,16 @@ function gatherArgs(fn) {
     };
 }
 
-// or the ES6 => arrow form
+// 或者使用ES6箭头函数
 var gatherArgs =
     fn =>
         (...argsArr) =>
             fn( argsArr );
 ```
 
-**Note:** In Ramda, this utility is referred to as `unapply(..)`, being that it's the opposite of `apply(..)`. I think the "spread"/"gather" terminology is a little more descriptive for what's going on.
+**注意:**在Ramda中，这个实用程序被称为“unapply(..)”，因为它与“apply(..)”相反。我认为用“扩展”/“收集”的术语更能描述这个。
 
-We can use this utility to gather individual arguments into a single array, perhaps because we want to adapt a function with array parameter destructuring to another utility that passes arguments separately. We will [cover `reduce(..)` more fully in Chapter 9](ch9.md/#reduce); in short, it repeatedly calls its reducer function with two individual parameters, which we can now *gather* together:
+我们可以使用这个实用程序将单个参数收集到一个数组中，这可能是因为我们希望将一个具有数组参数析构的函数调整为另一个单独传递参数的实用程序。我们将[在第9章更全面地讨论' reduce(..) '](ch9.md/#reduce);简而言之，它用两个单独的参数反复调用它的减速函数，我们现在可以将它们*集合*在一起:
 
 ```js
 function combineFirstTwo([ v1, v2 ]) {
@@ -232,11 +231,11 @@ function combineFirstTwo([ v1, v2 ]) {
 // 15
 ```
 
-## Some Now, Some Later
+## 现在与稍后的调用
 
-If a function takes multiple arguments, you may want to specify some of those up front and leave the rest to be specified later.
+如果一个函数接受多个参数，您可能希望预先指定其中一些参数，其余的参数留待以后指定。
 
-Consider this function:
+思考下面这个函数:
 
 ```js
 function ajax(url,data,callback) {
@@ -244,11 +243,11 @@ function ajax(url,data,callback) {
 }
 ```
 
-Let's imagine you'd like to set up several API calls where the URLs are known up front, but the data and the callback to handle the response won't be known until later.
+假设您想设置几个API调用，其中url在前面是已知的，但是处理响应的数据和回调要到稍后才会知道。
 
-Of course, you can just defer making the `ajax(..)` call until all the bits are known, and refer to some global constant for the URL at that time. But another way is to create a function reference that already has the `url` argument preset.
+当然，您可以推迟执行' ajax(..) '调用，直到所有的位都被知道，并在那个时候引用URL的某个全局常量。但另一种方法是创建一个函数引用，它已经预先设置了“url”参数。
 
-What we're going to do is make a new function that still calls `ajax(..)` under the covers, and it manually sets the first argument to the API URL you care about, while waiting to accept the other two arguments later:
+我们要做的是创建一个新函数，它仍然调用' ajax(..) '，并手动将第一个参数设置API URL，同时等待稍后接受其他两个参数:
 
 ```js
 function getPerson(data,cb) {
@@ -260,7 +259,7 @@ function getOrder(data,cb) {
 }
 ```
 
-Manually specifying these function call wrappers is certainly possible, but it may get quite tedious, especially if there will also be variations with different arguments preset, like:
+手动指定这些函数的封装当然是可能的，但它可能会变得相当乏味，特别是如果还会有不同的参数预置变化，如:
 
 ```js
 function getCurrentUser(cb) {
@@ -268,15 +267,15 @@ function getCurrentUser(cb) {
 }
 ```
 
-One practice an FPer gets very used to is looking for patterns where we do the same sorts of things repeatedly, and trying to turn those actions into generic reusable utilities. As a matter of fact, I'm sure that's already the instinct for many of you readers, so that's not uniquely an FP thing. But it's unquestionably important for FP.
+函数编程人员非常习惯的一种实践是寻找重复执行相同类型的操作的模式，并尝试将这些操作转换为通用的可重用实用程序。事实上，我相信这已经是你们许多读者的本能，所以这并不是函数式编程所独有的。但毫无疑问，这对函数式编程很重要。
 
-To conceive such a utility for argument presetting, let's examine conceptually what's going on, not just looking at the manual implementations shown here.
+要构思这样一个用于参数预置的实用程序，让我们从概念上研究一下发生了什么，而不只是查看这里显示的手动实现。
 
-One way to articulate what's going on is that the `getOrder(data,cb)` function is a *partial application* of the `ajax(url,data,cb)` function. This terminology comes from the notion that arguments are *applied* to parameters at the function call-site. And as you can see, we're only applying some of the arguments up front -- specifically, the argument for the `url` parameter -- while leaving the rest to be applied later.
+一种明确的方法是“getOrder(data,cb)”函数是“ajax(url,data,cb)”函数的“部分应用程序”。这个术语来自于这样一个概念:参数被“应用”到函数调用站点的参数上。正如您所看到的，我们只在前面应用了一些参数——具体地说，就是“url”参数的参数——其余的参数将在稍后应用。
 
-To be a tiny bit more formal about this pattern, partial application is strictly a reduction in a function's arity; remember, that's the number of expected parameter inputs. We reduced the original `ajax(..)` function's arity from 3 to 2 for the `getOrder(..)` function.
+更正式地说，部分应用严格地减少了函数的特性;记住，这是期望参数输入的个数。对于“getOrder(..)”函数，我们将原来的“ajax(..)”函数的特性从3减少到2。
 
-Let's define a `partial(..)` utility:
+定义一个`partial(..)`工具函数：
 
 ```js
 function partial(fn,...presetArgs) {
@@ -285,26 +284,26 @@ function partial(fn,...presetArgs) {
     };
 }
 
-// or the ES6 => arrow form
+// 或使用ES6箭头函数
 var partial =
     (fn,...presetArgs) =>
         (...laterArgs) =>
             fn( ...presetArgs, ...laterArgs );
 ```
 
-**Tip:** Don't just take this snippet at face value. Pause for a few moments to digest what's going on with this utility. Make sure you really *get it*.
+**提示:**不要只看这个片段的表面价值。暂停几分钟，消化一下这个实用程序到底发生了什么。确保你真的明白了。
 
-The `partial(..)` function takes an `fn` for which function we are partially applying. Then, any subsequent arguments passed in are gathered into the `presetArgs` array and saved for later.
+' partial(..) '函数接受一个' fn '函数，我们对该函数进行了部分应用。然后，传入的任何后续参数都被收集到“presetArgs”数组中，并保存到后面。
 
-A new inner function (called `partiallyApplied(..)` just for clarity) is created and `return`ed; the inner function's own arguments are gathered into an array called `laterArgs`.
+创建一个新的内部函数(称为' partiallyApplied(..) '，只是为了清晰起见)并返回;内部函数自身的参数被收集到一个名为“laterArgs”的数组中。
 
-Notice the references to `fn` and `presetArgs` inside this inner function? How does that work? After `partial(..)` finishes running, how does the inner function keep being able to access `fn` and `presetArgs`? If you answered **closure**, you're right on track! The inner function `partiallyApplied(..)` closes over both the `fn` and `presetArgs` variables so it can keep accessing them later, no matter where the function runs. This is why understanding closure is critical!
+注意到内部函数中对' fn '和' presetArgs '的引用了吗?这是怎么回事?在' partial(..) '运行完成后，内部函数如何能够继续访问' fn '和' presetArgs ' ?如果您回答的是**闭包**，那么你是正确的!内部函数“partiallyApplied(..)”对“fn”和“presetArgs”变量都关闭，无论函数运行在何处，以后都可以继续访问它们，。这就是为什么理解闭包是至关重要的!
 
-When the `partiallyApplied(..)` function is later executed somewhere else in your program, it uses the closed over `fn` to execute the original function, first providing any of the (closed over) `presetArgs` partial application arguments, then any further `laterArgs` arguments.
+当“partiallyapplied(..)”函数在程序中的其他地方执行时，它使用关闭的“fn”来执行原始函数，首先提供任何“presetargs”部分应用程序参数，然后再提供其他“laterargs”参数。
 
-If any of that was confusing, stop and go re-read it. Trust me, you'll be glad you did as we get further into the text.
+如果有什么让人困惑的话，停下来再读一遍。相信我，你会很高兴我们能更深入地了解。
 
-Let's now use the `partial(..)` utility to make those earlier partially applied functions:
+现在，让我们使用' partial(..) '函数来实现前面那些部分应用的函数:
 
 ```js
 var getPerson = partial( ajax, "http://some.api/person" );
@@ -312,7 +311,7 @@ var getPerson = partial( ajax, "http://some.api/person" );
 var getOrder = partial( ajax, "http://some.api/order" );
 ```
 
-Take a moment to consider the shape/internals of `getPerson(..)`. It will look sorta like this:
+花点时间考虑一下“getPerson(..)”的形状/内部结构。它看起来是这样的:
 
 ```js
 var getPerson = function partiallyApplied(...laterArgs) {
@@ -320,28 +319,28 @@ var getPerson = function partiallyApplied(...laterArgs) {
 };
 ```
 
-The same will be true of `getOrder(..)`. But what about `getCurrentUser(..)`?
+getOrder(..)也是如此。但是' getCurrentUser(..) '呢?
 
 ```js
-// version 1
+// 版本 1
 var getCurrentUser = partial(
     ajax,
     "http://some.api/person",
     { user: CURRENT_USER_ID }
 );
 
-// version 2
+// 版本 2
 var getCurrentUser = partial( getPerson, { user: CURRENT_USER_ID } );
 ```
 
-We can either define `getCurrentUser(..)` with both the `url` and `data` arguments specified directly (version 1), or define `getCurrentUser(..)` as a partial application of the `getPerson(..)` partial application, specifying only the additional `data` argument (version 2).
+我们可以使用直接指定的“url”和“data”参数定义“getCurrentUser(..)”(版本1)，或者将“getCurrentUser(..)”定义为“getPerson(..)”部分应用程序的部分应用程序，只指定附加的“data”参数(版本2)。
 
-Version 2 is a little cleaner to express because it reuses something already defined. As such, I think it fits a little closer to the spirit of FP.
+版本2更便于表达，因为它重用了已经定义的内容。因此，我认为它更符合函数式编程的概念。
 
-Just to make sure we understand how these two versions will work under the covers, they look respectively kinda like:
+为了确保我们理解这两个版本在背后是如何工作的，它们看起来分别有点像:
 
 ```js
-// version 1
+// 版本 1
 var getCurrentUser = function partiallyApplied(...laterArgs) {
     return ajax(
         "http://some.api/person",
@@ -350,7 +349,7 @@ var getCurrentUser = function partiallyApplied(...laterArgs) {
     );
 };
 
-// version 2
+// 版本 2
 var getCurrentUser = function outerPartiallyApplied(...outerLaterArgs){
     var getPerson = function innerPartiallyApplied(...innerLaterArgs){
         return ajax( "http://some.api/person", ...innerLaterArgs );
@@ -360,11 +359,11 @@ var getCurrentUser = function outerPartiallyApplied(...outerLaterArgs){
 }
 ```
 
-Again, stop and re-read those code snippets to make sure you understand what's going on there.
+同样，停止并重新阅读这些代码片段，以确保您理解其中的内容。
 
-**Note:** Version 2 has an extra layer of function wrapping involved. That may smell strange and unnecessary, but this is just one of those things in FP that you'll want to get really comfortable with. We'll be wrapping many layers of functions onto each other as we progress through the text. Remember, this is *function*al programming!
+**注意:** 版本 2包含一个额外的函数包装层。这可能听起来很奇怪，也没有必要，但这只是函数编程中你想要真正熟悉的东西之一。在阅读文本的过程中，我们将把许多层函数相互包装起来。记住，这是*函数*编程!
 
-Let's take a look at another example of the usefulness of partial application. Consider an `add(..)` function which takes two arguments and adds them together:
+让我们看一下部分应用程序的另一个有用的例子。考虑一个' add(..) '函数，它接受两个参数并将它们相加:
 
 ```js
 function add(x,y) {
