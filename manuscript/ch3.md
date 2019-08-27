@@ -371,7 +371,7 @@ function add(x,y) {
 }
 ```
 
-Now imagine we'd like take a list of numbers and add a certain number to each of them. We'll use the `map(..)` utility (see [Chapter 9, "Map"](ch9.md/#map)) built into JS arrays:
+现在假设我们想要一个数字列表，并在每个列表中添加一个特定的数字。我们将使用内置在JS数组中的 `map(..)`(see [Chapter 9, "Map"](ch9.md/#map)) ：
 
 ```js
 [1,2,3,4,5].map( function adder(val){
@@ -380,36 +380,36 @@ Now imagine we'd like take a list of numbers and add a certain number to each of
 // [4,5,6,7,8]
 ```
 
-The reason we can't pass `add(..)` directly to `map(..)` is because the signature of `add(..)` doesn't match the mapping function that `map(..)` expects. That's where partial application can help us: we can adapt the signature of `add(..)` to something that will match:
+我们不能直接将' add(..) '传递给' map(..) '的原因是' add(..) '的签名与' map(..) '的映射函数不匹配。这就是部分应用程序可以帮助我们的地方:我们可以修改`add(..)`的签名，使之匹配:
 
 ```js
 [1,2,3,4,5].map( partial( add, 3 ) );
 // [4,5,6,7,8]
 ```
 
-The `partial(add,3)` call produces a new unary function which is expecting only one more argument.
+`partial(add,3)`调用生成一个新的一元函数，该函数只需要一个参数。
 
-The `map(..)` utility will loop through the array (`[1,2,3,4,5]`) and repeatedly call this unary function, once for each of those values, respectively. So, the calls made will effectively be `add(3,1)`, `add(3,2)`, `add(3,3)`, `add(3,4)`, and `add(3,5)`. The array of those results is `[4,5,6,7,8]`.
+`map(..)`将循环遍历数组(`[1,2,3,4,5]`)，并分别为每个值重复调用这个一元函数一次。因此,有效地调用`add(3,1)`, `add(3,2)`, `add(3,3)`, `add(3,4)`, and `add(3,5)`，产生结果的数组是'[4,5,6,7,8]'
 
-### `bind(..)`
+### `bind(..)函数`
 
-JavaScript functions all have a built-in utility called `bind(..)`. It has two capabilities: presetting the `this` context and partially applying arguments.
+javascript函数都有一个名为`bind(..)`的内置函数。它有两个功能：预设`this`上下文和应用参数。
 
-I think it's incredibly misguided to conflate these two capabilities in one utility. Sometimes you'll want to hard-bind the `this` context and not partially apply arguments. Other times you'll want to partially apply arguments but not care about `this` binding at all. I have never needed both at the same time.
+我认为把这两种功能混为一谈是非常错误的。有时您需要绑定`this`上下文，而不是应用参数。其他时候，您可能希望作为应用参数，根本不关心`this`绑定。我是从来没有同时需要这两者的。
 
-The latter scenario (partial application without setting `this` context) is awkward because you have to pass an ignorable placeholder for the `this`-binding argument (the first one), usually `null`.
+后一种方案比较尴尬（不设置`this`上下文的应用函数），因为必须为 `this`绑定参数（第一个）传递一个可忽略的占位符，通常为“null”。
 
-Consider:
+想一想:
 
 ```js
 var getPerson = ajax.bind( null, "http://some.api/person" );
 ```
 
-That `null` just bugs me to no end. Despite this *this* annoyance, it's mildly convenient that JS has a built-in utility for partial application. However, most FP programmers prefer using the dedicated `partial(..)` utility in their chosen FP library.
+那个`null` 让人心烦。JS为部分应用程序提供了一个内置的实用程序，这还是比较方便的。然而，大多数函数编程程序员更喜欢在他们选择的函数编程库中使用专用的`partial(..)`实用程序。
 
-### Reversing Arguments
+### 反转参数
 
-Recall that the signature for our Ajax function is: `ajax( url, data, cb )`. What if we wanted to partially apply the `cb` but wait to specify `data` and `url` later? We could create a utility that wraps a function to reverse its argument order:
+回想一下，我们的Ajax函数的签名是:`ajax( url, data, cb )`。如果我们想要部分应用 `cb`，但要等到稍后指定`data`和`url`，又该怎么办?我们可以创建一个实用程序来包装一个函数，以逆转其参数顺序:
 
 ```js
 function reverseArgs(fn) {
@@ -418,14 +418,14 @@ function reverseArgs(fn) {
     };
 }
 
-// or the ES6 => arrow form
+// 运用箭头函数
 var reverseArgs =
     fn =>
         (...args) =>
             fn( ...args.reverse() );
 ```
 
-Now we can reverse the order of the `ajax(..)` arguments, so that we can then partially apply from the right rather than the left. To restore the expected order, we'll then reverse the subsequent partially applied function:
+现在我们可以颠倒`ajax(..)`参数的顺序，这样我们就可以从右边而不是左边部分地应用。为了恢复预期的顺序，我们将反转后面部分应用的函数:
 
 ```js
 var cache = {};
