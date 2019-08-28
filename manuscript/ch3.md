@@ -436,11 +436,11 @@ var cacheResult = reverseArgs(
     } )
 );
 
-// later:
+// 改造后:
 cacheResult( "http://some.api/person", { user: CURRENT_USER_ID } );
 ```
 
-Instead of manually using `reverseArgs(..)` (twice!) for this purpose, we can define a `partialRight(..)` which partially applies the rightmost arguments. Under the covers, it can use the same double-reverse trick:
+为此，我们可以定义一个`partialRight(..)`，而不是手动使用(两次!)`reverseArgs(..)` 封装后，它可以使用相同的双反转技巧:
 
 <a name="partialright"></a>
 
@@ -455,12 +455,11 @@ var cacheResult = partialRight( ajax, function onResult(obj){
     cache[obj.id] = obj;
 });
 
-// later:
+// 改造后:
 cacheResult( "http://some.api/person", { user: CURRENT_USER_ID } );
 ```
 
-Another more straightforward (and certainly more performant) implementation of `partialRight(..)` that doesn't use the double-reverse trick:
-
+另一个更直接(当然也更高效)的实现`partialRight(..)`，它没有使用双重反转技巧:
 ```js
 function partialRight(fn,...presetArgs) {
     return function partiallyApplied(...laterArgs){
@@ -468,16 +467,16 @@ function partialRight(fn,...presetArgs) {
     };
 }
 
-// or the ES6 => arrow form
+// ES6箭头函数格式
 var partialRight =
     (fn,...presetArgs) =>
         (...laterArgs) =>
             fn( ...laterArgs, ...presetArgs );
 ```
 
-None of these implementations of `partialRight(..)` guarantee that a specific parameter will receive a specific partially applied value; it only ensures that the partially applied value(s) appear as the rightmost (aka, last) argument(s) passed to the original function.
+这些`partialRight(..)`的实现都不能保证特定的参数将接收到特定的部分应用值;它只确保部分应用的值作为传递给原始函数的最右边(也就是最后一个)参数出现。
 
-For example:
+示例:
 
 ```js
 function foo(x,y,z,...rest) {
@@ -495,15 +494,15 @@ f( 1, 2, 3 );       // 1 2 3 ["z:last"]
 f( 1, 2, 3, 4 );    // 1 2 3 [4,"z:last"]
 ```
 
-The value `"z:last"` is only applied to the `z` parameter in the case where `f(..)` is called with exactly two arguments (matching `x` and `y` parameters). In all other cases, the `"z:last"` will just be the rightmost argument, however many arguments precede it.
+值 `"z:last"`只适用于`z`参数，当`f(..)`被调用时正好有两个参数(匹配`x` 和`y`参数)。在所有其他情况下，`"z:last"`将是最正确的参数，不管它前面有多少个参数。
 
-## One at a Time
+## 一次一个
 
-Let's examine a technique similar to partial application, where a function that expects multiple arguments is broken down into successive chained functions that each take a single argument (arity: 1) and return another function to accept the next argument.
+让我们研究一种类似于部分应用程序的技术，其中期望多个参数的函数被分解为连续的链接函数，每个函数接受一个参数并返回另一个函数来接受下一个参数。
 
-This technique is called currying.
+这种技术被称为柯里化。
 
-To first illustrate, let's imagine we had a curried version of `ajax(..)` already created. This is how we'd use it:
+首先，让我们假设已经创建了一个课程版的“ajax（…）”。我们就是这样使用它的：
 
 ```js
 curriedAjax( "http://some.api/person" )
@@ -511,7 +510,7 @@ curriedAjax( "http://some.api/person" )
         ( function foundUser(user){ /* .. */ } );
 ```
 
-The three sets of `(..)`s denote three chained function calls. But perhaps splitting out each of the three calls helps see what's going on better:
+`(..)`的三组表示三个链接函数调用。但也许把这三个回调分开会让你更好地了解情况:
 
 ```js
 var personFetcher = curriedAjax( "http://some.api/person" );
@@ -521,17 +520,17 @@ var getCurrentUser = personFetcher( { user: CURRENT_USER_ID } );
 getCurrentUser( function foundUser(user){ /* .. */ } );
 ```
 
-Instead of taking all the arguments at once (like `ajax(..)`), or some of the arguments up front and the rest later (via `partial(..)`), this `curriedAjax(..)` function receives one argument at a time, each in a separate function call.
+这个`curriedAjax(..)`函数不是一次接受所有参数(如`ajax(..)`)，或者先接收一些参数，然后再接收其他参数(通过`partial(..)`)，而是一次接收一个参数，每个参数都在一个单独的函数调用中。
 
-Currying is similar to partial application in that each successive curried call partially applies another argument to the original function, until all arguments have been passed.
+柯里化类似于部分应用程序，在传递完所有参数之前，每个连续的局部套用调用都会将另一个参数部分应用于原始函数。
 
-The main difference is that `curriedAjax(..)` will return a function (we call it `personFetcher(..)`) that expects **only the next argument** `data`, not one that (like the earlier `getPerson(..)`) can receive all the rest of the arguments.
+主要的区别是，`curriedAjax(..)`将返回一个函数（我们称之为`personFetcher(..)`），它只期望**下一个参数**`data`，而不是（像前面的`getPerson(..)`）可以接收所有其他参数的函数。
 
-If an original function expected five arguments, the curried form of that function would take just the first argument, and return a function to accept the second. That one would take just the second argument, and return a function to accept the third. And so on.
+如果一个原始函数需要五个参数，那么该函数的柯里化形式将只接受第一个参数，并返回一个函数来接受第二个参数。它只接受第二个参数，并返回一个函数来接受第三个参数。等等。
 
-So currying unwinds a single higher-arity function into a series of chained unary functions.
+因此，柯里化将单个高阶函数展开为一系列链式一元函数。
 
-How might we define a utility to do this currying? Consider:
+我们如何定义一个实用程序来实现这种柯里化?考虑:
 
 <a name="curry"></a>
 
@@ -551,7 +550,7 @@ function curry(fn,arity = fn.length) {
     })( [] );
 }
 
-// or the ES6 => arrow form
+// ES6箭头函数格式
 var curry =
     (fn,arity = fn.length,nextCurried) =>
         (nextCurried = prevArgs =>
@@ -568,13 +567,13 @@ var curry =
         )( [] );
 ```
 
-The approach here is to start a collection of arguments in `prevArgs` as an empty `[]` array, and add each received `nextArg` to that, calling the concatenation `args`. While `args.length` is less than `arity` (the number of declared/expected parameters of the original `fn(..)` function), make and return another `curried(..)` function to collect the next `nextArg` argument, passing the running `args` collection along as its `prevArgs`. Once we have enough `args`, execute the original `fn(..)` function with them.
+这里的方法是将' prevArgs '中的参数集合作为空'[]'数组，并将每个接收到的' nextArg '添加到其中，调用连接' args '。而“参数。length '小于' arity '(原始' fn(..) '函数声明/预期参数的数量)，make并返回另一个' curried(..) '函数来收集下一个' nextArg '参数，将运行中的' args '集合作为它的' prevArgs '传递。一旦我们有了足够的“args”，使用它们执行原始的“fn(..)”函数。
 
-By default, this implementation relies on being able to inspect the `length` property of the to-be-curried function to know how many iterations of currying we'll need before we've collected all its expected arguments.
+默认情况下，此实现依赖于能够检查待处理函数的“length”属性，以了解在收集所有预期参数之前需要进行多少次柯里化。
 
-**Note:** If you use this implementation of `curry(..)` with a function that doesn't have an accurate `length` property, you'll need to pass the `arity` (the second parameter of `curry(..)`) to ensure `curry(..)` works correctly. `length` will be inaccurate if the function's parameter signature includes default parameter values, parameter destructuring, or is variadic with `...args` (see [Chapter 2](ch2.md)).
+**注意:**如果您将' curry(..) '的这个实现用于一个没有精确的' length '属性的函数，则需要传递' arity ' (' curry(..) '的第二个参数)，以确保' curry(..) '工作正常。如果函数的参数签名包含默认参数值、参数析构或变量为…args '(参见[第2章](ch2.md))。
 
-Here's how we would use `curry(..)` for our earlier `ajax(..)` example:
+下面是我们将如何在前面的`ajax(..)` 示例中使用`curry(..)`:
 
 ```js
 var curriedAjax = curry( ajax );
@@ -586,18 +585,18 @@ var getCurrentUser = personFetcher( { user: CURRENT_USER_ID } );
 getCurrentUser( function foundUser(user){ /* .. */ } );
 ```
 
-Each call partially applies one more argument to the original `ajax(..)` call, until all three have been provided and `ajax(..)` is actually invoked.
+每个调用都会对原始的`ajax(..)`调用再应用一个参数，直到提供了所有三个参数并实际调用了`ajax(..)`。
 
-Remember our example from the discussion of partial application about adding `3` to each value in a list of numbers? As currying is similar to partial application, we could do that task with currying in almost the same way:
+还记得我们在讨论部分应用程序时的例子吗?由于柯里化与局部应用类似，我们可以用几乎相同的方法来完成这个任务:
 
 ```js
 [1,2,3,4,5].map( curry( add )( 3 ) );
 // [4,5,6,7,8]
 ```
 
-The difference between the two? `partial(add,3)` vs `curry(add)(3)`.
+注意到两者之间的区别?`partial(add,3)` 与 `curry(add)(3)`。
 
-Why might you choose `curry(..)` over `partial(..)`? It might be helpful in the case where you know ahead of time that `add(..)` is the function to be adapted, but the value `3` isn't known yet:
+为什么你会选择`curry(..)`而不是`partial(..)`?如果您事先知道`add(..)`是要修改的函数，但' 3 '的值还不知道，这可能会有帮助:
 
 ```js
 var adder = curry( add );
@@ -607,7 +606,7 @@ var adder = curry( add );
 // [4,5,6,7,8]
 ```
 
-Let's look at another numbers example, this time adding a list of them together:
+让我们看另一个数字的例子，这次把它们加在一起:
 
 ```js
 function sum(...nums) {
@@ -620,24 +619,24 @@ function sum(...nums) {
 
 sum( 1, 2, 3, 4, 5 );                       // 15
 
-// now with currying:
+// 现在使用柯里化:
 // (5 to indicate how many we should wait for)
 var curriedSum = curry( sum, 5 );
 
 curriedSum( 1 )( 2 )( 3 )( 4 )( 5 );        // 15
 ```
 
-The advantage of currying here is that each call to pass in an argument produces another function that's more specialized, and we can capture and use *that* new function later in the program. Partial application specifies all the partially applied arguments up front, producing a function that's waiting for all the rest of the arguments **on the next call**.
+这里的优点是，每次传入参数的调用都会产生另一个更专门化的函数，我们可以在程序的后面捕获并使用*这个*新函数。部分应用程序预先指定所有部分应用的参数，生成一个函数，该函数正在等待下一个调用**上的所有其他参数**。
 
-If you wanted to use partial application to specify one parameter (or several!) at a time, you'd have to keep calling `partial(..)` again on each successive partially applied function. By contrast, curried functions do this automatically, making working with individual arguments one-at-a-time more ergonomic.
+如果您想使用部分应用程序一次指定一个(或多个!)参数，则必须对每个连续的部分应用的函数再次调用`partial(..)`。相比之下，柯里化的函数可以自动完成这一任务，使每次处理单个参数更加符合人体工程学。
 
-Both currying and partial application use closure to remember the arguments over time until all have been received, and then the original function can be invoked.
+柯里化和部分应用程序都使用闭包来随着时间记住参数，直到所有参数都被接收，然后才能调用原始函数。
 
-### Visualizing Curried Functions
+### 柯里化的可视化功能
 
-Let's examine more closely the `curriedSum(..)` from the previous section. Recall its usage: `curriedSum(1)(2)(3)(4)(5)`; five subsequent (chained) function calls.
+让我们更仔细地研究前一节中的`curriedSum(..)`。回想一下它的用法:curriedSum(1)(2)(3)(4)(5);5个后续(链式)函数调用。
 
-What if we manually defined a `curriedSum(..)` instead of using `curry(..)`? How would that look?
+如果我们手工定义一个`curriedSum(..)`而不是使用`curry(..)`会怎么样?
 
 ```js
 function curriedSum(v1) {
@@ -653,11 +652,11 @@ function curriedSum(v1) {
 }
 ```
 
-Definitely uglier, no question. But this is an important way to visualize what's going on with a curried function. Each nested function call is returning another function that's going to accept the next argument, and that continues until we've specified all the expected arguments.
+绝对更丑，毫无疑问。但这是一个很重要的方法来形象化一个柯里化函数。每个嵌套函数调用都返回另一个函数，该函数将接受下一个参数，并继续执行，直到指定了所有预期的参数。
 
-When trying to decipher curried functions, I've found it helps me tremendously if I can unwrap them mentally as a series of nested functions.
+当我试图破译柯里化函数时，我发现如果我能在心里把它们分解成一系列嵌套函数，这对我有很大的帮助。
 
-In fact, to reinforce that point, let's consider the same code but written with ES6 arrow functions:
+事实上，为了加强这一点，让我们考虑同样的代码，但用ES6箭头函数编写:
 
 ```js
 curriedSum =
@@ -669,27 +668,27 @@ curriedSum =
                         sum( v1, v2, v3, v4, v5 );
 ```
 
-And now, all on one line:
+现在，所有的都在一行:
 
 ```js
 curriedSum = v1 => v2 => v3 => v4 => v5 => sum( v1, v2, v3, v4, v5 );
 ```
 
-Depending on your perspective, that form of visualizing the curried function may be more or less helpful to you. For me, it's a fair bit more obscured.
+根据您的观点，这种将柯里化函数可视化的形式可能或多或少对您有帮助。对我来说，这有点模糊。
 
-But the reason I show it that way is that it happens to look almost identical to the mathematical notation (and Haskell syntax) for a curried function! That's one reason why those who like mathematical notation (and/or Haskell) like the ES6 arrow function form.
+但我用这种方式展示它的原因是，它看起来几乎与柯里化函数的数学符号(和Haskell语法)相同!这就是那些喜欢数学符号(和/或Haskell)的人喜欢ES6箭头函数形式的原因之一。
 
-### Why Currying and Partial Application?
+### 为什么是柯里化和局部应用?
 
-With either style -- currying (such as `sum(1)(2)(3)`) or partial application (such as `partial(sum,1,2)(3)`) -- the call-site unquestionably looks stranger than a more common one like `sum(1,2,3)`. So **why would we ever go this direction** when adopting FP? There are multiple layers to answering that question.
+使用任意一种样式——柯里化(如`sum(1)(2)(3)`)或部分应用程序(如`partial(sum,1,2)(3)`)——调用站点无疑比更常见的`sum(1,2,3)`看起来更奇怪。那么，在采用FP时，我们为什么要走这个方向呢?回答这个问题有很多层次。
 
-The first and most obvious reason is that both currying and partial application allow you to separate in time/space (throughout your codebase) when and where separate arguments are specified, whereas traditional function calls require all the arguments to be present at the same time. If you have a place in your code where you'll know some of the arguments and another place where the other arguments are determined, currying or partial application are very useful.
+第一个也是最明显的原因是，局部套用和局部应用程序都允许在指定单独参数的时间/空间(在整个代码库中)中分离，而传统的函数调用要求所有参数同时出现。如果您在代码中有一个位置可以知道一些参数，而在另一个位置可以确定其他参数，那么局部套用或局部应用程序非常有用。
 
-Another layer to this answer, specifically for currying, is that composition of functions is much easier when there's only one argument. So a function that ultimately needs three arguments, if curried, becomes a function that needs just one, three times over. That kind of unary function will be a lot easier to work with when we start composing them. We'll tackle this topic later in [Chapter 4](ch4.md).
+这个答案的另一个层次，特别是对于局部套用，是当只有一个参数时，函数的组合要容易得多。所以一个最终需要三个参数的函数，如果柯里化，变成一个只需要一个，三次的函数。当我们开始组合它们时，这种一元函数会更容易处理。我们将在稍后的[第4章](ch4.md)中处理这个主题。
 
-But the most important layer is specialization of generalized functions, and how such abstraction improves readability of code.
+但是最重要的层是通用函数的专门化，以及这种抽象如何提高代码的可读性。
 
-Consider our running `ajax(..)` example:
+考虑我们运行的 `ajax(..)` 示例:
 
 ```js
 ajax(
@@ -699,9 +698,9 @@ ajax(
 );
 ```
 
-The call-site includes all the information necessary to pass to the most generalized version of the utility (`ajax(..)`). The potential readability downside is that it may be the case that the URL and the data are not relevant information at this point in the program, but yet that information is cluttering up the call-site nonetheless.
+调用站点包含传递到实用程序的最通用版本(`ajax(..)`)所需的所有信息。潜在的易读性缺点是，URL和数据在程序中的这一点上可能不是相关的信息，但是尽管如此，这些信息仍然使调用站点混乱不堪。
 
-Now consider:
+现在想一想:
 
 ```js
 var getCurrentUser = partial(
@@ -710,38 +709,38 @@ var getCurrentUser = partial(
     { user: CURRENT_USER_ID }
 );
 
-// later
+// 改造后
 
 getCurrentUser( function foundUser(user){ /* .. */ } );
 ```
 
-In this version, we define a `getCurrentUser(..)` function ahead of time that already has known information like URL and data preset. The call-site for `getCurrentUser(..)` then isn't cluttered by information that **at that point of the code** isn't relevant.
+在这个版本中，我们预先定义了一个`getCurrentUser(..)`函数，该函数已经具有URL和数据预置等已知信息。这样，`getCurrentUser(..)`的调用就不会被代码中**不相关的信息所打乱。
 
-Moreover, the semantic name for the function `getCurrentUser(..)` more accurately depicts what is happening than just `ajax(..)` with a URL and data would.
+此外，函数`getCurrentUser(..)`的语义名称比仅使用URL和数据的`ajax(..)`更准确地描述了正在发生的事情。
 
-That's what abstraction is all about: separating two sets of details -- in this case, the *how* of getting a current user and the *what* we do with that user -- and inserting a semantic boundary between them, which eases the reasoning of each part independently.
+这就是抽象的全部含义:分离两组细节——在本例中，是获取当前用户的*方法*和使用该用户的*方法*——并在它们之间插入语义边界，这将简化每个部分的独立推理。
 
-Whether you use currying or partial application, creating specialized functions from generalized ones is a powerful technique for semantic abstraction and improved readability.
+无论您使用柯里化还是局部应用程序，从通用函数创建专用函数都是语义抽象和提高可读性的强大技术。
 
-### Currying More Than One Argument?
+### 柯里化多个参数？
 
-The definition and implementation I've given of currying thus far is, I believe, as true to the spirit as we can likely get in JavaScript.
+到目前为止，我所给出的关于柯里化的定义和实现，我相信是最符合JavaScript精神的。
 
-Specifically, if we look briefly at how currying works in Haskell, we can observe that multiple arguments always go in to a function one at a time, one per curried call -- other than tuples (analogous to arrays for our purposes) that transport multiple values in a single argument.
+具体地说，如果我们简单地看一下在Haskell中如何使用局部套用，我们可以观察到，多个参数总是一个一个地进入一个函数，每个局部套用调用一个参数——而不是在一个参数中传输多个值的元组(类似于我们的目的中的数组)。
 
-For example, in Haskell:
+例如，在Haskell中:
 
 ```haskell
 foo 1 2 3
 ```
 
-This calls the `foo` function, and has the result of passing in three values `1`, `2`, and `3`. But functions are automatically curried in Haskell, which means each value goes in as a separate curried-call. The JS equivalent of that would look like `foo(1)(2)(3)`, which is the same style as the `curry(..)` I presented earlier.
+它调用`foo`函数，并传递三个值' 1 '、' 2 '和' 3 '。但是函数在Haskell中是自动柯里化的，这意味着每个值都作为一个单独的调用进入。对应的JS应该类似于`foo(1)(2)(3)`，这与我前面介绍的`curry(..)`风格相同。
 
-**Note:** In Haskell, `foo (1,2,3)` is not passing in those three values at once as three separate arguments, but a tuple (kinda like a JS array) as a single argument. To work, `foo` would need to be altered to handle a tuple in that argument position. As far as I can tell, there's no way in Haskell to pass all three arguments separately with just one function call; each argument gets its own curried-call. Of course, the presence of multiple calls is transparent to the Haskell developer, but it's a lot more syntactically obvious to the JS developer.
+**注意:**在Haskell中，`foo (1,2,3)`不是同时作为三个单独的参数传递这三个值，而是作为一个单独的参数传递一个元组(有点像JS数组)。为了工作，需要修改' foo '来处理那个参数位置的元组。据我所知，在Haskell中不可能仅通过一个函数调用就分别传递所有三个参数;每个参数都有自己的柯里化调用。当然，对于Haskell开发人员来说，多个调用的存在是透明的，但是对于JS开发人员来说，它在语法上要明显得多。
 
-For these reasons, I think the `curry(..)` that I demonstrated earlier is a faithful adaptation, or what I might call "strict currying". However, it's important to note that there's a looser definition used in most popular JavaScript FP libraries.
+基于这些原因，我认为我之前演示的`curry(..)`是一种忠实的改编，或者我可以称之为“严格的柯里化”。但是，需要注意的是，在大多数流行的JavaScript FP库中使用了一个更宽松的定义。
 
-Specifically, JS currying utilities typically allow you to specify multiple arguments for each curried-call. Revisiting our `sum(..)` example from before, this would look like:
+具体来说，JS 柯里化实用程序通常允许为每个调用指定多个参数。重新查看前面的“sum(..)”示例，如下所示:
 
 ```js
 var curriedSum = looseCurry( sum, 5 );
@@ -749,9 +748,9 @@ var curriedSum = looseCurry( sum, 5 );
 curriedSum( 1 )( 2, 3 )( 4, 5 );            // 15
 ```
 
-We see a slight syntax savings of fewer `( )`, and an implied performance benefit of now having three function calls instead of five. But other than that, using `looseCurry(..)` is identical in end result to the narrower `curry(..)` definition from earlier. I would guess the convenience/performance factor is probably why frameworks allow multiple arguments. This seems mostly like a matter of taste.
+我们看到语法上稍微节省了一些'()'，并且现在有三个函数调用而不是五个函数调用带来了性能上的好处。但除此之外，使用`looseCurry(..)`与前面定义的`curry(..)`在最终结果上是相同的。我想，方便/性能因素可能是框架允许多个参数的原因。这似乎主要是品味的问题。
 
-We can adapt our previous currying implementation to this common looser definition:
+我们可以调整我们之前的柯里化实现来适应这个更宽松的定义:
 
 <a name="loosecurry"></a>
 
@@ -772,13 +771,13 @@ function looseCurry(fn,arity = fn.length) {
 }
 ```
 
-Now each curried-call accepts one or more arguments (as `nextArgs`). We'll leave it as an exercise for the interested reader to define the ES6 `=>` version of `looseCurry(..)` similar to how we did it for `curry(..)` earlier.
+现在，每个柯里化调用都接受一个或多个参数(作为`nextArgs`)。我们将把它作为一个练习留给感兴趣的读者来定义ES6 `=>`版本的`looseCurry(..)`类似于我们之前为`curry(..)`所做的那样。
 
-### No Curry for Me, Please
+### 请不要对我用柯里化
 
-It may also be the case that you have a curried function that you'd like to essentially un-curry -- basically, to turn a function like `f(1)(2)(3)` back into a function like `g(1,2,3)`.
+也有可能你有一个柯里化函数你想要取消柯里化——基本上，把一个像f(1)(2)(3)这样的函数变成像g(1,2,3)这样的函数。
 
-The standard utility for this is (un)shockingly typically called `uncurry(..)`. Here's a simple naive implementation:
+这方面的标准实用程序通常被称为`uncurry(..)`。这里有一个简单的天真的实现:
 
 ```js
 function uncurry(fn) {
@@ -807,7 +806,7 @@ var uncurry =
         };
 ```
 
-**Warning:** Don't just assume that `uncurry(curry(f))` has the same behavior as `f`. In some libraries the uncurrying would result in a function like the original, but not all of them; certainly our example here does not. The uncurried function acts (mostly) the same as the original function if you pass as many arguments to it as the original function expected. However, if you pass fewer arguments, you still get back a partially curried function waiting for more arguments; this quirk is illustrated in the following snippet:
+**警告:**不要想当然地认为`uncurry(curry(f))`与`f`具有相同的行为。在一些库中，解列会得到与原始函数类似的函数，但不是所有函数;当然我们这里的例子没有。如果传递的参数与原始函数期望的一样多，那么反柯里化函数的作用(大多数情况下)与原始函数相同。然而，如果传递更少的参数，仍然会返回一个部分柯里化的函数，等待更多的参数;下面的代码片段说明了这种怪癖:
 
 ```js
 function sum(...nums) {
@@ -827,19 +826,19 @@ uncurriedSum( 1, 2, 3, 4, 5 );              // 15
 uncurriedSum( 1, 2, 3 )( 4 )( 5 );          // 15
 ```
 
-Probably the more common case of using `uncurry(..)` is not with a manually curried function as just shown, but with a function that comes out curried as a result of some other set of operations. We'll illustrate that scenario later in this chapter in the ["No Points" discussion](#no-points).
+可能使用`uncurry(..)`更常见的情况并不是像刚才显示的那样使用手动柯里化函数，而是使用由其他一些操作集生成的柯里化函数。我们将在本章后面的[“No Points”讨论](#no-points)中演示该场景。
 
-## Order Matters
+## 顺序的重要性
 
-In Chapter 2, we explored the [named arguments pattern](ch2.md/#named-arguments). One primary advantage of named arguments is not needing to juggle argument ordering, thereby improving readability.
+在第2章中，我们探讨了[命名参数模式](ch2.md/#named-arguments)。命名参数的一个主要优势是不需要改变参数的顺序，从而提高可读性。
 
-We've looked at the advantages of using currying/partial application to provide individual arguments to a function separately. But the downside is that these techniques are traditionally based on positional arguments; argument ordering is thus an inevitable headache.
+我们已经看到了使用柯里化/局部应用程序分别为函数提供单独参数的优点。但缺点是这些技术传统上是基于位置参数的;因此，论点排序是一个不可避免的头痛问题。
 
-Utilities like `reverseArgs(..)` (and others) are necessary to juggle arguments to get them into the right order. Sometimes we get lucky and define a function with parameters in the order that we later want to curry them, but other times that order is incompatible and we have to jump through hoops to reorder.
+像`reverseArgs(..)`(和其他)这样的实用程序是调整参数以使它们处于正确顺序所必需的。有时我们很幸运地定义了一个带有参数的函数，其顺序我们稍后将对其进行修改，但有时这个顺序是不兼容的，我们必须跳过一些困难才能重新排序。
 
-The frustration is not merely that we need to use some utility to juggle the properties, but the fact that the usage of the utility clutters up our code a bit with extra noise. These kinds of things are like little paper cuts; one here or there isn't a showstopper, but the pain can certainly add up.
+令人沮丧的是，我们不仅需要使用一些实用程序来处理属性，而且使用该实用程序会给代码带来额外的干扰，使代码变得有些混乱。这些东西就像小剪纸;这里有一个，那里没有一个，但痛苦肯定会累积起来。
 
-Can we improve currying/partial application to free it from these ordering concerns? Let's apply the tricks from named arguments style and invent some helper utilities for this adaptation:
+我们能否改进柯里化/部分应用程序，使其免于这些排序问题?让我们应用命名参数风格的技巧，并为这种适应发明一些辅助实用程序:
 
 ```js
 function partialProps(fn,presetArgsObj) {
