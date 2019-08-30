@@ -1,7 +1,6 @@
-# Functional-Light JavaScript
-# Chapter 4: Composing Functions
+# 章节 4: 组合函数
 
-By now, I hope you're feeling much more comfortable with what it means to use functions for functional programming.
+到目前为止，我希望您对使用函数进行函数编程的含义感到更舒服。
 
 A functional programmer sees every function in their program like a simple little Lego piece. They recognize the blue 2x2 brick at a glance, and know exactly how it works and what they can do with it. When they begin building a bigger, more complex Lego model, as they need each next piece, they already have an instinct for which of their many spare pieces to grab.
 
