@@ -86,27 +86,27 @@ wordsUsed;
 
 糖果工厂在这一过程中相当成功，但与所有企业一样，管理层一直在寻找增长的途径。
 
-To keep up with demand for more candy production, they decide to take out the conveyor belt contraption and just stack all three machines on top of one another, so that the output valve of one is connected directly to the input valve of the one below it. There's no longer sprawling wasted space where a chunk of chocolate slowly and noisily rumbles down a conveyor belt from the first machine to the second.
+为了满足更多糖果生产的需求，他们决定拿出传送带装置，把三台机器一台台叠起来，其中一台的输出阀直接连接到下一台的输入阀上。再也不会有大块巧克力在传送带上缓慢而嘈杂地从一台机器传到另一台机器的浪费空间了。
 
-This innovation saves a lot of room on the factory floor, so management is happy they'll get to make more candy each day!
+这一创新为工厂节省了很多空间，所以管理层很高兴他们能每天生产更多的糖果!
 
-The code equivalent of this improved candy factory configuration is to skip the intermediate step (the `wordsFound` variable in the earlier snippet), and just use the two function calls together:
+与此改进的糖果生产配置等价的代码是跳过中间步骤(前面代码片段中的`wordsFound`变量)，只使用两个函数调用:
 
 ```js
 var wordsUsed = unique( words( text ) );
 ```
 
-**Note:** Though we typically read the function calls left-to-right -- `unique(..)` and then `words(..)` -- the order of operations will actually be more right-to-left, or inner-to-outer. `words(..)` will run first and then `unique(..)`. Later we'll talk about a pattern that matches the order of execution to our natural left-to-right reading, called `pipe(..)`.
+**注意:**虽然我们通常从左到右读取函数调用`unique(..)`和`words(..)`，但是操作的顺序实际上会从右到左，或者从内到外。首先运行`words(..)`，然后运行`unique(..)`。稍后，我们将讨论一种模式，它将执行顺序与从左到右的自然读取匹配，称为`pipe(..)`。
 
-The stacked machines are working fine, but it's kind of clunky to have the wires hanging out all over the place. The more of these machine-stacks they create, the more cluttered the factory floor gets. And the effort to assemble and maintain all these machine stacks is awfully time intensive.
+堆叠的机器工作得很好，但是到处都挂着电线有点笨重。他们创建的机器栈越多，工厂的地板就越杂乱。组装和维护所有这些机器堆栈的工作非常耗时。
 
 <img src="images/fig4.png" align="left" width="15%" hspace="20">
 
-One morning, an engineer at the candy factory has a great idea. She figures that it'd be much more efficient if she made an outer box to hide all the wires; on the inside, all three of the machines are hooked up together, and on the outside everything is now neat and tidy. On the top of this fancy new machine is a valve to pour in melted chocolate and on the bottom is a valve that spits out wrapped chocolate candies. Brilliant!
+一天早上，糖果厂的一位工程师有了一个好主意。她认为如果她做一个外部盒子来隐藏所有的电线会更有效率;在内部，所有的三个机器都连接在一起，而在外部，一切都是干净整洁的。在这台新机器的顶部是一个阀门，可以将融化的巧克力倒入机器，底部是一个阀门，可以吐出包装好的巧克力糖果。这样太棒了!
 
-This single compound machine is much easier to move around and install wherever the factory needs it. The workers on the factory floor are even happier because they don't need to fidget with buttons and dials on three individual machines anymore; they quickly prefer using the single fancy machine.
+这台单台复合机器更容易移动和安装在工厂需要的任何地方。工厂里的工人们更开心，因为他们不再需要摆弄三台机器上的按钮和刻度盘;他们很快就喜欢用单台花哨的机器。
 
-Relating back to the code: we now realize that the pairing of `words(..)` and `unique(..)` in that specific order of execution (think: compound Lego) is something we could use in several other parts of our application. So, let's define a compound function that combines them:
+与代码相关:我们现在意识到`words(..)` 和 `unique(..)`以特定的执行顺序(想想:复合乐高)的配对可以在应用程序的其他几个部分中使用。所以，让我们定义一个复合函数来组合它们:
 
 ```js
 function uniqueWords(str) {
@@ -114,27 +114,27 @@ function uniqueWords(str) {
 }
 ```
 
-`uniqueWords(..)` takes a string and returns an array. It's a composition of the two functions: `unique(..)` and `words(..)`; it creates this flow of data:
+`uniqueWords(..)` 接受一个字符串并返回一个数组。它由两个函数组成:`unique(..)` 和 `words(..)`;它创建了这个数据流:
 
 ```txt
 wordsUsed <-- unique <-- words <-- text
 ```
 
-You probably recognize it by now: the unfolding revolution in candy factory design is function composition.
+您现在可能已经认识到:糖果工厂设计中正在展开的革命是功能组合。
 
-### Machine Making
+### 机器制造
 
-The candy factory is humming along nicely, and thanks to all the saved space, they now have plenty of room to try out making new kinds of candies. Building on the earlier success, management is keen to keep inventing new fancy compound machines for their growing candy assortment.
+糖果厂生意兴隆，由于节省了不少空间，他们现在有足够的空间来尝试制造新型糖果。在早期成功的基础上，管理层热衷于不断为他们不断增长的糖果品种发明新的神奇的复合机器。
 
-But the factory engineers struggle to keep up, because each time a new kind of fancy compound machine needs to be made, they spend quite a bit of time making the new outer box and fitting the individual machines into it.
+但是工厂的工程师们很难跟上步伐，因为每次需要制造一种新型的高级复合机器时，他们都要花费相当多的时间来制造新的外箱，并将各个机器安装到其中。
 
-So the factory engineers contact an industrial machine vendor for help. They're amazed to find out that this vendor offers a **machine-making** machine! As incredible as it sounds, they purchase a machine that can take a couple of the factory's smaller machines -- the chocolate cooling one and the cutting one, for example -- and wire them together automatically, even wrapping a nice clean bigger box around them. This is surely going to make the candy factory really take off!
+因此，工厂的工程师联系一个工业机器供应商寻求帮助。他们惊奇地发现这个供应商提供**机器制造**机器!听起来不可思议的是，他们购买了一台机器，可以把工厂里的几台较小的机器——比如冷却巧克力的机器和切割巧克力的机器——自动连接起来，甚至用一个干净的大盒子把它们包起来。这一定会使糖果厂真正腾飞!
 
 <p align="center">
     <img src="images/fig5.png" width="50%">
 </p>
 
-Back to code land, let's consider a utility called `compose2(..)` that creates a composition of two functions automatically, exactly the same way we did manually:
+回到代码领域，让我们考虑一个名为`compose2(..)`的实用程序，它自动创建两个函数的组合，与我们手动创建的方法完全相同:
 
 ```js
 function compose2(fn2,fn1) {
@@ -143,30 +143,30 @@ function compose2(fn2,fn1) {
     };
 }
 
-// or the ES6 => form
+// ES6 箭头格式
 var compose2 =
     (fn2,fn1) =>
         origValue =>
             fn2( fn1( origValue ) );
 ```
 
-Did you notice that we defined the parameter order as `fn2,fn1`, and furthermore that it's the second function listed (aka `fn1` parameter name) that runs first, then the first function listed (`fn2`)? In other words, the functions compose from right-to-left.
+您是否注意到，我们将参数顺序定义为`fn2,fn1`，而且它是第一个运行的第二个列出的函数(又名`fn1`参数名)，然后是第一个列出的函数(`fn2`)?换句话说，函数从右到左组成。
 
-That may seem like a strange choice, but there are some reasons for it. Most typical FP libraries define their `compose(..)` to work right-to-left in terms of ordering, so we're sticking with that convention.
+这似乎是一个奇怪的选择，但有一些原因。大多数典型的FP库都将它们的`compose(..)`定义为按顺序从右向左工作，所以我们坚持这个约定。
 
-But why? I think the easiest explanation (but perhaps not the most historically accurate) is that we're listing them to match the order they are written in code manually, or rather the order we encounter them when reading from left-to-right.
+但是为什么呢?我认为最简单的解释(但可能不是历史上最准确的解释)是，我们列出它们是为了匹配手工编写代码的顺序，或者更确切地说，是从左到右阅读时遇到的顺序。
 
-`unique(words(str))` lists the functions in the left-to-right order `unique, words`, so we make our `compose2(..)` utility accept them in that order, too. The execution order is right-to-left, but the code order is left-to-right. Pay close attention to keep those distinct in your mind.
+`unique(words(str))` 以从左到右的顺序列出函数`unique, words`，因此我们让我们的`compose2(..)`实用程序也按这个顺序接收它们。执行顺序是从右到左，但是代码顺序是从左到右。密切关注那些在你脑海中清晰的东西。
 
-Now, the more efficient definition of the candy making machine is:
+现在，对糖果机更有效的定义是:
 
 ```js
 var uniqueWords = compose2( unique, words );
 ```
 
-### Composition Variation
+### 成分变异
 
-It may seem like the `<-- unique <-- words` combination is the only order these two functions can be composed. But we could actually compose them in the opposite order to create a utility with a bit of a different purpose:
+看起来`<-- unique <-- words`组合是这两个函数可以组合的惟一顺序。但实际上我们可以把它们按相反的顺序组合在一起，从而创建一个具有不同用途的实用程序:
 
 ```js
 var letters = compose2( words, unique );
@@ -176,15 +176,15 @@ chars;
 // ["h","o","w","a","r","e","y","u","n"]
 ```
 
-This works because the `words(..)` utility, for value-type safety sake, first coerces its input to a string using `String(..)`. So the array that `unique(..)` returns -- now the input to `words(..)` -- becomes the string `"H,o,w, ,a,r,e,y,u,n,?"`, and then the rest of the behavior in `words(..)` processes that string into the `chars` array.
+这是因为`words(..)` 实用程序出于值类型安全的考虑，首先使用`String(..)`将其输入强制转换为字符串。因此，`unique(..)`返回的数组——现在是`words(..)`的输入——变成了字符串`"H,o,w, ,a,r,e,y,u,n,?"`，然后`words(..)`中的其他行为将处理该字符串到 `chars` 数组中。
 
-Admittedly, this is a contrived example. But the point is that function compositions are not always unidirectional. Sometimes we put the gray brick on top of the blue brick, and sometimes we put the blue brick on top.
+诚然，这是一个人为的例子。但重点是函数组合并不总是单向的。有时我们把灰砖放在蓝砖的上面，有时我们把蓝砖放在上面。
 
-The candy factory better be careful if they try to feed the wrapped candies into the machine that mixes and cools the chocolate!
+糖果工厂最好小心，如果他们试图把包装好的糖果放进机器，混合和冷却巧克力!
 
-## General Composition
+## 一般组成
 
-If we can define the composition of two functions, we can just keep going to support composing any number of functions. The general data visualization flow for any number of functions being composed looks like this:
+如果我们能定义两个函数的组合，我们就可以继续支持组合任意数量的函数。组成的任意数量函数的常规数据可视化流如下所示：
 
 ```txt
 finalValue <-- func1 <-- func2 <-- ... <-- funcN <-- origValue
@@ -194,9 +194,9 @@ finalValue <-- func1 <-- func2 <-- ... <-- funcN <-- origValue
     <img src="images/fig6.png" width="50%">
 </p>
 
-Now the candy factory owns the best machine of all: a machine that can take any number of separate smaller machines and spit out a big fancy machine that does every step in order. That's one heck of a candy operation! It's Willy Wonka's dream!
+现在糖果厂拥有所有机器中最好的一台:这台机器可以取任意数量的独立的小机器，然后吐出一台大而别致的机器，按顺序执行每一步。这可真是个糖果店啊!这是威利·旺卡的梦想!
 
-We can implement a general `compose(..)` utility like this:
+我们可以实现一个通用的 `compose(..)` 实用程序如下:
 
 <a name="generalcompose"></a>
 
@@ -216,7 +216,7 @@ function compose(...fns) {
     };
 }
 
-// or the ES6 => form
+// ES6 箭头格式
 var compose =
     (...fns) =>
         result => {
@@ -232,9 +232,9 @@ var compose =
         };
 ```
 
-**Warning:** `fns` is a collected array of arguments, not a passed-in array, and as such, it's local to `compose(..)`. It may be tempting to think the `[...fns]` would thus be unnecessary. However, in this particular implementation, `.pop()` inside the inner `composed(..)` function is mutating the list, so if we didn't make a copy each time, the returned composed function could only be used reliably once. We'll revisit this hazard in [Chapter 6](ch6.md/#user-content-hiddenmutation).
+**警告：**`fns` 是一个集合的参数数组，不是传入的数组，因此 `compose(..)`是本地的。可能会有人认为 `[...fns]` 是不必要的。但是，在这个特定的实现中，内部的`composed(..)`函数中的`.pop()`正在改变列表，因此如果我们每次都不进行复制，则返回的 `composed(..)` 函数只能可靠地使用一次。我们将在[Chapter 6](ch6.md/#user-content-hiddenmutation)中重新讨论此危害。
 
-Now let's look at an example of composing more than two functions. Recalling our `uniqueWords(..)` composition example, let's add a `skipShortWords(..)` to the mix:
+现在我们来看一个组成两个以上函数的例子。回顾我们的`uniqueWords(..)` 组合示例，让我们在组合中添加一个`skipShortWords(..)`：
 
 ```js
 function skipShortWords(words) {
