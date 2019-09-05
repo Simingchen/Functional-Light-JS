@@ -250,7 +250,7 @@ function skipShortWords(words) {
 }
 ```
 
-Let's define `biggerWords(..)` that includes `skipShortWords(..)`. The manual composition equivalent is `skipShortWords( unique( words( text ) ) )`, so let's do that with `compose(..)`:
+让我们定义 `biggerWords(..)`，其中包括`skipShortWords(..)`。手动合成相当于`skipShortWords( unique( words( text ) ) )`，所以让我们用`compose(..)`来实现:
 
 ```js
 var text = "To compose two functions together, pass the \
@@ -266,13 +266,13 @@ wordsUsed;
 // "function","input","second"]
 ```
 
-To do something more interesting with composition, let's use [`partialRight(..)`, which we first looked at in Chapter 3](ch3.md/#user-content-partialright). We can build a right-partial application of `compose(..)` itself, pre-specifying the second and third arguments (`unique(..)` and `words(..)`, respectively); we'll call it `filterWords(..)`.
+要对组合做一些更有趣的事情，让我们使用这是我们在第3章中首先看到的[`partialRight(..)`](ch3.md/#user-content-partialright)。我们可以构建一个`compose(..)`本身的函数式编程中局部应用，预先指定第二个和第三个参数(`unique(..)` 和 `words(..)`;我们将其称为`filterWords(..)`。
 
-Then, we can complete the composition multiple times by calling `filterWords(..)`, but with different first-arguments respectively:
+然后，我们可以通过调用`filterWords(..)`多次完成合成，但分别使用不同的第一个参数：
 
 ```js
-// Note: uses a `<= 4` check instead of the `> 4` check
-// that `skipShortWords(..)` uses
+// 注意：使用`<=4'检查而不是`>4'检查
+// `skipShortWords(..)` 使用
 function skipLongWords(list) { /* .. */ }
 
 var filterWords = partialRight( compose, unique, words );
@@ -288,21 +288,21 @@ shorterWords( text );
 // ["to","two","pass","the","of","call","as"]
 ```
 
-Take a moment to consider what the right-partial application on `compose(..)` gives us. It allows us to specify ahead of time the first step(s) of a composition, and then create specialized variations of that composition with different subsequent steps (`biggerWords(..)` and `shorterWords(..)`). This is one of the most powerful tricks of FP!
+花点时间考虑一下`compose(..)`上正确的部分应用程序给了我们什么。它允许我们提前指定构图的第一步，然后用不同的后续步骤（`biggerWords(..)`和`shorterWords(..)`）创建该构图的特殊变体。这是FP最强大的技巧之一！
 
-You can also `curry(..)` a composition instead of partial application, though because of right-to-left ordering, you might more often want to `curry( reverseArgs(compose), ..)` rather than just `curry( compose, ..)` itself.
+您也可以`curry(..)`组合而不是部分应用程序，但是由于从右到左排序，您可能更经常希望`curry( reverseArgs(compose), ..)`而不是仅仅`curry( compose, ..)`本身。
 
-**Note:** Because `curry(..)` (at least [the way we implemented it in Chapter 3](ch3.md/#user-content-curry)) relies on either detecting the arity (`length`) or having it manually specified, and `compose(..)` is a variadic function, you'll need to manually specify the intended arity like `curry(.. , 3)`.
+**注意：**因为`curry(..)` （至少[我们在第3章中实现它的方式](ch3.md/#user-content-curry)）依赖于检测元数（`length`）或手动指定它，并且`compose(..)` 是一个可变函数，所以需要手动指定预期的元素，如 `curry(.. , 3)`。
 
-### Alternative Implementations
+### 替代实施
 
-While you may very well never implement your own `compose(..)` to use in production, and rather just use a library's implementation as provided, I've found that understanding how it works under the covers actually helps solidify general FP concepts very well.
+虽然您可能永远不会实现自己的`compose(..)`以在生产中使用，而只是按照提供的方式使用库的实现，但我发现理解它在封面下的工作方式实际上有助于很好地巩固一般的fp概念。
 
-So let's examine some different implementation options for `compose(..)`. We'll also see there are some pros/cons to each implementation, especially performance.
+因此，让我们检查一下`compose(..)`的一些不同实现选项。我们还将看到每个实现都有一些优缺点，特别是性能。
 
-We'll be looking at the [`reduce(..)` utility in detail in Chapter 9](ch9.md/#reduce), but for now, just know that it reduces a list (array) to a single finite value. It's like a fancy loop.
+我们将在第9章中详细研究[`reduce(..)`](ch9.md/#reduce)，但现在只需知道它将一个列表（数组）缩减为一个有限值。就像一个奇特的环。
 
-For example, if you did an addition-reduction across a list of numbers (such as `[1,2,3,4,5,6]`), you'd loop over them adding them together as you go. The reduction would add `1` to `2`, and add that result to `3`, and then add that result to `4`, and so on, resulting in the final summation: `21`.
+例如，如果对一个数字列表（例如`[1,2,3,4,5,6]`）进行加法归约，则会在进行加法运算时循环它们。减法将把`1` 加到`2`，把结果加到`3`，然后把结果加到`4`，依此类推，最终得到`21`。
 
 The original version of `compose(..)` uses a loop and eagerly (aka, immediately) calculates the result of one call to pass into the next call. This is a reduction of a list of functions, so we can do that same thing with `reduce(..)`:
 
