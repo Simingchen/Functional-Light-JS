@@ -833,19 +833,19 @@ partial( ajax, "http://some.api/order", { id: -1 } )
 );
 ```
 
-这个代码段当然没有那么冗长，但是我认为它的可读性比前面的代码段要差，在前面的代码段中，每个操作都是它自己的变量。不管怎样，构图帮助了我们的无分风格。
+这个代码段当然没有那么冗长，但是我认为它的可读性比前面的代码段要差，在前面的代码段中，每个操作都是它自己的变量。不管怎样，构图帮助了我们的无参数风格的形成。
 
-## Summary
+## 小结
 
-Function composition is a pattern for defining a function that routes the output of one function call into another function call, and its output to another, and so on.
+函数组合是一种定义函数的模式，该函数将一个函数调用的输出路由到另一个函数调用，并将其输出路由到另一个函数调用，以此类推。
 
-Because JS functions can only return single values, the pattern essentially dictates that all functions in the composition (except perhaps the first called) need to be unary, taking only a single input from the output of the previous function.
+由于JS函数只能返回单个值，该模式本质上规定组合中的所有函数(可能第一个调用的函数除外)都必须是一元的，只能从上一个函数的输出中获取一个输入。
 
-Instead of listing out each step as a discrete call in our code, function composition using a utility like `compose(..)` or `pipe(..)` abstracts that implementation detail so the code is more readable, allowing us to focus on *what* the composition will be used to accomplish, not *how* it will be performed.
+而不是列出每个步骤作为一个零散的回调函数在我们的代码中,使用效用函数组合像`compose(..)` 或`pipe(..)`抽象实现细节代码可读性更强,让我们把注意力放在要完成“什么”，而不是“如何”完成。
 
-Composition is declarative data flow, meaning our code describes the flow of data in an explicit, obvious, and readable way.
+组合是声明性数据流，这意味着我们的代码以显式、明显和可读的方式描述数据流。
 
-In many ways, composition is the most important foundational pattern, in large part because it's the only way to route data through our programs aside from using side effects; the next chapter explores why such should be avoided wherever possible.
+在许多方面，组合是最重要的基本模式，这在很大程度上是因为除了使用副作用外，它是通过程序路由数据的唯一方法;下一章将探讨为什么应该尽可能避免这样做。
 
 ----
 
