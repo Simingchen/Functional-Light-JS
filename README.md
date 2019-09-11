@@ -53,6 +53,6 @@
 
 ## buy me a coffee
 
-<img src="manuscript/images/paycode1.jpg" width="25%" align="right" hspace="20" vspace="20" title="Functional-Light JavaScript" alt="Book Cover">
-<img src="manuscript/images/paycode2.jpg" width="25%" align="right" hspace="20" vspace="20" title="Functional-Light JavaScript" alt="Book Cover">
+<img src="manuscript/images/paycode1.jpg" width="25%" align="left" hspace="20" vspace="20" title="buy me a coffee" alt="Book Cover">
+<img src="manuscript/images/paycode2.jpg" width="25%" align="left" hspace="20" vspace="20" title="buy me a coffee" alt="Book Cover">
 
