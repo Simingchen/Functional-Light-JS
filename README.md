@@ -51,3 +51,8 @@
     <a href="http://fljsbook.com"><img src="https://img.shields.io/badge/Buy-Leanpub-yellow.svg" title="Buy on Leanpub" alt="Buy on Leanpub"></a> <a href="http://manning.fljsbook.com"><img src="https://img.shields.io/badge/Buy-Manning-yellow.svg" title="Buy on Manning" alt="Buy on Manning"></a> <a href="http://amazon.fljsbook.com"><img src="https://img.shields.io/badge/Buy-Amazon-yellow.svg" title="Buy on Amazon" alt="Buy on Amazon"></a>
 </p>
 
+## buy me a coffee
+
+<img src="manuscript/images/paycode1.jpg" width="25%" align="right" hspace="20" vspace="20" title="Functional-Light JavaScript" alt="Book Cover">
+<img src="manuscript/images/paycode2.jpg" width="25%" align="right" hspace="20" vspace="20" title="Functional-Light JavaScript" alt="Book Cover">
+
