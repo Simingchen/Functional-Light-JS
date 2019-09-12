@@ -161,7 +161,7 @@ function isShortEnoughReducer(list,str) {
 
 ### Reducer的参数化
 
-Both filter reducers are almost identical, except they use a different predicate function. Let's parameterize that so we get one utility that can define any filter-reducer:
+除了使用不同的谓词函数外，这两个过滤器reducer程序几乎是相同的。让我们参数化它，我们得到一个实用程序，可以定义任何过滤器reducer程序:
 
 ```js
 function filterReducer(predicateFn) {
@@ -175,7 +175,7 @@ var isLongEnoughReducer = filterReducer( isLongEnough );
 var isShortEnoughReducer = filterReducer( isShortEnough );
 ```
 
-Let's do the same parameterization of the `mapperFn(..)` for a utility to produce any map-reducer:
+让我们做同样的参数化`mapperFn(..)`的实用程序，以产生reducer程序:
 
 ```js
 function mapReducer(mapperFn) {
@@ -197,11 +197,11 @@ words
 .reduce( strConcat, "" );
 ```
 
-### Extracting Common Combination Logic
+### 提取公共组合逻辑
 
-Look very closely at the preceding `mapReducer(..)` and `filterReducer(..)` functions. Do you spot the common functionality shared in each?
+仔细查看前面的`mapReducer(..)`和`filterReducer(..)`函数。您是否发现了它们共享的公共功能?
 
-This part:
+看这部分:
 
 ```js
 return [ ...list, .. ];
@@ -210,7 +210,8 @@ return [ ...list, .. ];
 return list;
 ```
 
-Let's define a helper for that common logic. But what shall we call it?
+让我们为这个公共逻辑定义一个helper程序。但我们该怎么称呼它呢?
+
 
 ```js
 function WHATSITCALLED(list,val) {
@@ -218,7 +219,7 @@ function WHATSITCALLED(list,val) {
 }
 ```
 
-If you examine what that `WHATSITCALLED(..)` function does, it takes two values (an array and another value) and it "combines" them by creating a new array and concatenating the value onto the end of it. Very uncreatively, we could name this `listCombine(..)`:
+如果您检查那个`WHATSITCALLED(..)`函数的作用，它将接受两个值(一个数组和另一个值)，并通过创建一个新数组并将该值连接到它的末尾来“组合”它们。名字可以非常没有创意性，我们可以把它命名为`listCombine(..)`:
 
 ```js
 function listCombine(list,val) {
@@ -226,7 +227,7 @@ function listCombine(list,val) {
 }
 ```
 
-Let's now re-define our reducer helpers to use `listCombine(..)`:
+现在让我们使用`listCombine(..)`重新定义我们的reducer函数:
 
 ```js
 function mapReducer(mapperFn) {
@@ -243,11 +244,11 @@ function filterReducer(predicateFn) {
 }
 ```
 
-Our chain still looks the same (so we won't repeat it).
+我们的链式看起来还是一样的(所以我们不会重复它)。
 
-### Parameterizing the Combination
+### 参数化组合
 
-Our simple `listCombine(..)` utility is only one possible way that we might combine two values. Let's parameterize the use of it to make our reducers more generalized:
+我们简单的`listCombine(..)`实用程序只是组合两个值的一种可能方法。让我们参数化它的使用，使我们的reducer程序更一般化:
 
 ```js
 function mapReducer(mapperFn,combinerFn) {
@@ -264,7 +265,7 @@ function filterReducer(predicateFn,combinerFn) {
 }
 ```
 
-To use this form of our helpers:
+用这种方式定义我们的helper程序：
 
 ```js
 var strToUppercaseReducer = mapReducer( strUppercase, listCombine );
@@ -272,7 +273,7 @@ var isLongEnoughReducer = filterReducer( isLongEnough, listCombine );
 var isShortEnoughReducer = filterReducer( isShortEnough, listCombine );
 ```
 
-Defining these utilities to take two arguments instead of one is less convenient for composition, so let's use our `curry(..)` approach:
+将这些函数定义为使用两个参数而不是一个参数，这种方式更不方便进行组合，所以让我们使用`curry(..)`方法进行组合:
 
 ```js
 var curriedMapReducer =
@@ -298,15 +299,15 @@ var isShortEnoughReducer =
     curriedFilterReducer( isShortEnough )( listCombine );
 ```
 
-That looks a bit more verbose, and probably doesn't seem very useful.
+这看起来有点啰嗦，而且可能不是很有用。
 
-But this is actually necessary to get to the next step of our derivation. Remember, our ultimate goal here is to be able to `compose(..)` these reducers. We're almost there.
+但这对于推导的下一步是必要的。记住，我们这里的最终目标是能够使用`compose(..)`组合这些reducer函数。我们做的差不多了。
 
-### Composing Curried
+### 组合柯里化
 
-This step is the trickiest of all to visualize. So read slowly and pay close attention here.
+这一步太形象化了。所以慢点读，仔细听。
 
-Let's consider the curried functions from earlier, but without the `listCombine(..)` function having been passed in to each:
+让我们考虑一下之前的函数，但是没有将`listCombine(..)`函数传递给每个函数:
 
 ```js
 var x = curriedMapReducer( strUppercase );
@@ -314,9 +315,9 @@ var y = curriedFilterReducer( isLongEnough );
 var z = curriedFilterReducer( isShortEnough );
 ```
 
-Think about the shape of all three of these intermediate functions, `x(..)`, `y(..)`, and `z(..)`. Each one expects a single combination function, and produces a reducer function with it.
+考虑这三个中间函数的形式，`x(..)`, `y(..)`, 和 `z(..)`。每个函数都期望一个组合函数，并用它生成一个reducer函数。
 
-Remember, if we wanted the independent reducers from all these, we could do:
+记住，如果我们想要这些独立的reducer函数，我们可以:
 
 ```js
 var upperReducer = x( listCombine );
@@ -324,7 +325,7 @@ var longEnoughReducer = y( listCombine );
 var shortEnoughReducer = z( listCombine );
 ```
 
-But what would you get back if you called `y(z)`, instead of `y(listCombine)`? Basically, what happens when passing `z` in as the `combinerFn(..)` for the `y(..)` call? That returned reducer function internally looks kinda like this:
+但是如果您调用`y(z)`而不是`y(listCombine)`，会得到什么呢?基本上，当将 `z` 作为`combinerFn(..)`传递给 `y(..)`调用时会发生什么?返回的reducer函数内部看起来像这样:
 
 ```js
 function reducer(list,val) {
@@ -333,18 +334,18 @@ function reducer(list,val) {
 }
 ```
 
-See the `z(..)` call inside? That should look wrong to you, because the `z(..)` function is supposed to receive only a single argument (a `combinerFn(..)`), not two arguments (`list` and `val`). The shapes don't match. That won't work.
+看到里面的`z(..)`调用了吗?这看起来不对，因为`z(..)`函数应该只接收一个参数(`combinerFn(..)`)，而不是两个参数(`list` 和 `val`)。形式不匹配。是行不通的。
 
-Let's instead look at the composition `y(z(listCombine))`. We'll break that down into two separate steps:
+让我们看一下组合`y(z(listCombine))`。我们将其分为两个步骤:
 
 ```js
 var shortEnoughReducer = z( listCombine );
 var longAndShortEnoughReducer = y( shortEnoughReducer );
 ```
 
-We create `shortEnoughReducer(..)`, then we pass *it* in as the `combinerFn(..)` to `y(..)` instead of calling `y(listCombine)`; this new call produces `longAndShortEnoughReducer(..)`. Re-read that a few times until it clicks.
+我们创建了`shortEnoughReducer(..)`，然后我们将它作为`combinerFn(..)`传递给 `y(..)`，而不是调用`y(listCombine)`;这个新调用生成`longAndShortEnoughReducer(..)`。再读几遍，直到它点击为止。
 
-Now consider: what do `shortEnoughReducer(..)` and `longAndShortEnoughReducer(..)` look like internally? Can you see them in your mind?
+现在考虑一下:`shortEnoughReducer(..)` 和 `longAndShortEnoughReducer(..)`在内部是什么样子的?你能在脑海中看到它们吗?
 
 ```js
 // shortEnoughReducer, from calling z(..):
@@ -360,11 +361,11 @@ function reducer(list,val) {
 }
 ```
 
-Do you see how `shortEnoughReducer(..)` has taken the place of `listCombine(..)` inside `longAndShortEnoughReducer(..)`? Why does that work?
+您是否看到`shortEnoughReducer(..)` 如何取代`listCombine(..)`中的`longAndShortEnoughReducer(..)`?为什么会这样呢?
 
-Because **the shape of a `reducer(..)` and the shape of `listCombine(..)` are the same.** In other words, a reducer can be used as a combination function for another reducer; that's how they compose! The `listCombine(..)` function makes the first reducer, then *that reducer* can be used as the combination function to make the next reducer, and so on.
+因为`reducer(..)`的格式和`listCombine(..)`的格式是相同的。**换句话说，一个reducer函数可以作为另一个reducer函数的组合函数使用;他们就是这样组合的!`listCombine(..)`函数生成第一个reducer函数，然后可以用作组合函数来生成下一个reducer函数，以此类推。
 
-Let's test out our `longAndShortEnoughReducer(..)` with a few different values:
+让我们用几个不同的值来测试我们的`longAndShortEnoughReducer(..)`:
 
 ```js
 longAndShortEnoughReducer( [], "nope" );
@@ -377,18 +378,18 @@ longAndShortEnoughReducer( [], "hello world" );
 // []
 ```
 
-The `longAndShortEnoughReducer(..)` utility is filtering out both values that are not long enough and values that are not short enough, and it's doing both these filterings in the same step. It's a composed reducer!
+`longAndShortEnoughReducer(..)`实用程序过滤掉两个不够长和不够短的值，它在同一步骤中执行这两个过滤。它是一个复合reducer函数!
 
-Take another moment to let that sink in. It still kinda blows my mind.
+再花点时间让自己明白这一点。感觉还是让我震惊。
 
-Now, to bring `x(..)` (the uppercase reducer producer) into the composition:
+现在，将`x(..)`添加到合成中:
 
 ```js
 var longAndShortEnoughReducer = y( z( listCombine) );
 var upperLongAndShortEnoughReducer = x( longAndShortEnoughReducer );
 ```
 
-As the name `upperLongAndShortEnoughReducer(..)` implies, it does all three steps at once -- a mapping and two filters! What it kinda look likes internally:
+正如名称`upperLongAndShortEnoughReducer(..)`所暗示的，它一次完成所有三个步骤——一个映射和两个过滤器!看内部情况:
 
 ```js
 // upperLongAndShortEnoughReducer:
@@ -397,11 +398,11 @@ function reducer(list,val) {
 }
 ```
 
-A string `val` is passed in, uppercased by `strUppercase(..)` and then passed along to `longAndShortEnoughReducer(..)`. *That* function only conditionally adds this uppercased string to the `list` if it's both long enough and short enough. Otherwise, `list` will remain unchanged.
+传入一个字符串`val`，用`strUppercase(..)`大写，然后传递给`longAndShortEnoughReducer(..)`。函数只有在足够长和足够短的情况下才有条件地将这个大写字符串添加到`list`中。否则，`list`将保持不变。
 
-It took my brain weeks to fully understand the implications of that juggling. So don't worry if you need to stop here and re-read a few (dozen!) times to get it. Take your time.
+我的大脑花了几周的时间才完全理解这种含义。所以，如果你需要在这里停下来，花你读几遍(甚至几十遍!)的时间。
 
-Now let's verify:
+现在让我们来验证:
 
 ```js
 upperLongAndShortEnoughReducer( [], "nope" );
@@ -414,9 +415,9 @@ upperLongAndShortEnoughReducer( [], "hello world" );
 // []
 ```
 
-This reducer is the composition of the map and both filters! That's amazing!
+这个reducer函数是映射函数和过滤函数的合成!那太神奇了!
 
-Let's recap where we're at so far:
+让我们回顾一下目前的进展:
 
 ```js
 var x = curriedMapReducer( strUppercase );
@@ -429,9 +430,9 @@ words.reduce( upperLongAndShortEnoughReducer, [] );
 // ["WRITTEN","SOMETHING"]
 ```
 
-That's pretty cool. But let's make it even better.
+这是很酷。让我们做得更好吧。
 
-`x(y(z( .. )))` is a composition. Let's skip the intermediate `x` / `y` / `z` variable names, and just express that composition directly:
+`x(y(z( .. )))`是一个组合型函数。让我们跳过中间的`x` / `y` / `z` 变量名，直接表示这个组合:
 
 ```js
 var composition = compose(
@@ -446,13 +447,13 @@ words.reduce( upperLongAndShortEnoughReducer, [] );
 // ["WRITTEN","SOMETHING"]
 ```
 
-Think about the flow of "data" in that composed function:
+想想组合函数中的“数据”流:
 
-1. `listCombine(..)` flows in as the combination function to make the filter-reducer for `isShortEnough(..)`.
-2. *That* resulting reducer function then flows in as the combination function to make the filter-reducer for `isLongEnough(..)`.
-3. Finally, *that* resulting reducer function flows in as the combination function to make the map-reducer for `strUppercase(..)`.
+1. `listCombine(..)`作为组合函数传入，从而生成用于`isShortEnough(..)`的filter-reducer函数。
+2. 生成的reducer函数然后作为组合函数传入，从而生成用于`isLongEnough(..)`的filter-reducer函数。
+3. 生成的reducer函数然后作为组合函数传入，从而生成用于`strUppercase(..)`的filter-reducer函数。
 
-In the previous snippet, `composition(..)` is a composed function expecting a combination function to make a reducer; `composition(..)` here has a special name: transducer. Providing the combination function to a transducer produces the composed reducer:
+在前面的代码片段中，`composition(..)`是一个复合函数，它期望组合函数能够生成一个reducer函数;这里有一个特殊的名称: 转换器。为转换提供组合功能，产生组合reducer函数:
 
 ```js
 var transducer = compose(
@@ -466,11 +467,11 @@ words
 // ["WRITTEN","SOMETHING"]
 ```
 
-**Note:** We should make an observation about the `compose(..)` order in the previous two snippets, which may be confusing. Recall that in our original example chain, we `map(strUppercase)` and then `filter(isLongEnough)` and finally `filter(isShortEnough)`; those operations indeed happen in that order. But in [Chapter 4](ch4.md/#user-content-generalcompose), we learned that `compose(..)` typically has the effect of running its functions in reverse order of listing. So why don't we need to reverse the order *here* to get the same desired outcome? The abstraction of the `combinerFn(..)` from each reducer reverses the effective applied order of operations under the hood. So counter-intuitively, when composing a transducer, you actually want to list them in desired order of execution!
+**注意:**我们应该对前两个代码片段中的`compose(..)`顺序进行观察，这可能会让人混淆。回想一下，在最初的示例链中，我们从`map(strUppercase)`然后`filter(isLongEnough)`最后`filter(isShortEnough)`;这些操作确实是按这个顺序进行的。但是在[章节 4](ch4.md/#user-content-generalcompose)中，我们了解到`compose(..)`通常具有按列表的相反顺序运行函数的效果。那么为什么我们不需要颠倒顺序来得到相同的期望结果呢?从每个reducer中抽象出的 `combinerFn(..)` 颠倒了有效应用操作顺序。因此，与直觉相反的是，在组合转换函数时，您实际上希望按照所需的执行顺序列出它们!
 
-#### List Combination: Pure vs. Impure
+#### 列表组合: 纯函数与不纯函数
 
-As a quick aside, let's revisit our `listCombine(..)` combination function implementation:
+顺便提一下，让我们重温一下我们的`listCombine(..)`组合函数实现:
 
 ```js
 function listCombine(list,val) {
@@ -478,9 +479,9 @@ function listCombine(list,val) {
 }
 ```
 
-While this approach is pure, it has negative consequences for performance: for each step in the reduction, we're creating a whole new array to append the value onto, effectively throwing away the previous array. That's a lot of arrays being created and thrown away, which is not only bad for CPU but also GC memory churn.
+虽然这种方法是纯的，但它对性能有负面影响:对于缩减中的每一步，我们都要创建一个全新的数组来追加值，从而有效地丢弃前面的数组。这需要创建和丢弃大量数组，这不仅不利于CPU，还会影响GC内存。
 
-By contrast, look again at the better-performing but impure version:
+相比之下，再看看性能更好但不纯的版本:
 
 ```js
 function listCombine(list,val) {
@@ -489,19 +490,19 @@ function listCombine(list,val) {
 }
 ```
 
-Thinking about `listCombine(..)` in isolation, there's no question it's impure and that's usually something we'd want to avoid. However, there's a bigger context we should consider.
+如果单独考虑`listCombine(..)`，毫无疑问它是不纯的，这通常是我们希望避免的。然而，我们应该考虑一个更大的背景。
 
-`listCombine(..)` is not a function we interact with at all. We don't directly use it anywhere in the program; instead, we let the transducing process use it.
+`listCombine(..)`根本不是我们交互的函数。我们不在程序的任何地方直接使用它;相反，我们在转换过程使用它。
 
-Back in [Chapter 5](ch5.md), we asserted that our goal with reducing side effects and defining pure functions was only that we expose pure functions to the API level of functions we'll use throughout our program. We observed that under the covers, inside a pure function, it can cheat for performance sake all it wants, as long as it doesn't violate the external contract of purity.
+回到[第5章](ch5.md)，我们断言减少副作用和定义纯函数的目标只是将纯函数暴露给我们将在整个程序中使用的函数的API级别。我们观察到，在一个纯函数的内部，它可以为了性能而欺骗所有它想要的东西，只要它不违反纯的外部契约。
 
-`listCombine(..)` is more an internal implementation detail of the transducing -- in fact, it'll often be provided by the transducing library for you! -- rather than a top-level method you'd interact with on a normal basis throughout your program.
+`listCombine(..)` 更多的是转换的内部实现细节——事实上，它通常由转换库为您提供!——而不是在整个程序中与之正常交互的顶级方法。
 
-Bottom line: I think it's perfectly acceptable, and advisable even, to use the performance-optimal impure version of `listCombine(..)`. Just make sure you document that it's impure with a code comment!
+我认为使用性能最佳的非纯版本`listCombine(..)`是完全可以接受的，甚至是可取的。只要确保您用代码注释来记录它是不纯的!
 
-### Alternative Combination
+### 替代组合
 
-So far, this is what we've derived with transducing:
+到目前为止，这是我们通过转化得到的:
 
 ```js
 words
@@ -510,11 +511,11 @@ words
 // WRITTENSOMETHING
 ```
 
-That's pretty good, but we have one final trick up our sleeve with transducing. And frankly, I think this part is what makes all this mental effort you've expended thus far, actually worth it.
+这很好，但是我们还有最后一个关于转化的技巧。坦率地说，我认为这部分是你迄今为止所付出的所有精神努力的真正价值所在。
 
-Can we somehow "compose" these two `reduce(..)` calls to get it down to just one `reduce(..)`? Unfortunately, we can't just add `strConcat(..)` into the `compose(..)` call; because it's a reducer and not a combination-expecting function, its shape is not correct for the composition.
+我们能否以某种方式“组合”这两个`reduce(..)`调用，将其简化为一个`reduce(..)`?不幸的是，我们不能`strConcat(..)`添加到`compose(..)`调用中;因为它是一个reducer函数，而不是一个期望组合的函数，所以它的形式不适合组合。
 
-But let's look at these two functions side by side:
+但是让我们一起来看看这两个函数:
 
 ```js
 function strConcat(str1,str2) { return str1 + str2; }
@@ -522,26 +523,26 @@ function strConcat(str1,str2) { return str1 + str2; }
 function listCombine(list,val) { list.push( val ); return list; }
 ```
 
-If you squint your eyes, you can almost see how these two functions are interchangeable. They operate with different data types, but conceptually they do the same thing: combine two values into one.
+如果你仔细看，你几乎可以看到这两个功能是如何互换的。它们使用不同的数据类型进行操作，但在概念上它们做的是相同的事情:将两个值合并为一个值。
 
-In other words, `strConcat(..)` is a combination function!
+换句话说，`strConcat(..)`是一个组合函数!
 
-That means we can use *it* instead of `listCombine(..)` if our end goal is to get a string concatenation rather than a list:
+这意味着如果我们的最终目标是得到一个字符串连接而不是列表，我们可以使用*it*而不是`listCombine(..)`:
 
 ```js
 words.reduce( transducer( strConcat ), "" );
 // WRITTENSOMETHING
 ```
 
-Boom! That's transducing for you. I won't actually drop the mic here, but just gently set it down...
+太棒啦!这就是转化。
 
-## What, Finally
+## 最后是什么
 
-Take a deep breath. That was a lot to digest.
+深呼吸。要消化的东西太多了。
 
-Clearing our brains for a minute, let's turn our attention back to just using transducing in our applications without jumping through all those mental hoops to derive how it works.
+先清理一下我们的大脑，让我们把注意力转回到仅仅在应用程序中使用转换函数上，而不是跳过所有的思维障碍来推导它是如何工作的。
 
-Recall the helpers we defined earlier; let's rename them for clarity:
+回想一下我们前面定义的函数;为了清晰起见，我们重新命名一下:
 
 ```js
 var transduceMap =
@@ -560,7 +561,7 @@ var transduceFilter =
     } );
 ```
 
-Also recall that we use them like this:
+还记得我们这样使用它们:
 
 ```js
 var transducer = compose(
@@ -570,9 +571,9 @@ var transducer = compose(
 );
 ```
 
-`transducer(..)` still needs a combination function (like `listCombine(..)` or `strConcat(..)`) passed to it to produce a transduce-reducer function, which can then be used (along with an initial value) in `reduce(..)`.
+`transducer(..)`仍然需要传递给它一个组合函数(如`listCombine(..)`或`strConcat(..)`)来生成一个reducer函数，然后可以在`reduce(..)`中使用该函数。
 
-But to express all these transducing steps more declaratively, let's make a `transduce(..)` utility that does these steps for us:
+但是为了更明确地表达所有这些转换步骤，让我们创建一个`transduce(..)` 实用程序，它为我们完成这些步骤:
 
 ```js
 function transduce(transducer,combinerFn,initialValue,list) {
@@ -581,7 +582,7 @@ function transduce(transducer,combinerFn,initialValue,list) {
 }
 ```
 
-Here's our running example, cleaned up:
+这是我们的运行例子:
 
 ```js
 var transducer = compose(
@@ -597,11 +598,11 @@ transduce( transducer, strConcat, "", words );
 // WRITTENSOMETHING
 ```
 
-Not bad, huh!? See the `listCombine(..)` and `strConcat(..)` functions used interchangeably as combination functions?
+还不赖,是吧! ?看一下`listCombine(..)`和`strConcat(..)`函数作为组合函数互换使用吗?
 
-### Transducers.js
+### Transducers.js 库
 
-Finally, let's illustrate our running example using the [`transducers-js` library](https://github.com/cognitect-labs/transducers-js):
+最后，让我们使用 [`transducers-js` 库](https://github.com/cognitect-labs/transducers-js):
 
 ```js
 var transformer = transducers.comp(
@@ -617,15 +618,16 @@ transducers.transduce( transformer, strConcat, "", words );
 // WRITTENSOMETHING
 ```
 
-Looks almost identical to above.
+看起来几乎和上面一样。
 
-**Note:** The preceding snippet uses `transformers.comp(..)` because the library provides it, but in this case our [`compose(..)` from Chapter 4](ch4.md/#user-content-generalcompose) would produce the same outcome. In other words, composition itself isn't a transducing-sensitive operation.
+**注意:**前面的代码片段使用了`transformers.comp(..)`，因为库提供了它，但是在本例中，来自第4章的[`compose(..)`](ch4.md/#user-content-generalcompose)将产生相同的结果。换句话说，合成本身并不是一个敏锐转换的操作。
 
-The composed function in this snippet is named `transformer` instead of `transducer`. That's because if we call `transformer( listCombine )` (or `transformer( strConcat )`), we won't get a straight-up transduce-reducer function as earlier.
+这个代码片段中的组合函数名为`transformer`，而不是`transducer`。这是因为如果我们调用`transformer( listCombine )`(或`transformer( strConcat )`)，我们将不会像前面那样得到一个直接的转换的reducer函数。
 
-`transducers.map(..)` and `transducers.filter(..)` are special helpers that adapt regular predicate or mapper functions into functions that produce a special transform object (with the transducer function wrapped underneath); the library uses these transform objects for transducing. The extra capabilities of this transform object abstraction are beyond what we'll explore, so consult the library's documentation for more information.
+`transducers.map(..)`和`transducers.filter(..)`是特殊的函数，它们将常规谓词或映射函数转换为生成特殊转换对象的函数;库使用这些转换对象进行转换。这种转换对象抽象的额外功能超出了我们将探讨的范围，因此请参考库文档以获得更多信息。
 
-Because calling `transformer(..)` produces a transform object and not a typical binary transduce-reducer function, the library also provides `toFn(..)` to adapt the transform object to be useable by native array `reduce(..)`:
+因为调用`transformer(..)` 会生成一个转换对象，而不是一个典型的二进制换向器函数，所以库还提供了`toFn(..)`来调整转换对象，使其可被原生数组中`reduce(..)`使用:
+
 
 ```js
 words.reduce(
@@ -635,7 +637,7 @@ words.reduce(
 // WRITTENSOMETHING
 ```
 
-`into(..)` is another provided helper that automatically selects a default combination function based on the type of empty/initial value specified:
+`into(..)`是另一个函数，它可以根据指定的空/初值类型自动选择默认组合函数:
 
 ```js
 transducers.into( [], transformer, words );
@@ -645,16 +647,16 @@ transducers.into( "", transformer, words );
 // WRITTENSOMETHING
 ```
 
-When specifying an empty `[]` array, the `transduce(..)` called under the covers uses a default implementation of a function like our `listCombine(..)` helper. But when specifying an empty `""` string, something like our `strConcat(..)` is used. Cool!
+当指定一个空的`[]`数组时，在内部调用的`transduce(..)`使用一个函数的默认实现，比如我们的`listCombine(..)` 。但是，当指定一个空的`""`字符串时，使用类似于我们的`strConcat(..)`的东西。这样太酷了!
 
-As you can see, the `transducers-js` library makes transducing pretty straightforward. We can very effectively leverage the power of this technique without getting into the weeds of defining all those intermediate transducer-producing utilities ourselves.
+如您所见，`transducers-js` 库使换能器非常简单。我们可以非常有效地利用这种技术的力量，而不必自己定义所有那些产生中间换能器的实用程序。
 
-## Summary
+## 总结
 
-To transduce means to transform with a reduce. More specifically, a transducer is a composable reducer.
+转换指的是用reduce进行变换。更具体地说，转换函数是一种可组合的reducer函数。
 
-We use transducing to compose adjacent `map(..)`, `filter(..)`, and `reduce(..)` operations together. We accomplish this by first expressing `map(..)`s and `filter(..)`s as `reduce(..)`s, and then abstracting out the common combination operation to create unary reducer-producing functions that are easily composed.
+我们使用转换来组合相邻的 `map(..)`, `filter(..)`, 和 `reduce(..)`操作。我们首先将 `map(..)`和`filter(..)`表示为`reduce(..)`，然后抽象出常见的组合操作来创建易于组合的一元生成reducer函数，从而实现这一点。
 
-Transducing primarily improves performance, which is especially obvious if used on an observable.
+转化主要是为了提高性能，如果使用在一个纯函数是特别明显的。
 
-But more broadly, transducing is how we express a more declarative composition of functions that would otherwise not be directly composable. The result, if used appropriately as with all other techniques in this book, is clearer, more readable code! A single `reduce(..)` call with a transducer is easier to reason about than tracing through multiple `reduce(..)` calls.
+但更广泛地说，转换是我们表达更声明性的函数组合的方式，否则这些函数将不能直接组合。如果像本书中所有其他技术一样使用得当，其结果将是更清晰、更可读的代码!使用转换函数的调用单个`reduce(..)`比跟踪多个`reduce(..)` 调用更容易推理。
