@@ -92,22 +92,21 @@ words
 .reduce( strConcat, "" );
 // "WRITTENSOMETHING"
 ```
+你能想象一个包含所有这些步骤的构图吗：`map(strUppercase)`, `filter(isLongEnough)`, `filter(isShortEnough)`, `reduce(strConcat)`？每个运算符的用法不同，因此它们不会直接组合在一起。我们需要把它们的运算符稍微变动一下，使它们合二为一。
 
-Can you envision a composition that includes all of these steps: `map(strUppercase)`, `filter(isLongEnough)`, `filter(isShortEnough)`, `reduce(strConcat)`? The shape of each operator is different, so they won't directly compose together. We need to bend their shapes a little bit to fit them together.
+希望这些观察结果已经说明了为什么简单的融合式合成不能胜任这项任务。我们需要一个更强大的技术，而转换就是这个工具。
 
-Hopefully these observations have illustrated why simple fusion-style composition isn't up to the task. We need a more powerful technique, and transducing is that tool.
+## 下一步，怎么做？
 
-## How, Next
+让我们讨论如何派生 map映射、function谓词,更或者是reducer的组合。
 
-Let's talk about how we might derive a composition of mappers, predicates, and/or reducers.
+不要过于不知所措:您不必经历编程中探索的这些心理。一旦您理解并认识到转换所解决的问题，就可以直接从FP库跳到使用 `transduce(..)`，然后继续处理应用程序的其他部分!
 
-Don't get too overwhelmed: you won't have to go through all these mental steps we're about to explore in your own programming. Once you understand and can recognize the problem transducing solves, you'll be able to just jump straight to using a `transduce(..)` utility from a FP library and move on with the rest of your application!
+我们开始吧。
 
-Let's jump in.
+### 将Map/Filter表示为Reduce
 
-### Expressing Map/Filter as Reduce
-
-The first trick we need to perform is expressing our `filter(..)` and `map(..)` calls as `reduce(..)` calls. Recall [how we did that in Chapter 9](ch9.md/#map-as-reduce):
+我们需要执行的第一个技巧是将 `filter(..)`和`map(..)`调用表示为`reduce(..)`调用。回想一下[第9章我们是如何做到的](ch9.md/#map-as-reduce):
 
 ```js
 function strUppercase(str) { return str.toUpperCase(); }
@@ -136,11 +135,11 @@ words
 // "WRITTENSOMETHING"
 ```
 
-That's a decent improvement. We now have four adjacent `reduce(..)` calls instead of a mixture of three different methods all with different shapes. We still can't just `compose(..)` those four reducers, however, because they accept two arguments instead of one.
+这是一个不错的进步。我们现在有四个相邻的 `reduce(..)`调用，而不是三个不同方法的混合，它们都具有不同的基础方法。然而，我们仍然不能仅仅使用`compose(..)`组合这四个简化方法，因为它们接受两个而不是一个参数。
 
 <a name="cheating"></a>
 
-In [Chapter 9, we sort of cheated](ch9.md/#user-content-reducecheating) and used `list.push(..)` to mutate as a side effect rather than creating a whole new array to concatenate onto. Let's step back and be a bit more formal for now:
+在[第9章，我们有点受骗了](ch9.md/#user-content-reducecheating)中，并使用`list.push(..)`进行转换，而不是创建一个全新的数组来连接。现在让我们退一步，变得更正式一点:
 
 ```js
 function strUppercaseReducer(list,str) {
@@ -158,9 +157,9 @@ function isShortEnoughReducer(list,str) {
 }
 ```
 
-Later, we'll revisit whether creating a new array (e.g., `[...list,str]`) to concatenate onto is necessary here or not.
+稍后，我们将再次讨论是否需要在这里创建一个新数组（例如，`[...list,str]`）来连接到该数组。
 
-### Parameterizing the Reducers
+### Reducer的参数化
 
 Both filter reducers are almost identical, except they use a different predicate function. Let's parameterize that so we get one utility that can define any filter-reducer:
 
