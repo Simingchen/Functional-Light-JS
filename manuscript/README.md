@@ -77,7 +77,7 @@
     * [Stock Events](ch11.md/#stock-events)
     * [Stock Ticker UI](ch11.md/#stock-ticker-ui)
 * [附言 A: 转换](apA.md/#appendix-a-transducing)
-    * [Why, First](apA.md/#why-first)
+    * [首先弄清楚“为什么”](apA.md/#why-first)
     * [How, Next](apA.md/#how-next)
     * [What, Finally](apA.md/#what-finally)
 * [附言 B: 卑微的单元](apB.md/#appendix-b-the-humble-monad)
