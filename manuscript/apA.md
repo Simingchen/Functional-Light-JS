@@ -1,21 +1,20 @@
-# Functional-Light JavaScript
-# Appendix A: Transducing
+# 附言 A: 转换
 
-Transducing is a more advanced technique than we've covered in this book. It extends many of the concepts from [Chapter 9](ch9.md) on list operations.
+转换是一种比我们在本书中介绍的更为先进的技术。它扩展了[第9章](ch9.md)关于列表操作的许多概念。
 
-I wouldn't necessarily call this topic strictly "Functional-Light", but more like a bonus on top. I've presented this as an appendix because you might very well need to skip the discussion for now and come back to it once you feel fairly comfortable with -- and make sure you've practiced! -- the main book concepts.
+我并不一定要严格地将这个主题称为“功能轻量级”，但更像是一个附加功能。我将此作为附录介绍，因为您很可能需要暂时跳过讨论，待您感到相当舒服时再回过头来讨论书籍主要概念。
 
-To be honest, even after teaching transducing many times, and writing this chapter, I am still trying to fully wrap my brain around this technique. So don't feel bad if it twists you up. Bookmark this appendix and come back when you're ready.
+说实话，即使在教授了很多次关于转换的概念，并写了这一章之后，我仍然试图完全理解这种技术。所以，如果它使你陷入困境，不要感到难过。把这个附录标上书签，准备好了再来。
 
-Transducing means transforming with reduction.
+转换是指还原转化。
 
-I know that may sound like a jumble of words that confuses more than it clarifies. But let's take a look at how powerful it can be. I actually think it's one of the best illustrations of what you can do once you grasp the principles of Functional-Light Programming.
+我知道这听起来像是一堆乱七八糟的字眼，让人困惑不止。但让我们看看它有多强大。实际上，我认为这是一个最好的例证，说明一旦你掌握了函数轻编程的原理，你可以做你要做的事情。
 
-As with the rest of this book, my approach is to first explain *why*, then *how*, then finally boil it down to a simplified, repeatable *what*. That's often the reverse of how many teach, but I think you'll learn the topic more deeply this way.
+和本书的其他部分一样，我的方法是先解释为什么，然后解释如何，最后将其归结为一个简化的、可重复的“什么”。这通常与教多少人相反，但我认为你会通过这种方式更深入地学习这个话题。
 
-## Why, First
+## 首先弄清楚“为什么”
 
-Let's start by extending a [scenario we covered back in Chapter 3](ch3.md/#user-content-shortlongenough), testing words to see if they're short enough and/or long enough:
+让我们从扩展[我们在第3章中讨论过的场景](ch3.md/#user-content-shortlongenough)开始，测试单词是否足够短和/或足够长:
 
 ```js
 function isLongEnough(str) {
@@ -26,8 +25,7 @@ function isShortEnough(str) {
     return str.length <= 10;
 }
 ```
-
-In [Chapter 3, we used these predicate functions](ch3.md/#user-content-shortlongenough) to test a single word. Then in Chapter 9, we learned how to repeat such tests [using list operations like `filter(..)`](ch9.md/#filter). For example:
+在[第3章，我们使用这些谓词函数](ch3.md/#user-content-shortlongenough)来测试单个单词。然后在第9章，我们学习了如何重复这样的测试[使用列表操作，如`filter(..)`](ch9.md/#filter)。例如:
 
 ```js
 var words = [ "You", "have", "written", "something", "very",
@@ -39,13 +37,13 @@ words
 // ["written","something"]
 ```
 
-It may not be obvious, but this pattern of separate adjacent list operations has some non-ideal characteristics. When we're dealing with only a single array of a small number of values, everything is fine. But if there were lots of values in the array, each `filter(..)` processing the list separately can slow down a bit more than we'd like.
+这可能不明显，但是这种分离相邻列表操作的模式具有一些不理想的特性。当我们只处理一个由少量值组成的数组时，一切正常。但是如果数组中有很多值，每个`filter(..)`单独处理列表的速度会比我们希望的慢一些。
 
-A similar performance problem arises when our arrays are async/lazy (aka Observables), processing values over time in response to events (see [Chapter 10](ch10.md)). In this scenario, only a single value comes down the event stream at a time, so processing that discrete value with two separate `filter(..)`s function calls isn't really such a big deal.
+当我们的数组是异步/延迟的时，也会出现类似的性能问题，即随着时间的推移处理值以响应事件(参见[章节 10](ch10.md))。在这个场景中，一次只有一个值从事件流中下来，所以使用两个单独的`filter(..)`函数调用来处理这个不连续值并不是什么大问题。
 
-But what's not obvious is that each `filter(..)` method produces a separate observable. The overhead of pumping a value out of one observable into another can really add up. That's especially true since in these cases, it's not uncommon for thousands or millions of values to be processed; even such small overhead costs add up quickly.
+但不明显的是，每个`filter(..)`方法都会产生一个单独的可观察值。将一个值从一个可观察对象注入到另一个可观察对象的开销确实会增加。这一点尤其正确，因为在这些情况下，处理成千上万的值并不罕见;即使如此小的日常开支也会迅速增加。
 
-The other downside is readability, especially when we need to repeat the same series of operations against multiple lists (or Observables). For example:
+另一个缺点是可读性，特别是当我们需要对多个列表(或可观察对象)重复相同的系列操作时。例如:
 
 ```js
 zip(
@@ -55,9 +53,9 @@ zip(
 )
 ```
 
-Repetitive, right?
+看起来重复了,是吧?
 
-Wouldn't it be better (both for readability and performance) if we could combine the `isLongEnough(..)` predicate with the `isShortEnough(..)` predicate? You could do so manually:
+如果我们能将`isLongEnough(..)`与`isShortEnough(..)`结合起来，岂不是更好(在可读性和性能方面)?你可以手动操作:
 
 ```js
 function isCorrectLength(str) {
@@ -65,9 +63,9 @@ function isCorrectLength(str) {
 }
 ```
 
-But that's not the FP way!
+但这不是函数式编程的方式!
 
-In [Chapter 9, we talked about fusion](ch9.md/#fusion) -- composing adjacent mapping functions. Recall:
+在[第9章，我们讨论了fusion](ch9.md/#fusion)——组合相邻的映射函数。回忆一下:
 
 ```js
 words
@@ -76,15 +74,15 @@ words
 );
 ```
 
-Unfortunately, combining adjacent predicate functions doesn't work as easily as combining adjacent mapping functions. To understand why, think about the "shape" of the predicate function -- a sort of academic way of describing the signature of inputs and output. It takes a single value in, and it returns a `true` or a `false`.
+不幸的是，组合相邻的谓词函数不如组合相邻的映射函数那么容易。要理解原因，请考虑谓词函数的“形状”——一种描述输入和输出签名的学术方法。它接受一个值，并返回一个`true`或`false`。
 
-If you tried `isShortEnough(isLongEnough(str))`, it wouldn't work properly. `isLongEnough(..)` will return `true`/`false`, not the string value that `isShortEnough(..)` is expecting. Bummer.
+如果你试了`isShortEnough(isLongEnough(str))`，它不会正常工作。`isLongEnough(..)`将返回`true`/`false`，而不是`isShortEnough(..)`期望的字符串值。结果有点让人失望。
 
-A similar frustration exists trying to compose two adjacent reducer functions. The "shape" of a reducer is a function that receives two values as input, and returns a single combined value. The output of a reducer as a single value is not suitable for input to another reducer expecting two inputs.
+试图组合两个相邻的reducer函数也存在类似的问题。reducer的“shape”是一个函数，它接收两个值作为输入，并返回单个组合值。一个reducer的输出作为一个单独的值，不适合输入到另一个期望有两个输入的reducer函数。
 
-Moreover, the `reduce(..)` helper takes an optional `initialValue` input. Sometimes this can be omitted, but sometimes it has to be passed in. That even further complicates composition, since one reduction might need one `initialValue` and the other reduction might seem like it needs a different `initialValue`. How can we possibly do that if we only make one `reduce(..)` call with some sort of composed reducer?
+此外，`reduce(..)`的helper函数接受一个可选的`initialValue`输入。有时这可以省略，但有时必须传入。这甚至使组合更加复杂，因为一个缩减可能需要一个`initialValue`，而另一个缩减可能需要一个不同的`initialValue`。如果我们只使用某种组合的reduce调用一个`reduce(..)`调用，我们怎么可能做到这一点呢?
 
-Consider a chain like this:
+考虑一下这样的链式：
 
 ```js
 words
