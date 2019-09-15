@@ -80,7 +80,7 @@
     * [首先弄清楚“为什么”](apA.md/#why-first)
     * [How, Next](apA.md/#how-next)
     * [What, Finally](apA.md/#what-finally)
-* [附言 B: 卑微的单元](apB.md/#appendix-b-the-humble-monad)
+* [附言 B: 卑微的单子](apB.md/#appendix-b-the-humble-monad)
     * [Type](apB.md/#type)
     * [Loose Interface](apB.md/#loose-interface)
     * [Just a Monad](apB.md/#just-a-monad)
