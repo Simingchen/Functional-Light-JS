@@ -1,23 +1,22 @@
-# Functional-Light JavaScript
-# Chapter 5: Reducing Side Effects
+# 章节 5: 减少副作用影响
 
-In [Chapter 2](ch2.md), we discussed how a function can have outputs besides its `return` value. By now you should be very comfortable with the FP definition of a function, so the idea of such side outputs -- side effects! -- should smell.
+在[第2章](ch2.md)中，我们讨论了一个函数除了它的`return`值之外，还可以有哪些输出。到目前为止，您应该对函数的FP定义非常熟悉了，所以对这种副作用应该有印象。
 
-We're going to examine the various different forms of side effects and see why they are harmful to our code's quality and readability.
+我们将研究各种不同形式的副作用，并看看它们为什么对代码的质量和可读性有害。
 
-But let me not bury the lede here. The punchline to this chapter: it's impossible to write a program with no side effects. Well, not impossible; you certainly can. But that program won't do anything useful or observable. If you wrote a program with zero side effects, you wouldn't be able to tell the difference between it and an empty program.
+本章的重点是:不可能编写一个没有副作用的程序。并非不可能;你当然可以。但这个程序不会做任何有用或可观察的事情。如果你写了一个没有副作用的程序，你就不能分辨出它和一个空程序的区别。
 
-The FPer doesn't eliminate all side effects. Rather, the goal is to limit them as much as possible. To do that, we first need to fully understand them.
+FP函数编程人员并不能消除所有副作用。相反，我们的目标是尽可能地限制它们。要做到这一点，我们首先需要完全理解它们。
 
 ## Effects on the Side, Please
 
-Cause and effect: one of the most fundamental, intuitive observations we humans can make about the world around us. Push a book off the edge of a table, it falls to the ground. You don't need a physics degree to know that the cause was you pushing the book and the effect was gravity pulling it to the ground. There's a clear and direct relationship.
+因果关系:人类对周围世界最基本、最直观的观察之一。把一本书从桌子边上推下去，它掉到地上了。你不需要物理学位就能知道原因是你推了书，结果是重力把书拖到地上。这是一种明确而直接的关系。
 
-In programming, we also deal entirely in cause and effect. If you call a function (cause), it displays a message on the screen (effect).
+在编程中，我们也处理因果关系。如果您调用一个函数(原因)，它将在屏幕上显示一条消息(效果)。
 
-When reading a program, it's supremely important that the reader be able to clearly identify each cause and each effect. To any extent where a direct relationship between cause and effect cannot be seen readily upon a read-through of the program, that program's readability is degraded.
+当阅读一个程序时，读者能够清楚地识别每一个原因和每一个结果是极其重要的。如果在程序的通读过程中不能很容易地看出因果之间的直接关系，那么程序的可读性就会下降。
 
-Consider:
+考虑:
 
 ```js
 function foo(x) {
@@ -27,9 +26,9 @@ function foo(x) {
 var y = foo( 3 );
 ```
 
-In this trivial program, it is immediately clear that calling foo (the cause) with value `3` will have the effect of returning the value `6` that is then assigned to `y` (the effect). There's no ambiguity here.
+在这个简单的程序中，很明显，用值`3`调用foo (原因)会产生返回值`6` 的效果，然后将值赋给`y` (结果)。这里没有歧义。
 
-But now:
+现在改变下:
 
 ```js
 function foo(x) {
