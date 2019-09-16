@@ -8,7 +8,7 @@
 
 ## 需关注的工具库（注：我的理解）
 
-让我们展开第1章 [list of FP libraries to be aware of, from Chapter 1](ch1.md/#libraries)，我们不可能涵盖所有这些内容（可能有很多相似），但以下应该是你要关注的库：
+让我们展开第1章 [需要注意的FP库列表，从第1章开始](ch1.md/#libraries)，我们不可能涵盖所有这些内容（可能有很多相似），但以下应该是你要关注的库：
 
 * [Ramda](http://ramdajs.com): 通用的FP工具库
 * [Sanctuary](https://github.com/sanctuary-js/sanctuary): 类似Ramda的FP工具库
@@ -30,7 +30,7 @@ Fantasy Land （FL）与“轻量函数式编程”的概念几乎完全相反�
 
 ## Ramda (0.23.0) （注：目前最新版本是0.26.1）
 
-来自 [Ramda documentation](http://ramdajs.com/):
+来自 [Ramda 文件](http://ramdajs.com/):
 
 > Ramda函数是自动被柯里化的.
 >
@@ -38,7 +38,7 @@ Fantasy Land （FL）与“轻量函数式编程”的概念几乎完全相反�
 
 我发现合理设计是Ramda的优势之一。还需要注意的是，Ramda的柯里化形式(似乎与大多数库一样)是 [我们第3章讨论的“松散柯里化”](ch3.md/#user-content-loosecurry)。
 
-回想一下，[在第3章最后的示例](ch3.md/#user-content-finalshortlong)，我们定义一个无点函数`printif(..) ` -- 在Ramda中可以这样定义：
+回想一下，[在第3章最后的示例](ch3.md/#user-content-finalshortlong)，我们定义一个无参函数`printif(..) ` -- 在Ramda中可以这样定义：
 
 ```js
 function output(msg) {
@@ -246,13 +246,13 @@ Promise.all( images )
 
 不幸的是，这个“技巧”只有在你要同时执行所有异步步骤（而不是串行，一个接一个）时才有效，并且只有当操作是一个`map(..)`调用时才有效。 如果你想要串行异步操作，或者你想同事使用`filter(..)`方法，这将可能返回错乱结果。
 
-And some operations naturally require serial asynchrony, like for example an asynchronous `reduce(..)`, which clearly needs to work left-to-right one at a time; those steps can't be run concurrently and have that operation make any sense.
+有些操作自然需要串行异步，例如异步`reduce(..)`，它显然需要一次从左到右工作;这些步骤不能同时运行，并且不能让该操作有任何意义。
 
-As I said, Observables (see [Chapter 10](ch10.md/#observables)) aren't the answer to these kinds of tasks. The reason is, an Observable's coordination of asynchrony is between separate operations, not between steps/iterations at a single level of operation.
+正如我所说，可观察性(参见[第10章](ch10.md/#observables))不是这类任务的答案。原因是，一个可观察对象的异步协调是在单独的操作之间进行的，而不是在单个操作级别的步骤/迭代之间进行的。
 
-Another way to visualize this distinction is that Observables support "vertical asynchrony", whereas what I'm talking about would be "horizontal asynchrony".
+另一种可视化这种区别的方法是，可观测支持“垂直异步”，而我所说的是“水平异步”。
 
-Consider:
+考虑:
 
 ```js
 var obsv = Rx.Observable.from( [1,2,3,4,5] );
@@ -270,15 +270,13 @@ obsv
 // 11
 ```
 
-If for some reason I wanted to ensure that there was a delay of 100 ms between when `1` was processed by the first `map(..)` and when `2` was processed, that would be the "horizontal asynchrony" I'm referring to. There's not really a clean way to model that.
+如果出于某种原因，我想确保从第一个`map(..)`处理`1`到处理`2`之间有100毫秒的延迟，那么这就是我所指的“水平异步”。没有一种明朗的方法来模拟它。
 
-And of course, I'm using an arbitrary delay in that description, but in practice that would more likely be serial-asynchrony like an asynchronous reduce, where each step in that reduction iteration could take some time before it completes and lets the next step be processed.
+那么，我们如何跨异步操作同时支持串行迭代和并发迭代呢?
 
-So, how do we support both serial and concurrent iteration across asynchronous operations?
+**fasy**(发音与“Tracy”相似，但带有“f”)是我为支持这类任务而构建的一个小实用程序库。你可以在这里找到更多关于它的[信息](https://github.com/getify/fasy)。
 
-**fasy** (pronounced like "Tracy" but with an "f") is a little utility library I built for supporting exactly those kinds of tasks. You can find more information about it [here](https://github.com/getify/fasy).
-
-To illustrate **fasy**, let's consider a concurrent `map(..)` versus a serial `map(..)`:
+为了说明**fasy**，让我们考虑一个并发的`map(..)`与一个串行的`map(..)`:
 
 ```js
 FA.concurrent.map( fetchImage, imageURLs )
@@ -292,15 +290,15 @@ FA.serial.map( fetchImage, imageURLs )
 } );
 ```
 
-In both cases, the `then(..)` handler will only be invoked once all the fetches have fully completed. The difference is whether the fetches will all initiate concurrently (aka, "in parallel") or go out one at a time.
+在这两种情况下，`then(..)`处理程序只会在所有获取完全完成后调用。不同之处在于，所有的获取是同时启动(也就是“并行”)，还是一次发出一个的。
 
-Your instinct might be that concurrent would always be preferable, and while that may be common, it's not always the case.
+你的直觉可能是同时进行总是更好的，虽然这可能是常见的，但并不总是这样。
 
-For example, what if `fetchImage(..)` maintains a cache of fetched images, and it checks the cache before making the actual network request? What if, in addition to that, the list of `imageURLs` could have duplicates in it? You'd certainly want the first fetch of an image URL to complete (and populate the cache) before doing the check on the duplicate image URL later in the list.
+例如，如果 `fetchImage(..)`维护一个获取图像的缓存，并在发出实际的网络请求之前检查缓存，结果会怎样?除此之外，如果“imageURLs”列表中可以有多个副本呢?在检查列表中稍后的重复图像URL之前，您肯定希望完成图像URL的第一次获取(并填充缓存)。
 
-Again, there will inevitably be cases where concurrent or serial asynchrony will be called for. Asynchronous reductions will always be serial, whereas asynchronous mappings may likely tend to be more concurrent but can also need to be serial in some cases. That's why **fasy** supports all these options.
+同样，在某些情况下不可避免地需要并发或串行异步。异步缩减总是串行的，而异步映射可能更倾向于并发，但在某些情况下也可能需要串行。这就是为什么**fasy**支持所有这些选项。
 
-Along with Observables, **fasy** will help you extend more FP patterns and principles to your asynchronous operations.
+除了Observables，**fasy**将帮助您将更多fp模式和原则扩展到异步操作。
 
 ## 总结
 
