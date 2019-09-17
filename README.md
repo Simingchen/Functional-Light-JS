@@ -43,15 +43,9 @@
 * [附言 B: 卑微的单元](manuscript/apB.md/#appendix-b-the-humble-monad)
 * [附言 C: 函数式编程的库](manuscript/apC.md/#appendix-c-fp-libraries)
 
-## 出版发行
-
-这本书已经出版，现在可以从这些来源购买（电子书和印刷格式）:
-
-<p align="center">
-    <a href="http://fljsbook.com"><img src="https://img.shields.io/badge/Buy-Leanpub-yellow.svg" title="Buy on Leanpub" alt="Buy on Leanpub"></a> <a href="http://manning.fljsbook.com"><img src="https://img.shields.io/badge/Buy-Manning-yellow.svg" title="Buy on Manning" alt="Buy on Manning"></a> <a href="http://amazon.fljsbook.com"><img src="https://img.shields.io/badge/Buy-Amazon-yellow.svg" title="Buy on Amazon" alt="Buy on Amazon"></a>
-</p>
 
 ## Buy me a coffee
+if you like the book,just buy me a coffee.
 
 <img src="manuscript/images/paycode1.jpg" width="25%" align="left" hspace="20" vspace="20" title="buy me a coffee" alt="Book Cover">
 <img src="manuscript/images/paycode2.jpg" width="25%" align="left" hspace="20" vspace="20" title="buy me a coffee" alt="Book Cover">
