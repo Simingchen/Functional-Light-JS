@@ -1,24 +1,23 @@
-# Functional-Light JavaScript
-# Chapter 6: Value Immutability
+# 章节 6: 值的不变性质
 
-In [Chapter 5](ch5.md), we talked about the importance of reducing side causes/effects: the ways that your application's state can change unexpectedly and cause surprises (bugs). The fewer places we have with such landmines, the more confidence we have over our code, and the more readable it will be. Our topic for this chapter follows directly from that same effort.
+在[第5章](ch5.md)中，我们讨论了减少副作用的重要性:应用程序的状态可能意外改变并导致意外(bug)的方式。使用这种地雷的地方越少，我们对代码就越有信心，代码的可读性也就越好。我们这一章的主题也是做同样的努力去减少副作用。
 
-If programming-style idempotence is about defining a value change operation so that it can only affect state once, we now turn our attention to the goal of reducing the number of change occurrences from one to zero.
+如果编程风格的幂等性是关于定义一个值更改操作，以便它只能影响状态一次，那么现在我们将注意力转向将发生更改的次数从1减少到0的目标。
 
-Let's now explore value immutability, the notion that in our programs we use only values that cannot be changed.
+现在让我们来探讨值的不变性，即在程序中我们只使用不可更改的值。
 
-## Primitive Immutability
+## 原始类型的不变性
 
-Values of the primitive types (`number`, `string`, `boolean`, `null`, and `undefined`) are already immutable; there's nothing you can do to change them:
+js原始类型(`number`, `string`, `boolean`, `null`, and `undefined`)的值已经是不可变的;你无法改变他们:
 
 ```js
-// invalid, and also makes no sense
+// 无效，也没有任何意义
 2 = 2.5;
 ```
 
-However, JS does have a peculiar behavior which seems like it allows mutating such primitive type values: "boxing". When you access a property on certain primitive type values -- specifically `number`, `string`, and `boolean` -- under the covers JS automatically wraps (aka "boxes") the value in its object counterpart (`Number`, `String`, and `Boolean`, respectively).
+然而，js确实有一个特殊的行为，看起来它允许改变这样的原始类型值：“boxing”（boxing所谓的装箱，是指将基本数据类型转换为对应的引用类型的操作。而装箱又分为隐式装箱和显式装箱）。当您访问某些基本类型值（特别是`number`, `string`和`boolean`）的属性时，js会自动将该值包装在其对象对应项（分别为`number`, `string`和`boolean`）中。
 
-Consider:
+考虑:
 
 ```js
 var x = 2;
@@ -29,22 +28,22 @@ x;              // 2
 x.length;       // undefined
 ```
 
-Numbers do not normally have a `length` property available, so the `x.length = 4` setting is trying to add a new property, and it silently fails (or is ignored/discarded, depending on your point-of-view); `x` continues to hold the simple primitive `2` number.
+数字通常没有`length`属性可用。`x.length = 4`设置试图添加一个新属性，但它会自动失败（或根据您的观点被忽略/丢弃）;`x` 继续保持简单的基本数字`2`。
 
-But the fact that JS allows the `x.length = 4` statement to run at all can seem troubling, if for no other reason than its potential confusion to readers. The good news is, if you use strict mode (`"use strict";`), such a statement will throw an error.
+但js允许`x.length = 4`语句运行看起来很麻烦，如果不是因为其他原因，读者可能会感到困惑。好消息是，如果使用strict模式（`"use strict";`），这样的语句将抛出错误。
 
-What if you try to mutate the explicitly boxed object representation of such a value?
+如果您尝试改变这样一个值的显式装箱对象表示，会怎么样？
 
 ```js
 var x = new Number( 2 );
 
-// works fine
+// 运行正常
 x.length = 4;
 ```
 
-`x` in this snippet is holding a reference to an object, so custom properties can be added and changed without issue.
+这个代码段中的`x`保存了对对象的引用，因此可以添加和更改自定义属性而不存在任何问题。
 
-The immutability of simple primitives like `number`s probably seems fairly obvious. But what about `string` values? JS developers have a very common misconception that strings are like arrays and can thus be changed. JS syntax even hints at them being "array like" with the `[ ]` access operator. However, strings are also immutable:
+像`number`这样的简单原语的不可变性可能看起来相当明显。但是`string`值呢?JS开发人员有一个非常普遍的误解，认为字符串就像数组，因此可以更改。JS语法甚至暗示他们是“数组一样”与`[ ]访问操作符。然而，字符串也是不可变的:
 
 ```js
 var s = "hello";
@@ -57,9 +56,9 @@ s.length = 10;
 s;                  // "hello"
 ```
 
-Despite being able to access `s[1]` like it's an array, JS strings are not real arrays. Setting `s[1] = "E"` and `s.length = 10` both silently fail, just as `x.length = 4` did before. In strict mode, these assignments will fail, because both the `1` property and the `length` property are read-only on this primitive `string` value.
+尽管能够像访问数组一样访问`s[1]`，但JS字符串并不是真正的数组。设置 `s[1] = "E"`和`s.length = 10`和之前做过`x.length = 4`一样，都自动失败了。在严格模式下，这些赋值将失败，因为`1`属性和`length`属性在这个基本`string`值上都是只读的。
 
-Interestingly, even the boxed `String` object value will act (mostly) immutable as it will throw errors in strict mode if you change existing properties:
+有趣的是，即使是被框起来的`String`对象值也会(基本上)不可变，因为如果您更改现有属性，它会在严格模式下抛出错误:
 
 ```js
 "use strict";
@@ -74,13 +73,13 @@ s[42] = "?";        // OK
 s;                  // "hello"
 ```
 
-## Value to Value
+## 此值到彼值
 
-We'll unpack this idea more throughout the chapter, but just to start with a clear understanding in mind: value immutability does not mean we can't have values change over the course of our program. A program without changing state is not a very interesting one! It also doesn't mean that our variables can't hold different values. These are all common misconceptions about value immutability.
+我们将在本章中进一步解释这个概念，但是首先要有一个清晰的理解:值的不变性并不意味着我们不能在程序的过程中改变值。一个没有改变状态的程序不是一个很有趣的程序!这也不意味着我们的变量不能有不同的值。这些都是关于价值不变性的普遍误解。
 
-Value immutability means that *when* we need to change the state in our program, we must create and track a new value rather than mutate an existing value.
+值不变性意味着*当*我们需要更改程序中的状态时，我们必须创建并跟踪一个新值，而不是更改一个现有值。
 
-For example:
+例如:
 
 ```js
 function addValue(arr) {
@@ -91,17 +90,17 @@ function addValue(arr) {
 addValue( [1,2,3] );    // [1,2,3,4]
 ```
 
-Notice that we did not change the array that `arr` references, but rather created a new array (`newArr`) that contains the existing values plus the new `4` value.
+注意，我们没有更改`arr`引用的数组，而是创建了一个新数组(`newArr`)，其中包含现有值加上新的`4` 值。
 
-Analyze `addValue(..)` based on what we discussed in [Chapter 5](ch5.md) about side causes/effects. Is it pure? Does it have referential transparency? Given the same array, will it always produce the same output? Is it free of both side causes and side effects? **Yes.**
+根据我们在[第5章](ch5.md)中讨论的关于副作用的原因/影响来分析`addValue(..)`。它是纯洁的吗?它是否具有参考透明性?给定相同的数组，它总是会产生相同的输出吗?它有没有副作用和副作用?答案为：是的
 
-Imagine the `[1,2,3]` array represents a sequence of data from some previous operations and we stored in some variable. It is our current state. If we want to compute what the next state of our application is, we call `addValue(..)`. But we want that act of next-state computation to be direct and explicit. So the `addValue(..)` operation takes a direct input, returns a direct output, and avoids the side effect of mutating the original array that `arr` references.
+假设`[1,2,3]`数组表示来自以前一些操作的数据序列，并且我们存储在某个变量中。这是我们目前的状态。如果我们想计算应用程序的下一个状态，我们调用`addValue(..)`。但是我们希望下一个状态的计算是直接和明确的。因此，`addValue(..)`操作接受直接输入，返回直接输出，并避免了修改`arr`引用的原始数组的副作用。
 
-This means we can calculate the new state of `[1,2,3,4]` and be fully in control of that transition of states. No other part of our program can unexpectedly transition us to that state early, or to another state entirely, like `[1,2,3,5]`. By being disciplined about our values and treating them as immutable, we drastically reduce the surface area of surprise, making our programs easier to read, reason about, and ultimately trust.
+这意味着我们可以计算`[1,2,3,4]`的新状态，并完全控制状态的转换。程序的任何其他部分都不能意外地将我们提前转换到那个状态，或者完全转换到另一个状态，比如`[1,2,3,5]`。通过对我们的值进行约束并将它们视为不可变的，我们大大减少了令人惊讶的表面区域，使我们的程序更易于阅读、推理和最终信任。
 
-The array that `arr` references is actually mutable. We just chose not to mutate it, so we practiced the spirit of value immutability.
+`arr`引用的数组实际上是可变的。我们只是选择不去改变它，所以我们实践了价值不变的精神。
 
-We can use the copy-instead-of-mutate strategy for objects, too. Consider:
+我们也可以对对象使用复制而不是变异的策略。 思考:
 
 ```js
 function updateLastLogin(user) {
