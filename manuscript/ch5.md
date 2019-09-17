@@ -793,27 +793,27 @@ var specialNumber = (function memoization(){
 })();
 ```
 
-We've contained the `cache` side causes/effects of `specialNumber(..)` inside the scope of the `memoization()` IIFE, so now we're sure that no other parts of the program *can* observe them, not just that they *don't* observe them.
+我们已经将`specialNumber(..)`的`cache`副作用包含在`memoization()`IIFE（立即执行函数表达式）的范围内，所以现在我们确定程序的其他部分*不能*干扰它们，而不仅仅是它们*不*干扰它们。
 
-That last sentence may seem like a subtle point, but actually I think it might be **the most important point of the entire chapter**. Read it again.
+最后这句话似乎是一个微妙的观点，但实际上我认为它可能是**整章最重要的一点**。可以再读一遍。
 
-Recall this philosophical musing:
+回想一下这个哲学思考:
 
-> If a tree falls in the forest, but no one is around to hear it, does it still make a sound?
+> 如果一棵树倒在森林里，但周围没有人听到，它还会发出声音吗（可以认为他发出声音了吗）?
 
-Going with the metaphor, what I'm getting at is: whether the sound is made or not, it would be better if we never create a scenario where the tree can fall without us being around; we'll always hear the sound when a tree falls.
+用这个比喻，我想说的是:不管声音有没有发出来，如果我们不创造一个场景，让树在没有我们的情况下倒下，那就更好了;当树倒下时，我们总是能听到声音。
 
-The purpose of reducing side causes/effects is not per se to have a program where they aren't observed, but to design a program where fewer of them are possible, because this makes the code easier to reason about. A program with side causes/effects that *just happen* to not be observed is not nearly as effective in this goal as a program that *cannot* observe them.
+减少副作用的目的本身并不是要让一个程序不被观察到，而是要设计一个可以减少副作用的程序，因为这使代码更容易推理。在这个目标中，一个带有“恰好”没有被观察到的“副作用”的程序远不如一个“不能”观察到它们的程序有效。
 
-If side causes/effects can happen, the writer and reader must mentally juggle them. Make it so they can't happen, and both writer and reader will find more confidence over what can and cannot happen in any part.
+如果有可能产生副作用，作者和读者必须在心理上同时处理它们。让它们不可能发生，这样作家和读者都会对任何部分能发生和不能发生的事情有更多的信心。
 
-## Purifying
+## 重构不纯函数
 
-The first best option in writing functions is that you design them from the beginning to be pure. But you'll spend plenty of time maintaining existing code, where those kinds of decisions were already made; you'll run across a lot of impure functions.
+编写函数的第一个最佳选择是从头开始设计函数。但是您将花费大量的时间来维护现有的代码，这些类型的决策已经做出;你会遇到很多不纯函数。
 
-If possible, refactor the impure function to be pure. Sometimes you can just shift the side effects out of a function to the part of the program where the call of that function happens. The side effect wasn't eliminated, but it was made more obvious by showing up at the call-site.
+如果可能，将不纯函数重构为纯函数。有时，您可以将副作用从函数转移到程序中函数调用发生的部分。副作用并没有被消除，但是在调用点出现的副作用更加明显，更容易发现与理解。
 
-Consider this trivial example:
+考虑这个简单的例子:
 
 ```js
 function addMaxNum(arr) {
@@ -828,7 +828,7 @@ addMaxNum( nums );
 nums;       // [4,2,7,3,8]
 ```
 
-The `nums` array needs to be modified, but we don't have to obscure that side effect by containing it in `addMaxNum(..)`. Let's move the `push(..)` mutation out, so that `addMaxNum(..)` becomes a pure function, and the side effect is now more obvious:
+需要修改`nums`数组，但我们不必通过将它包含在`addMaxNum(..)`中来掩盖这种副作用。让我们将`push(..)`突变移出，这样`addMaxNum(..)`就变成了一个纯函数，副作用现在更明显了:
 
 ```js
 function addMaxNum(arr) {
@@ -845,17 +845,17 @@ nums.push(
 nums;       // [4,2,7,3,8]
 ```
 
-**Note:** Another technique for this kind of task could be to use an immutable data structure, which we cover in the next chapter.
+注:这类任务的另一种技术可能是使用不可变的数据结构，我们将在下一章中讨论。
 
-But what can you do if you have an impure function where the refactoring is not as easy?
+但是，如果您有一个不纯的函数，而重构并不容易，那么您可以做什么呢?
 
-You need to figure what kind of side causes/effects the function has. It may be that the side causes/effects come variously from lexical free variables, mutations-by-reference, or even `this` binding. We'll look at approaches that address each of these scenarios.
+你需要弄清楚函数有什么样的副作用。这可能是因为副作用来自不同的词汇自由变量，引用的变异，甚至`this`绑定。我们将研究处理这些场景的方法。
 
-### Containing Effects
+### 包含影响
 
-If the nature of the concerned side causes/effects is with lexical free variables, and you have the option to modify the surrounding code, you can encapsulate them using scope.
+如果副作用的问题性质是词法自由变量，并且您可以选择修改周围的代码，那么您可以使用作用域封装它们。
 
-Recall:
+回顾:
 
 ```js
 var users = {};
@@ -867,23 +867,23 @@ function fetchUserData(userId) {
 }
 ```
 
-One option for purifying this code is to create a wrapper around both the variable and the impure function. Essentially, the wrapper has to receive as input "the entire universe" of state it can operate on.
+重构这段代码的一个选项是在变量和非纯函数周围创建一个包装器。本质上，包装器必须接收它可以操作的状态的“所有引用参数”作为输入。
 
 ```js
 function safer_fetchUserData(userId,users) {
-    // simple, naive ES6+ shallow object copy, could also
-    // be done w/ various libs or frameworks
+    // 简单、朴素的ES6+浅对象复制，也可以
+    // 使用各种库或框架
     users = Object.assign( {}, users );
 
     fetchUserData( userId );
 
-    // return the copied state
+    // 返回复制的状态
     return users;
 
 
     // ***********************
 
-    // original untouched impure function:
+    // 原始未变动的不纯函数：
     function fetchUserData(userId) {
         ajax(
             `http://some.api/user/${userId}`,
@@ -895,19 +895,19 @@ function safer_fetchUserData(userId,users) {
 }
 ```
 
-**Warning:** `safer_fetchUserData(..)` is *more* pure, but is not strictly pure in that it still relies on the I/O of making an Ajax call. There's no getting around the fact that an Ajax call is an impure side effect, so we'll just leave that detail unaddressed.
+警告: `safer_fetchUserData(..)`更纯粹一些，但并不完全纯粹，因为它仍然依赖于发出Ajax调用的I/O操作。Ajax调用是一个不纯的副作用，这是无法回避的事实，因此我们将不处理这个细节。
 
-Both `userId` and `users` are input for the original `fetchUserData`, and `users` is also output. The `safer_fetchUserData(..)` takes both of these inputs, and returns `users`. To make sure we're not creating a side effect on the outside when `users` is mutated, we make a local copy of `users`.
+ `userId` 和`users` 都是原始`fetchUserData`的输入，`users`也是输出。 `safer_fetchUserData(..)`接受这两个输入，并返回 `users`。为了确保 `users`发生突变时不会对外部产生副作用，我们创建了`users`的本地副本。
 
-This technique has limited usefulness mostly because if you cannot modify a function itself to be pure, you're not that likely to be able to modify its surrounding code either. However, it's helpful to explore it if possible, as it's the simplest of our fixes.
+这种技术的用处有限，主要是因为如果不能将函数本身修改为纯函数，那么也不太可能修改其周围的代码。然而，如果可能的话，研究它是有帮助的，因为它是我们的修复中最简单的。
 
-Regardless of whether this will be a practical technique for refactoring to pure functions, the more important take-away is that function purity only need be skin deep. That is, the **purity of a function is judged from the outside**, regardless of what goes on inside. As long as a function's usage behaves pure, it is pure. Inside a pure function, impure techniques can be used -- in moderation! -- for a variety of reasons, including most commonly, for performance. It's not necessarily, as they say, "turtles all the way down".
+无论这是否是重构纯函数的实用技术，更重要的是函数的纯性只需要表面功夫。也就是说，函数的**纯度是从外部**判断的，而不管函数内部发生了什么。只要函数的使用行为是纯的，它就是纯的。在纯函数内部，可以使用不纯的技术——适度使用!——出于各种各样的原因，包括最常见的表现原因。正如他们所说，这并不一定是“turtles all the way down”原则（总是惊人的相似）。
 
-Be very careful, though. Any part of the program that's impure, even if it's wrapped with and only ever used via a pure function, is a potential source of bugs and confusion for readers of the code. The overall goal is to reduce side effects wherever possible, not just hide them.
+不过要非常小心。程序中任何不纯的部分，即使是用纯函数封装的，并且只通过纯函数使用，也会给代码的读者带来潜在的bug和混淆。总的目标是尽可能减少副作用，而不仅仅是隐藏它们。
 
-### Covering Up Effects
+### 掩盖副作用
 
-Many times you will be unable to modify the code to encapsulate the lexical free variables inside the scope of a wrapper function. For example, the impure function may be in a third-party library file that you do not control, containing something like:
+很多时候，您将无法修改代码来将词法自由变量封装在包装器函数的范围内。例如，不纯函数可能位于您无法控制的第三方库文件中，其中包含如下内容:
 
 ```js
 var nums = [];
@@ -930,50 +930,50 @@ function generateMoreRandoms(count) {
 }
 ```
 
-The brute-force strategy to *quarantine* the side causes/effects when using this utility in the rest of our program is to create an interface function that performs the following steps:
+当我们在程序使用这个工具时，“隔离”副作用的暴力策略是创建一个执行以下步骤的接口函数:
 
-1. Capture the to-be-affected current states
-2. Set initial input states
-3. Run the impure function
-4. Capture the side effect states
-5. Restore the original states
-6. Return the captured side effect states
+1. 捕获要受影响的当前状态
+2. 设置初始输入状态
+3. 运行非纯函数
+4. 捕捉副作用状态
+5. 恢复初始状态
+6. 返回捕获的副作用状态
 
 ```js
 function safer_generateMoreRandoms(count,initial) {
-    // (1) Save original state
+    // (1) 保存原始状态
     var orig = {
         nums,
         smallCount,
         largeCount
     };
 
-    // (2) Set up initial pre-side effects state
+    // (2) 设置初始预副作用状态
     nums = [...initial.nums];
     smallCount = initial.smallCount;
     largeCount = initial.largeCount;
 
-    // (3) Beware impurity!
+    // (3) 当心不纯性!
     generateMoreRandoms( count );
 
-    // (4) Capture side effect state
+    // (4) 俘获副作用状态
     var sides = {
         nums,
         smallCount,
         largeCount
     };
 
-    // (5) Restore original state
+    // (5) 恢复初始状态
     nums = orig.nums;
     smallCount = orig.smallCount;
     largeCount = orig.largeCount;
 
-    // (6) Expose side effect state directly as output
+    // (6) 直接将副作用状态显示为输出
     return sides;
 }
 ```
 
-And to use `safer_generateMoreRandoms(..)`:
+然后使用 `safer_generateMoreRandoms(..)`:
 
 ```js
 var initialStates = {
@@ -990,21 +990,21 @@ smallCount;     // 0
 largeCount;     // 0
 ```
 
-That's a lot of manual work to avoid a few side causes/effects; it'd be a lot easier if we just didn't have them in the first place. But if we have no choice, this extra effort is well worth it to avoid surprises in our programs.
+这需要大量的手工工作来避免一些副作用;如果我们一开始就没有它们，事情会简单得多。但是如果我们别无选择，那么为了避免程序中出现意外，这种额外的努力是非常值得的。
 
-**Note:** This technique really only works when you're dealing with synchronous code. Asynchronous code can't reliably be managed with this approach because it can't prevent surprises if other parts of the program access/modify the state variables in the interim.
+注意:这项技术只在处理同步代码时才有效。异步代码不能用这种方法可靠地进行管理，因为如果程序的其他部分在此期间访问/修改状态变量，它就不能防止意外。
 
-### Evading Effects
+### 规避效应
 
-When the nature of the side effect to be dealt with is a mutation of a direct input value (object, array, etc.) via reference, we can again create an interface function to interact with instead of the original impure function.
+当要处理的副作用的本质是通过引用直接输入值(对象、数组等)的突变时，我们可以再次创建一个接口函数来与之交互，而不是原始的不纯函数。
 
-Consider:
+考虑:
 
 ```js
 function handleInactiveUsers(userList,dateCutoff) {
     for (let i = 0; i < userList.length; i++) {
         if (userList[i].lastLogin == null) {
-            // remove the user from the list
+            // 从列表中删除用户
             userList.splice( i, 1 );
             i--;
         }
@@ -1015,31 +1015,31 @@ function handleInactiveUsers(userList,dateCutoff) {
 }
 ```
 
-Both the `userList` array itself, plus the objects in it, are mutated. One strategy to protect against these side effects is to do a deep (well, just not shallow) copy first:
+`userList`数组本身以及其中的对象都发生了变化。防止这些副作用的一个策略是先做一个深度的(好吧，只是不要做浅的)复制:
 
 ```js
 function safer_handleInactiveUsers(userList,dateCutoff) {
-    // make a copy of both the list and its user objects
+    // 复制列表及其用户对象
     let copiedUserList = userList.map( function mapper(user){
-        // copy a `user` object
+        // 复制一个`user`对象
         return Object.assign( {}, user );
     } );
 
-    // call the original function with the copy
+    // 使用副本调用原始函数
     handleInactiveUsers( copiedUserList, dateCutoff );
 
-    // expose the mutated list as a direct output
+    // 将修改后的列表作为直接输出公开
     return copiedUserList;
 }
 ```
 
-The success of this technique will be dependent on the thoroughness of the *copy* you make of the value. Using `[...userList]` would not work here, since that only creates a shallow copy of the `userList` array itself. Each element of the array is an object that needs to be copied, so we need to take extra care. Of course, if those objects have objects inside them (they might!), the copying needs to be even more robust.
+这项技术的成功将取决于您对值的“复制”是否彻底。使用`[...userList]` 这里不能实现，因为这只创建了一个浅拷贝的`userList`数组本身。数组中的每个元素都是一个需要复制的对象，因此我们需要格外小心。当然，如果这些对象中有对象(可能有!)，那么复制需要更加健壮的方法。
 
-### `this` Revisited
+### 重新审视`this`
 
-Another variation of the via-reference side cause/effect is with `this`-aware functions having `this` as an implicit input. See [Chapter 2, "What's This"](ch2.md/#whats-this) for more info on why the `this` keyword is problematic for FPers.
+另一个导致副作用的原因是函数将`this`作为隐式输入。参见[第2章，"This指的是什么"](ch2.md/#whats-this)了解更多关于为什么`this`关键字的信息。
 
-Consider:
+考虑:
 
 ```js
 var ids = {
@@ -1050,7 +1050,7 @@ var ids = {
 };
 ```
 
-Our strategy is similar to the previous section's discussion: create an interface function that forces the `generate()` function to use a predictable `this` context:
+我们的策略类似于上一节的讨论:创建一个接口函数，强制`generate()`函数使用一个可预测的`this`上下文:
 
 ```js
 function safer_generate(context) {
@@ -1063,16 +1063,16 @@ safer_generate( { prefix: "foo" } );
 // "foo0.8988802158307285"
 ```
 
-These strategies are in no way fool-proof; the safest protection against side causes/effects is to not do them. But if you're trying to improve the readability and confidence level of your program, reducing the side causes/effects wherever possible is a huge step forward.
+这些策略绝不是万无一失的;对副作用最安全的保护就是不去做。但是，如果您试图提高程序的可读性和可信度，那么尽可能减少副作用是一个巨大的进步。
 
-Essentially, we're not really eliminating side causes/effects, but rather containing and limiting them, so that more of our code is verifiable and reliable. If we later run into program bugs, we know that the parts of our code still using side causes/effects are the most likely culprits.
+本质上，我们并没有真正消除副作用，而是包含并限制它们，这样我们的代码中就有更多是可验证和可靠的。如果我们后来遇到程序错误，我们知道代码中仍然使用副作用的部分最有可能是罪魁祸首。
 
-## Summary
+## 总结
 
-Side effects are harmful to code readability and quality because they make your code much harder to understand. Side effects are also one of the most common *causes* of bugs in programs, because juggling them is hard. Idempotence is a strategy for restricting side effects by essentially creating one-time-only operations.
+副作用对代码的可读性和质量是有害的，因为它们使代码更难理解。副作用也是程序中bug最常见的“原因”之一，因为处理它们很困难。幂等性本质上是通过创建一次操作来限制副作用的策略。
 
-Pure functions are how we best avoid side effects. A pure function is one that always returns the same output given the same input, and has no side causes or side effects. Referential transparency further states that -- more as a mental exercise than a literal action -- a pure function's call could be replaced with its output and the program would not have altered behavior.
+纯功能是我们避免副作用的最佳方式。一个纯函数总是在给定相同输入的情况下返回相同的输出，并且没有副作用。引用透明性进一步指出，纯函数的调用可以用它的输出替换，程序不会改变行为，这更像是一种脑力练习，而不是文字操作。
 
-Refactoring an impure function to be pure is the preferred option. But if that's not possible, try encapsulating the side causes/effects, or creating a pure interface against them.
+将不纯函数重构为纯函数是首选。但是如果这是不可能的，尝试封装含有副作用的函数，或者创建一个纯接口来处理它们。
 
-No program can be entirely free of side effects. But prefer pure functions in as many places as that's practical. Collect impure functions side effects together as much as possible, so that it's easier to identify and audit these most likely culprits of bugs when they arise.
+没有一个程序可以完全没有副作用。但在实际应用中更喜欢纯函数。尽可能多地收集不纯函数的副作用，以便在出现bug时更容易识别和审计这些最有可能的罪魁祸首。
