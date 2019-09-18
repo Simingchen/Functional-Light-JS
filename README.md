@@ -33,7 +33,7 @@
 
 [目录](manuscript/README.md/#table-of-contents)
 
-* [序言](manuscript/foreword.md/#foreword) ([Brian Lonsdorf, aka "Prof Frisby"](https://twitter.com/DrBoolean))
+* [序言](manuscript/foreword.md/#foreword)
 * [前言](manuscript/preface.md/#preface)
 * [章节 1: 为什么要函数式编程?](manuscript/ch1.md/#chapter-1-why-functional-programming)
 * [章节 2: 函数的本质](manuscript/ch2.md/#chapter-2-the-nature-of-functions)
