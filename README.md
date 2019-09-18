@@ -2,10 +2,12 @@
 
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-blue.svg)](http://creativecommons.org/licenses/by-nc-nd/4.0/)
 
-## 译者说
+### 译者说
 本书讲解如何规避一些不可预知的副作用，友好的书写js，封装的理念。让我们在认识这门js语言的同时，更加深入理解语言的底层思维，通过这些思维去灵活应用到我们的业务语言上。里面的例子浅显易懂，却都是我们常犯的一些错误，通过看这本书你会更加理解运用“what”与“how”。
 
-由于术语与js语言的精深，里面的翻译全部由本人直译与理解意译，可能存在小误差，但是不影响阅读，如果想要更加了解作者的思维（外国人的思维表达也不一样），可以翻阅原著，如果能帮助你更加理解一门语言，帮你前行，那本书翻译的目的也就达到了，谢谢。与你共勉，我叫小明。
+由于术语与js语言的精深，里面的翻译全部由本人直译与理解意译，可能存在小误差，但是不影响阅读，如果想要更加了解作者的思维（外国人的思维表达也不一样），可以翻阅原著，如果能帮助你更加理解一门语言，帮你前行，那本书翻译的目的也就达到了，谢谢。
+
+·····结束
 
 <a href="http://fljsbook.com"><img src="manuscript/images/marketing/front-cover-small.png" width="25%" align="right" hspace="20" vspace="20" title="Functional-Light JavaScript" alt="Book Cover"></a>
 
