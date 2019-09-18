@@ -150,119 +150,120 @@ console.log( arr[0] );      // 1
 
 ##  重赋值
 
-你如何描述什么是“常量”?在你进入下一段之前想一下这个问题。
+你如何描述“常量”?在你进入下一段之前想一下这个问题。
 
 <p align="center">
     * * * *
 </p>
 
-Some of you may have conjured descriptions like, "a value that can't change", "a variable that can't be changed", or something similar. These are all approximately in the neighborhood, but not quite at the right house. The precise definition we should use for a constant is: a variable that cannot be reassigned.
+你们中的一些人可能会这么描述，“一个不能改变的值”，“一个不能改变的变量”，或者类似的东西。意思相近，但不完全正确。我们应该对常量使用的精确定义是:不能重新分配的变量。
 
-This nitpicking is really important, because it clarifies that a constant actually has nothing to do with the value, except to say that whatever value a constant holds, that variable cannot be reassigned any other value. But it says nothing about the nature of the value itself.
+这种吹毛求疵是非常重要的，因为它阐明了一个常量实际上与这个值无关，只是说，无论一个常量持有什么值，这个变量都不能被重新分配任何其他值。但它没有说明价值本身的性质。
 
-Consider:
+思考:
 
 ```js
 var x = 2;
 ```
 
-Like we discussed earlier, the value `2` is an unchangeable (immutable) primitive. If I change that code to:
+如前所述，值`2`是一个不可更改(不可变)的原始值。如果我把代码改成:
 
 ```js
 const x = 2;
 ```
 
-The presence of the `const` keyword, known familiarly as a "constant declaration", actually does nothing at all to change the nature of `2`; it's already unchangeable, and it always will be.
+`const`关键字的出现，通常被称为“常量声明”，实际上根本没有改变`2`的性质;它只是变得不可改变的，而且将永远不变。
 
-It's true that this later line will fail with an error:
+这是真的，这后面的一行将报错失败:
 
 ```js
-// try to change `x`, fingers crossed!
+// 试着改变`x`看看!
 x = 3;      // Error!
 ```
 
-But again, we're not changing anything about the value. We're attempting to reassign the variable `x`. The values involved are almost incidental.
+但是，我们没有改变任何关于值的东西。我们试图重新分配变量`x`。所涉及的值几乎是偶然的。
 
-To prove that `const` has nothing to do with the nature of the value, consider:
+要证明`const`与值的本质无关，思考下:
 
 ```js
 const x = [ 2 ];
 ```
 
-Is the array a constant? **No.** `x` is a constant because it cannot be reassigned. But this later line is totally OK:
+数组是常量吗?*不* `x`是一个常量，因为它不能被重新分配。但是下面这句话完全可以:
 
 ```js
 x[0] = 3;
 ```
 
-Why? Because the array is still totally mutable, even though `x` is a constant.
+为什么?因为数组仍然是完全可变的，即使`x`是一个常量。
 
-The confusion around `const` and "constant" only dealing with assignments and not value semantics is a long and dirty story. It seems a high degree of developers in just about every language that has a `const` stumble over the same sorts of confusions. Java in fact deprecated `const` and introduced a new keyword `final` at least in part to separate itself from the confusion over "constant" semantics.
+围绕`const`和“常量”的混淆只处理赋值而不处理值语义，可以长篇大论了。似乎每一种语言中都有相当多的开发人员遇到了相同类型的混淆。实际上，Java反对使用const，并引入了一个新的关键字final，至少在一定程度上是为了将自己从“常量”语义的混乱中分离出来。
 
-Setting aside the confusion detractions, what importance does `const` hold for the FPer, if not to have anything to do with creating an immutable value?
+抛开混淆的影响，如果`const`与创建不可变值没有任何关系，那么它对于FPer有什么重要性呢?
 
-### Intent
+### 意图
 
-The use of `const` tells the reader of your code that *that* variable will not be reassigned. As a signal of intent, `const` is often highly lauded as a welcome addition to JavaScript and a universal improvement in code readability.
+`const`的使用告诉代码的读者，*那个*变量不会被重新分配。作为意图的一个信号，`const`通常被高度赞扬为JavaScript的一个受欢迎的附加功能，并在代码可读性方面得到了普遍的改进。
 
-In my opinion, this is mostly hype; there's not much substance to these claims. I see only the mildest of faint benefit in signaling your intent in this way. And when you match that up against decades of precedent around confusion about it implying value immutability, I don't think `const` comes close to carrying its own weight.
+在我看来，这主要是炒作;这些说法没有多少实质内容。我只看到用这种方式表示你的意图所带来的最轻微的好处。而当你把这个数字与几十年来围绕它的困惑(暗示着值的不变性)进行对比时，我不认为`const`有什么分量。
 
-To back up my assertion, let's consider scope. `const` creates a block scoped variable, meaning that variable only exists in that one localized block:
+为了支持我的断言，让我们考虑作用域。`const`创建了一个块作用域的变量，这意味着变量只存在于一个本地化的块中:
 
 ```js
-// lots of code
+// 一些代码
 
 {
     const x = 2;
 
-    // a few lines of code
+    // 几行代码
 }
 
-// lots of code
+// 一些代码
 ```
 
-Typically, blocks are considered best designed to be only a few lines long. If you have blocks of more than say 10 lines, most developers will advise you to refactor. So `const x = 2` only applies to those next nine lines of code at most.
+通常，块被认为是最好的设计只有几行。如果您的代码块超过10行，大多数开发人员会建议您重构。所以`const x = 2`最多只适用于后面的9行代码。
 
-No other part of the program can ever affect the assignment of `x`. **Period.**
+程序的任何其他部分都不能影响`x`的赋值。
 
-My claim is that program has basically the same magnitude of readability as this one:
+我的主张是，程序的可读性基本上与这个相同:
 
 ```js
-// lots of code
+// 一些代码
 
 {
     let x = 2;
 
-    // a few lines of code
+    // 几行代码
 }
 
-// lots of code
+// 一些代码
 ```
 
-If you look at the next few lines of code after `let x = 2;`, you'll be able to easily tell that `x` is in fact *not* reassigned. That to me is a **much stronger signal** -- actually not reassigning it! -- than the use of some confusable `const` declaration to say "won't reassign it".
+如果您查看`let x = 2;`后面的几行代码，您将能够很容易地看出`x`实际上“没有”重新分配。对我来说，这是一个**更强的信号**——实际上不是重新分配它!——而不是使用一些容易混淆的 `const`声明来表示“不会重新分配它”。
 
-Moreover, let's consider what this code is likely to communicate to a reader at first glance:
+此外，让我们考虑一下这段代码可能第一眼就传达给读者的信息:
 
 ```js
 const magicNums = [1,2,3,4];
 ```
 
-Isn't it at least possible (probable?) that the reader of your code will assume (wrongly) that your intent is to never mutate the array? That seems like a reasonable inference to me. Imagine their confusion if later you do in fact allow the array value referenced by `magicNums` to be mutated. Might that surprise them?
+难道您的代码的读者(错误地)认为您的意图是永远不修改数组，这至少是可能的(可能的)吗?对我来说，这似乎是一个合理的推论。想象一下他们的疑惑，如果稍后您实际上允许`magicNums`引用的数组值发生突变。这会让他们感到惊讶吗?
 
-Worse, what if you intentionally mutate `magicNums` in some way that turns out to not be obvious to the reader? Subsequently in the code, they see a usage of `magicNums` and assume (again, wrongly) that it's still `[1,2,3,4]` because they read your intent as, "not gonna change this".
+更糟的是，如果您故意以某种方式修改`magicNums`，结果却不为读者所知，该怎么办?随后，在代码中，他们看到了`magicNums`的用法，并假设(同样是错误的)它仍然是`[1,2,3,4]`，因为他们将您的意图理解为“不会更改这个”。
 
-I think you should use `var` or `let` for declaring variables to hold values that you intend to mutate. I think that actually is a **much clearer signal** of your intent than using `const`.
+我认为您应该使用`var`或`let`来声明变量，以保存要进行更改的值。我认为这实际上比使用`const`更清楚地表达了你的意图。
 
-But the troubles with `const` don't stop there. Remember we asserted at the top of the chapter that to treat values as immutable means that when our state needs to change, we have to create a new value instead of mutating it? What are you going to do with that new array once you've created it? If you declared your reference to it using `const`, you can't reassign it.
+但`const`的麻烦还不止于此。还记得我们在这一章的开头说过，要将值视为不可变的，就意味着当我们的状态需要更改时，我们必须创建一个新值，而不是对它进行修改吗?一旦你创建了这个新数组，你打算怎么处理它?如果使用`const`声明对它的引用，则不能重新分配它。
+
 
 ```js
 const magicNums = [1,2,3,4];
 
-// later:
-magicNums = magicNums.concat( 42 );  // oops, can't reassign!
+// 然后:
+magicNums = magicNums.concat( 42 );  // 噢, 不能重新分配
 ```
 
-So... what next?
+那么，下一步怎么做？
 
 In this light, I see `const` as actually making our efforts to adhere to FP harder, not easier. My conclusion: `const` is not all that useful. It creates unnecessary confusion and restricts us in inconvenient ways. I only use `const` for simple constants like:
 
