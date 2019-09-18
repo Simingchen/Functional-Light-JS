@@ -100,7 +100,7 @@ addValue( [1,2,3] );    // [1,2,3,4]
 
 `arr`引用的数组实际上是可变的。我们只是选择不去改变它，所以我们实践了价值不变的精神。
 
-我们也可以对对象使用复制而不是变异的策略。 思考:
+我们也可以对对象使用复制而不是变异的策略。思考下:
 
 ```js
 function updateLastLogin(user) {
@@ -116,15 +116,15 @@ var user = {
 user = updateLastLogin( user );
 ```
 
-### Non-Local
+### 非局部
 
-Non-primitive values are held by reference, and when passed as arguments, it's the reference that's copied, not the value itself.
+非原始值由引用持有，当作为参数传递时，复制的是引用，而不是值本身。
 
-If you have an object or array in one part of the program, and pass it to a function that resides in another part of the program, that function can now affect the value via this reference copy, mutating it in possibly unexpected ways.
+如果在程序的一个部分中有一个对象或数组，并将其传递给在程序另一个部分中的函数，那么该函数现在可以通过这个引用副本影响值，并以可能意想不到的方式对其进行修改。
 
-In other words, if passed as arguments, non-primitive values become non-local. Potentially the entire program has to be considered to understand whether such a value will be changed or not.
+换句话说，如果作为参数传递，非原始值将变为非本地值。可能需要考虑整个程序来理解是否会更改这样的值。
 
-Consider:
+思考:
 
 ```js
 var arr = [1,2,3];
@@ -134,23 +134,23 @@ foo( arr );
 console.log( arr[0] );
 ```
 
-Ostensibly, you're expecting `arr[0]` to still be the value `1`. But is it? You don't know, because `foo(..)` *might* mutate the array using the reference copy you pass to it.
+从表面上看，您期望`arr[0]`仍然是值`1`。但真的是这样吗?您不知道，因为`foo(..)` *可能*使用传递给它的引用副本更改了数组。
 
-We already saw a trick in the previous chapter to avoid such a surprise:
+我们在前一章已经看到了一个避免这种意外的技巧:
 
 ```js
 var arr = [1,2,3];
 
-foo( [...arr] );         // ha! a copy!
+foo( [...arr] );         // 拷贝一个数组
 
 console.log( arr[0] );      // 1
 ```
 
-In a little bit, we'll see another strategy for protecting ourselves from a value being mutated out from underneath us unexpectedly.
+稍后，我们将看到另一种策略，用于保护不受来自下面的值意外突变的影响。
 
-## Reassignment
+##  重赋值
 
-How would you describe what a "constant" is? Think about that for a moment before you move on to the next paragraph.
+你如何描述什么是“常量”?在你进入下一段之前想一下这个问题。
 
 <p align="center">
     * * * *
