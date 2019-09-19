@@ -369,7 +369,7 @@ function outer() {
 }
 ```
 
-We could imagine that the scope -- the set of all variables defined -- of `outer()` is implemented as an object with properties. So, conceptually, somewhere in memory, there's something like:
+我们可以想象，`outer()`的作用域(定义的所有变量的集合)被实现为一个带有属性的对象。所以，从概念上讲，在内存的某个地方，类似有这样的东西:
 
 ```js
 scopeOfOuter = {
@@ -377,14 +377,14 @@ scopeOfOuter = {
 };
 ```
 
-And then for the `inner()` function, when created, it gets an (empty) scope object called `scopeOfInner`, which is linked via its `[[Prototype]]` to the `scopeOfOuter` object, sorta like this:
+然后对于`inner()`函数，当创建时，它得到一个(空的)作用域对象叫做`scopeOfInner`，它通过它的`[[Prototype]]`链接到`scopeOfOuter`对象，大概是这样的:
 
 ```js
 scopeOfInner = {};
 Object.setPrototypeOf( scopeOfInner, scopeOfOuter );
 ```
 
-Then, inside `inner()`, when it makes reference to the lexical variable `x`, it's actually more like:
+然后，在`inner()`内部，当它引用词法变量`x`时，它实际上更像是:
 
 ```js
 return scopeOfInner.x;
