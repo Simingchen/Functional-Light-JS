@@ -1,4 +1,3 @@
-
 # 章节1：为什么要函数式编程?
 
 > 函数编程人员：（名词）将变量命名为“x”，将函数命名为“f”，并将代码模式命名为“zygohistomorphic prepromorphism”。
