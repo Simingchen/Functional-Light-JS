@@ -390,33 +390,33 @@ Object.setPrototypeOf( scopeOfInner, scopeOfOuter );
 return scopeOfInner.x;
 ```
 
-`scopeOfInner` doesn't have an `x` property, but it's `[[Prototype]]`-linked to `scopeOfOuter`, which does have an `x` property. Accessing `scopeOfOuter.x` via prototype delegation results in the `1` value being returned.
+`scopeOfInner`没有`x`属性，但它是[[Prototype]]` -链接到`scopeOfOuter`，它确实有`x`属性。通过原型委托访问`scopeOfOuter.x`将返回“1”值。
 
-In this way, we can sorta see why the scope of `outer()` is preserved (via closure) even after it finishes: because the `scopeOfInner` object is linked to the `scopeOfOuter` object, thereby keeping that object and its properties alive and well.
+通过这种方式，我们可以看到为什么`outer()` 的作用域(通过闭包)在完成之后仍然保留:因为`scopeOfInner`对象与`scopeOfOuter`对象相链接，从而保持该对象及其属性的活动和状态。
 
-Now, this is all conceptual. I'm not literally saying the JS engine uses objects and prototypes. But it's entirely plausible that it *could* work similarly.
+这些都是概念性的。我并不是说JS引擎使用对象和原型。但它完全有可能以类似的方式工作。
 
-Many languages do in fact implement closures via objects. And other languages implement objects in terms of closures. But we'll let the reader use their imagination on how that would work.
+实际上，许多语言都通过对象实现闭包。其他语言使用闭包实现对象。但我们会让读者发挥他们的想象力来理解它是如何运作的。
 
-## Two Roads Diverged in a Wood...
+## 两个观点
 
-So closures and objects are equivalent, right? Not quite. I bet they're more similar than you thought before you started this chapter, but they still have important differences.
+闭包和对象是等价的?不完全是。我打赌它们比您在开始本章之前所认为的更相似，但是它们仍然有重要的区别。
 
-These differences should not be viewed as weaknesses or arguments against usage; that's the wrong perspective. They should be viewed as features and advantages that make one or the other more suitable (and readable!) for a given task.
+这些差异不应被视为缺点或反对使用的理由;这是错误的观点。它们应该被看作是使其中一个或另一个更适合(和可读!)用于给定任务的特性和优势。
 
-### Structural Mutability
+### 结构可变性
 
-Conceptually, the structure of a closure is not mutable.
+从概念上讲，闭包的结构不是可变的。
 
-In other words, you can never add to or remove state from a closure. Closure is a characteristic of where variables are declared (fixed at author/compile time), and is not sensitive to any runtime conditions -- assuming you use strict mode and/or avoid using cheats like `eval(..)`, of course!
+换句话说，您永远不能向闭包添加或删除状态。闭包是声明变量的一个特性(在作者/编译时固定)，并且不敏感于任何运行时条件——当然，假设您使用严格模式和/或避免使用`eval(..)`之类的欺骗自己不会出错的方式!
 
-**Note:** The JS engine could technically cull a closure to weed out any variables in its scope that are no longer going to be used, but this is an advanced optimization that's transparent to the developer. Whether the engine actually does these kinds of optimizations, I think it's safest for the developer to assume that closure is per-scope rather than per-variable. If you don't want it to stay around, don't close over it!
+注: JS引擎可以在技术上剔除一个闭包，以剔除其范围内不再使用的任何变量，但这是一个高级优化，对开发人员来说是透明的。无论引擎实际上是否执行这些优化，我认为对于开发人员来说，假设闭包是针对范围而不是针对变量的是最安全的。如果你不想让它作用域影响，就不要对他修改!
 
-However, objects by default are quite mutable. You can freely add or remove (`delete`) properties/indices from an object, as long as that object hasn't been frozen (`Object.freeze(..)`).
+然而，对象在默认情况下是相当可变的。您可以自由地从对象中添加或删除(`delete`)属性/索引，只要该对象没有被冻结(`Object.freeze(..)`)。
 
-It may be an advantage of the code to be able to track more (or less!) state depending on the runtime conditions in the program.
+根据程序中的运行时条件，可以跟踪更多(或更少)的状态，这可能是代码的一个优势。
 
-For example, let's imagine tracking the keypress events in a game. Almost certainly, you'll think about using an array to do this:
+例如，让我们想象一下在游戏中跟踪按键事件。几乎可以肯定的是，您将考虑使用数组来完成以下操作:
 
 ```js
 function trackEvent(evt,keypresses = []) {
@@ -428,11 +428,11 @@ var keypresses = trackEvent( newEvent1 );
 keypresses = trackEvent( newEvent2, keypresses );
 ```
 
-**Note:** Did you spot why I didn't `push(..)` directly to `keypresses`? Because in FP, we typically want to treat arrays as immutable data structures that can be re-created and added to, but not directly changed. We trade out the evil of side-effects for an explicit reassignment (more on that later).
+注:你注意到为什么我没有直接将`push(..)`推到`keypresses`中了吗?因为在FP中，我们通常希望将数组视为不可变的数据结构，可以重新创建并添加到其中，但不能直接更改。我们用副作用的影响来换取明确的重新分配(稍后会详细介绍)。
 
-Though we're not changing the structure of the array, we could if we wanted to. More on this in a moment.
+虽然我们没有改变数组的结构，但如果我们愿意，我们可以。稍后会详细介绍。
 
-But an array is not the only way to track this growing "list" of `evt` objects. We could use closure:
+但是数组并不是跟踪不断增长的`evt`对象“列表”的唯一方法。我们可以使用闭包:
 
 ```js
 function trackEvent(evt,keypresses = () => []) {
