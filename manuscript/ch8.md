@@ -30,17 +30,17 @@
 
 我非常喜欢递归，你也可以!不幸的是，许多递归的例子都集中在一些琐碎的学术任务上，比如生成斐波那契数列。如果你的程序中需要这些数字——让我们面对现实吧，这并不常见!——你可能会错过大局。
 
-As a matter of fact, recursion is one of the most important ways that FP developers avoid imperative looping and reassignment, by offloading the implementation details to the language and engine. When used properly, recursion is powerfully declarative for complex problems.
+事实上，递归是FP开发人员避免命令性循环和重新分配的最重要方法之一，方法是将实现细节转移到语言和引擎中。如果使用得当，递归对于复杂的问题具有强大的声明性。
 
-Sadly, recursion gets far less attention, especially in JS, than it should, in large part because of some very real performance (speed and memory) limitations. Our goal in this chapter is to dig deeper and find practical reasons that recursion should be front and center in our FP.
+遗憾的是，递归得到的关注要少得多，尤其是在JS中，这在很大程度上是因为一些非常实际的性能(速度和内存)限制。我们在这一章的目标是深入挖掘，并找到递归应该成为FP的首要和中心的实际原因。
 
-## Definition
+## 定义
 
-Recursion is when a function calls itself, and that call does the same, and this cycle continues until a base condition is satisfied and the call loop unwinds.
+递归是当一个函数调用它自己时，这个调用也做同样的事情，这个循环一直持续，直到满足一个基本条件，然后调用循环展开。
 
-**Warning:** If you don't ensure that a base condition is *eventually* met, recursion will run forever, and crash or lock up your program; the base condition is pretty important to get right!
+**警告:**如果不能确保最终满足基本条件，递归将永远运行，并导致程序崩溃或锁定;基本条件是相当重要的，以得到正确!
 
-But... that definition is too confusing in its written form. We can do better. Consider this recursive function:
+但是…那个定义的书面形式太混乱了。我们可以做得更好。考虑这个递归函数:
 
 ```js
 function foo(x) {
@@ -49,31 +49,31 @@ function foo(x) {
 }
 ```
 
-Let's visualize what happens with this function when we call `foo( 16 )`:
+让我们想象一下当我们调用`foo(16)`时这个函数会发生什么:
 
 <p align="center">
     <img src="images/fig13.png">
 </p>
 
-In step 2, `x / 2` produces `8`, and that's passed in as the argument to a recursive `foo(..)` call. In step 3, same thing, `x / 2` produces `4`, and that's passed in as the argument to yet another `foo(..)` call. That part is hopefully fairly straightforward.
+在步骤2中，`x / 2` 生成`8`，并将其作为参数传递给递归的`foo(..)`调用。在步骤3中，同样的事情，`x / 2` 生成 `4`，并作为参数传递给另一个`foo(..)`调用。这部分应该很简单
 
-But where someone may often get tripped up is what happens in step 4. Once we've satisfied the base condition where `x` (value `4`) is `< 5`, we no longer make any more recursive calls, and just (effectively) do `return 4`. Specifically the dotted line return of `4` in this figure simplifies what's happening there, so let's dig into that last step and visualize it as these three sub-steps:
+但有些人可能经常犯错的地方是步骤4。一旦我们满足了`x` (值`4`)为 `< 5` 的基本条件，我们就不再执行任何递归调用，而只是(有效地)执行 `return 4`。具体来说，图中虚线返回的 `4` 简化了这里发生的事情，所以让我们深入研究最后一步，并将其可视化为以下三个子步骤:
 
 <p align="center">
     <img src="images/fig14.png">
 </p>
 
-Once the base condition is satisfied, the returned value cascades back through all of the current function calls (and thus `return`s), eventually `return`ing the final result out.
+一旦基本条件得到满足，返回的值将通过所有当前函数调用级联返回，最终 `return` 输出最终结果。
 
-Another way to visualize this recursion is by considering the function calls in the order they happen (commonly referred to as the call stack):
+另一种可视化这种递归的方法是考虑函数调用的发生顺序(通常称为调用堆栈):
 
 <p align="center">
     <img src="images/fig19.png" width="30%">
 </p>
 
-More on the call stack later in this chapter.
+本章稍后将详细介绍调用堆栈。
 
-Another recursion example:
+另一个递归的例子:
 
 ```js
 function isPrime(num,divisor = 2){
@@ -88,9 +88,9 @@ function isPrime(num,divisor = 2){
 }
 ```
 
-This prime checking basically works by trying each integer from `2` up to the square root of the `num` being checked, to see if any of them divide evenly (`%` mod returning `0`) into the number. If any do, it's not a prime. Otherwise, it must be prime. The `divisor + 1` uses the recursion to iterate through each possible `divisor` value.
+这个质数检查基本上是通过尝试从`2` 到被检查的`num`的平方根的每个整数来工作的，看看它们中是否有一个被均匀地除(`%` mod返回 `0`)到这个数字。如果有的话，它不是质数。否则，它必须是质数。`divisor + 1` 使用递归遍历每个可能的“除数”值。
 
-One of the most famous examples of recursion is calculating a Fibonacci number, where the sequence is defined as:
+递归最著名的例子之一是计算斐波那契数列，其中序列定义为:
 
 ```txt
 fib( 0 ): 0
@@ -99,9 +99,9 @@ fib( n ):
     fib( n - 2 ) + fib( n - 1 )
 ```
 
-**Note:** The first several numbers of this sequence are: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, ... Each number is the addition of the previous two numbers in the sequence.
+**注意:**这个序列的前几个数字是:0、1、1、2、3、5、8、13、21、34、…每个数字都是序列中前两个数字的加法。
 
-The definition of Fibonacci expressed directly in code:
+Fibonacci（斐波那契）的定义直接用代码表示:
 
 ```js
 function fib(n) {
@@ -110,9 +110,9 @@ function fib(n) {
 }
 ```
 
-`fib(..)` calls itself recursively twice, which is typically referred to as binary recursion. We'll talk more about binary recursion later.
+`fib(..)` 两次递归地调用自己，通常称为二进制递归。稍后我们会详细讨论二进制递归。
 
-We'll use `fib(..)` variously throughout this chapter to illustrate ideas around recursion, but one downside to this particular form is that there's an awful lot of duplicated work. `fib(n-1)` and `fib(n-2)` don't share any of their work with each other, but overlap with each other almost entirely, over the entire integer space down to `0`.
+我们将在本章中多次使用`fib(..)`来说明递归的概念，但是这种特殊形式的一个缺点是有大量的重复工作。`fib(n-1)` 和 `fib(n-2)` 彼此之间没有任何工作，但几乎完全重叠，在整个整数空间直到`0`。
 
 We briefly touched on memoization in [Chapter 5, "Performance Effects"](ch5.md/#performance-effects). Here, memoization would allow the `fib(..)` of any given number to be computed only once, instead of being recomputed many times. We won't go further into that topic here, but that performance caveat is important to keep in mind with any algorithm, recursive or not.
 
