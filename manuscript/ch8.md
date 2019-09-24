@@ -1,13 +1,12 @@
-# Functional-Light JavaScript
-# Chapter 8: Recursion
+# 章节 8: 递归
 
-Did you have fun down our little closures/objects rabbit hole in the previous chapter? Welcome back!
+你在前一章的闭包/对象了解的怎么样?现在欢迎回来!
 
-On the next page, we're going to jump into the topic of recursion.
+下一页，我们将直接进入递归的话题。
 
 <hr>
 
-*(rest of the page intentionally left blank)*
+*(这一页的其余部分故意留白)*
 
 <p>&nbsp;</p>
 <p>&nbsp;</p>
@@ -23,13 +22,13 @@ On the next page, we're going to jump into the topic of recursion.
 
 <div style="page-break-after: always;"></div>
 
-Let's talk about recursion. Before we dive in, consult the previous page for the formal definition.
+我们来谈谈递归。在深入讨论之前，请参阅前一页中的正式定义。
 
-Weak joke, I know. :)
+我知道这是个蹩脚的笑话。 :)
 
-Recursion is one of those programming techniques that most developers admit can be very powerful, but also most of them don't like to use it. I'd put it in the same category as regular expressions, in that sense. Powerful, but confusing, and thus seen as *not worth the effort*.
+递归是大多数开发人员都承认非常强大的编程技术之一，但是大多数开发人员也不喜欢使用它。在这个意义上，我把它和正则表达式放在同一个类别。强大，但令人困惑，因此被视为“不值得努力”。
 
-I'm a big fan of recursion, and you can, too! Unfortunately, many examples of recursion focus on trivial academic tasks like generating Fibonacci sequences. If you're needing those kinds of numbers in your program -- and let's face it, that's not very common! -- you'll likely miss the big picture.
+我非常喜欢递归，你也可以!不幸的是，许多递归的例子都集中在一些琐碎的学术任务上，比如生成斐波那契数列。如果你的程序中需要这些数字——让我们面对现实吧，这并不常见!——你可能会错过大局。
 
 As a matter of fact, recursion is one of the most important ways that FP developers avoid imperative looping and reassignment, by offloading the implementation details to the language and engine. When used properly, recursion is powerfully declarative for complex problems.
 
