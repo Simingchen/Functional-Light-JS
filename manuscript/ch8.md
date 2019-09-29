@@ -373,63 +373,65 @@ baz();
 
 这类技术通常称为末尾调用优化(Tail Call optimization, TCO)，但重要的是要区分检测要在固定内存空间中运行的末尾调用的能力和优化此方法的技术。从技术上讲，tail调用本身并不是大多数人认为的性能优化，因为它们实际上可能比正常调用运行得慢。TCO是关于优化末尾调用以更有效地运行。
 
-### Proper Tail Calls (PTC)
+### 正确的末尾调用 (PTC)
 
-JavaScript has never required (nor forbidden) tail calls, until ES6. ES6 mandates recognition of tail calls, of a specific form referred to as Proper Tail Calls (PTC), and the guarantee that code in PTC form will run without unbounded stack memory growth. Practically speaking, this means we should not get `RangeError`s thrown if we adhere to PTC.
+JavaScript从来没有要求(或禁止)末尾调用，直到ES6。ES6要求对末尾调用(称为适当的末尾调用(PTC))的特定形式的末尾调用进行识别，并保证PTC形式的代码在没有无限制堆栈内存增长的情况下运行。实际上，这意味着如果我们坚持PTC，就不会抛出RangeError。
 
-First, PTC in JavaScript requires strict mode. You should already be using strict mode, but if you aren't, this is yet another reason you should already be using strict mode. Did I mention, yet, you should already be using strict mode!?
+首先，JavaScript中的PTC需要严格的模式。您应该已经使用了严格模式，但是如果您没有使用严格模式，这是您应该使用严格模式的另一个原因。我提过吗，你应该已经使用严格模式了!?
 
-Second, a *proper* tail call looks like this:
+其次，一个“适当的”尾部调用是这样的:
 
 ```js
 return foo( .. );
 ```
 
-In other words, the function call is the last thing to execute in the surrounding function, and whatever value it returns is explicitly `return`ed. In this way, JS can be absolutely guaranteed that the current stack frame won't be needed anymore.
+换句话说，函数调用是在周围函数中执行的最后一件事，它返回的任何值都显式地`return`。通过这种方式，JS可以绝对保证不再需要当前栈帧。
 
-These *are not* PTC:
+这些都不是 PTC:
 
 ```js
 foo();
 return;
 
-// or
+// 或者
 
 var x = foo( .. );
 return x;
 
-// or
+// 或者
 
 return 1 + foo( .. );
 ```
 
-**Note:** A JS engine, or a smart transpiler, *could* do some code reorganization to treat `var x = foo(); return x;` effectively the same as `return foo();`, which would then make it eligible for PTC. But that is not required by the specification.
+注:一个JS引擎，或者一个智能换行器，*可以*做一些代码重组来处理`var x = foo(); return x;`实际上与`return foo();`相同，这将使它符合PTC的条件。但这不是规范所要求的。
+
+`1 +`部分肯定是在 `foo(..)`完成后处理的，因此堆栈帧必须保持不变。
 
 The `1 +` part is definitely processed *after* `foo(..)` finishes, so the stack frame has to be kept around.
 
-However, this *is* PTC:
+然而, 这样的是 PTC:
 
 ```js
 return x ? foo( .. ) : bar( .. );
 ```
 
-After the `x` condition is computed, either `foo(..)` or `bar(..)` will run, and in either case, the return value will always be `return`ed back. That's PTC form.
+在计算了`x`条件之后，将运行`foo(..)`或`bar(..)`，在这两种情况下，返回值总是`return。这就是PTC的形式。
 
-Binary (or multiple) recursion -- as shown earlier, two (or more!) recursive calls made at each level -- can never be fully PTC as-is, because all the recursion has to be in tail call position to avoid the stack growth; at most, only one recursive call can appear in PTC position.
+二进制(或多个)递归——如前所述，在每个级别上执行两个(或多个)递归调用——永远不可能完全按原样执行PTC，因为所有递归都必须位于尾部调用位置，以避免堆栈增长;在PTC位置最多只能出现一个递归调用。
 
-Earlier, we showed an example of refactoring from binary recursion to mutual recursion. It may be possible to achieve PTC from a multiple-recursive algorithm by splitting each into separate function calls, where each is expressed respectively in PTC form. However, that type of intricate refactoring is highly dependent on the scenario, and beyond the scope of what we can cover in this text.
+前面，我们展示了一个从二进制递归重构到互递归的例子。通过将每个函数调用分割成单独的函数调用，其中每个函数调用分别以PTC的形式表示，可以从一个多递归算法中实现PTC。然而，这种类型的复杂重构高度依赖于场景，并且超出了我们在本文中所能涵盖的范围。
 
-## Rearranging Recursion
+## 重新安排递归
 
-If you want to use recursion but your problem set could grow enough eventually to exceed the stack limit of the JS engine, you're going to need to rearrange your recursive calls to take advantage of PTC (or avoid nested calls entirely). There are several refactoring strategies that can help, but there are of course trade-offs to be aware of.
+如果您想使用递归，但是您的问题集最终可能增长到超过JS引擎的堆栈限制，那么您需要重新安排递归调用，以利用PTC(或者完全避免嵌套调用)。有几种重构策略可以提供帮助，但当然也有一些需要注意的权衡。
 
-As a word of caution, always keep in mind that code readability is our overall most important goal. If recursion along with some combination of the strategies described here results in code that is harder to read/understand, **don't use recursion**; find another more readable approach.
+需要注意的是，始终牢记代码可读性是我们整体上最重要的目标。如果递归和这里描述的一些策略的组合导致代码更难读/理解，**不要使用递归**;寻找另一种更易于阅读的方法。
 
-### Replacing the Stack
+### 更换栈
 
-The main problem with recursion is its memory usage, keeping around the stack frames to track the state of a function call while it dispatches to the next recursive call iteration. If we can figure out how to rearrange our usage of recursion so that the stack frame doesn't need to be kept, then we can express recursion with PTC and take advantage of the JS engine's optimized handling of tail calls.
+递归的主要问题是它的内存使用，在函数调用被分派到下一个递归调用迭代时，保持堆栈帧的状态来跟踪函数调用的状态。如果我们能够重新安排递归的用法，使堆栈框架不需要保留，那么我们就可以使用PTC来表示递归，并利用JS引擎对末尾调用的优化处理。
 
-Let's recall the summation example from earlier:
+让我们回忆一下前面的求和例子:
 
 ```js
 function sum(num1,...nums) {
@@ -438,11 +440,11 @@ function sum(num1,...nums) {
 }
 ```
 
-This isn't in PTC form because after the recursive call to `sum(...nums)` is finished, the `total` variable is added to that result. So, the stack frame has to be preserved to keep track of the `total` partial result while the rest of the recursion proceeds.
+这不是PTC形式，因为在递归调用`sum(...nums)` 完成后，`total`变量将添加到该结果中。因此，必须保留堆栈帧，以便在递归的其余部分继续进行时跟踪`total`部分结果。
 
-The key recognition point for this refactoring strategy is that we could remove our dependence on the stack by doing the addition *now* instead of *after*, and then forward-passing that partial result as an argument to the recursive call. In other words, instead of keeping `total` in the current function's stack frame, push it into the stack frame of the next recursive call; that frees up the current stack frame to be removed/reused.
+这种重构策略的关键识别点是，我们可以通过添加*now*而不是*after*来消除对堆栈的依赖，然后将部分结果作为参数转发给递归调用。换句话说，不要将`total`保存在当前函数的堆栈帧中，而是将它推入下一次递归调用的堆栈帧中;这将释放当前堆栈帧，以便删除/重用。
 
-To start, we could alter our `sum(..)` function's signature to have a new first parameter as the partial result:
+首先，我们可以改变我们的`sum(..)`函数的签名，以获得一个新的第一个参数作为部分结果:
 
 ```js
 function sum(result,num1,...nums) {
@@ -450,7 +452,7 @@ function sum(result,num1,...nums) {
 }
 ```
 
-Now, we should pre-calculate the addition of `result` and `num1`, and pass that along:
+现在，我们应该预先计算`result`和`num1`的加法，并传递下去:
 
 ```js
 "use strict";
@@ -462,17 +464,17 @@ function sum(result,num1,...nums) {
 }
 ```
 
-Now our `sum(..)` is in PTC form! Yay!
+现在我们的`sum(..)`已经是PTC格式了!耶!
 
-But the downside is we now have altered the signature of the function that makes using it stranger. The caller essentially has to pass `0` as the first argument ahead of the rest of the numbers they want to sum:
+但是缺点是我们现在已经改变了函数的签名，使得使用它变得更加奇怪。调用者本质上必须将`0`作为第一个参数传递给他们想要求和的其他数字:
 
 ```js
 sum( /*initialResult=*/0, 3, 1, 17, 94, 8 );        // 123
 ```
 
-That's unfortunate.
+这是不幸的。
 
-Typically, people will solve this by naming their awkward-signature recursive function differently, then defining an interface function that hides the awkwardness:
+通常，人们会通过不同的命名他们的笨拙签名递归函数来解决这个问题，然后定义一个接口函数来隐藏这种笨拙:
 
 ```js
 "use strict";
@@ -490,7 +492,7 @@ function sum(...nums) {
 sum( 3, 1, 17, 94, 8 );                             // 123
 ```
 
-That's better. Still unfortunate that we've now created multiple functions instead of just one. Sometimes you'll see developers "hide" the recursive function as an inner function, like this:
+这是更好的。不幸的是，我们现在已经创建了多个函数，而不是一个。有时您会看到开发人员将递归函数“隐藏”为一个内部函数，如下所示:
 
 ```js
 "use strict";
@@ -508,7 +510,7 @@ function sum(...nums) {
 sum( 3, 1, 17, 94, 8 );                             // 123
 ```
 
-The downside here is that we'll re-create that inner `sumRec(..)` function each time the outer `sum(..)` is called. So, we can go back to them being side-by-side functions, but hide them both inside an IIFE, and expose just the one we want to:
+这里的缺点是，每次调用外部`sum(..)`函数时，我们都会重新创建内部的`sumRec(..)`函数。所以，我们可以回到它们是并排的函数，但是把它们都隐藏在一个生命周期中，并且只暴露我们想要的一个:
 
 ```js
 "use strict";
@@ -530,11 +532,11 @@ var sum = (function IIFE(){
 sum( 3, 1, 17, 94, 8 );                             // 123
 ```
 
-OK, we've got PTC and we've got a nice clean signature for our `sum(..)` that doesn't require the caller to know about our implementation details. Yay!
+好的，我们已经有了PTC，并且我们已经为`sum(..)`有了一个干净漂亮的签名，它不需要调用者知道我们的实现细节。耶!
 
-But... wow, our simple recursive function has a lot more noise now. The readability has definitely been reduced. That's unfortunate to say the least. Sometimes, that's just the best we can do.
+但是…哇，我们简单的递归函数现在有很多干扰。可读性确实降低了。至少可以说，这是不幸的。有时候，这是我们能做的最好的了。
 
-Luckily, in some other cases, like the present one, there's a better way. Let's reset back to this version:
+幸运的是，在其他一些情况下，比如现在，有一个更好的方法。让我们回到这个版本:
 
 ```js
 "use strict";
@@ -548,7 +550,7 @@ function sum(result,num1,...nums) {
 sum( /*initialResult=*/0, 3, 1, 17, 94, 8 );        // 123
 ```
 
-What you might observe is that `result` is a number just like `num1`, which means that we can always treat the first number in our list as our running total; that includes even the first call. All we need is to rename those params to make this clear:
+您可能会注意到，`result`是一个与`num1`类似的数字，这意味着我们总是可以将列表中的第一个数字作为运行总数;这甚至包括第一次通话。我们所需要做的就是重新命名这些参数，以明确这一点:
 
 ```js
 "use strict";
@@ -562,7 +564,7 @@ function sum(num1,num2,...nums) {
 sum( 3, 1, 17, 94, 8 );                             // 123
 ```
 
-Awesome. That's much better, huh!? I think this pattern achieves a good balance between declarative/reasonable and performant.
+太棒了。好多了，是吧?我认为这种模式在声明性/合理性和性能之间取得了很好的平衡。
 
 Let's try refactoring with PTC once more, revisiting our earlier `maxEven(..)` (currently not PTC). We'll observe that similar to keeping the sum as the first argument, we can narrow the list of numbers one at a time, keeping the first argument as the highest even we've come across thus far.
 
