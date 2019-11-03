@@ -334,7 +334,7 @@ function filterOut(predicateFn,arr) {
 }
 ```
 
-Now we can use whichever filtering makes most sense at any point in our code:
+现在我们可以在代码的任何地方选用最合理的过滤器:
 
 ```js
 isOdd( 3 );                             // true
@@ -344,46 +344,46 @@ filterIn( isOdd, [1,2,3,4,5] );         // [1,3,5]
 filterOut( isEven, [1,2,3,4,5] );       // [1,3,5]
 ```
 
-I think using `filterIn(..)` and `filterOut(..)` (known as `reject(..)` in Ramda) will make your code a lot more readable than just using `filter(..)` and leaving the semantics conflated and confusing for the reader.
+我认为使用 `filterIn(..)` 和 `filterOut(..)` (在Ramda中称为 `reject(..)` )将使您的代码比仅仅使用 `filter(..)` 更具有可读性，并避免使读者混淆语义。
 
-## Reduce
+## Reduce 函数
 
-While `map(..)` and `filter(..)` produce new lists, typically this third operator (`reduce(..)`) combines (aka "reduces") the values of a list down to a single finite (non-list) value, like a number or string. However, later in this chapter, we'll look at how you can push `reduce(..)` to use it in more advanced ways. `reduce(..)` is one of the most important FP tools; it's like a Swiss Army all-in-one knife with all its usefulness.
+当 `map(..)` 和 `filter(..)` 生成新列表时，通常第三个操作函数(`reduce(..)`)将列表的值合并(也称为"reduce ")为单个有限(非列表)值，如数字或字符串。但是，在本章的后面，我们将看到如何推动`reduce(..)`以更高级的方式使用它。`reduce(..)`是最重要的FP工具之一;它就像一把瑞士军刀，功能齐全。
 
-A combination/reduction is abstractly defined as taking two values and making them into one value. Some FP contexts refer to this as "folding", as if you're folding two values together into one value. That's a helpful visualization, I think.
+组合/约简被抽象地定义为取两个值并使它们成为一个值。有些FP上下文将其称为“折叠”，就好像您将两个值折叠成一个值一样。我认为这是一个很有帮助的形象化。
 
-Just like with mapping and filtering, the manner of the combination is entirely up to you, and generally dependent on the types of values in the list. For example, numbers will typically be combined through arithmetic, strings through concatenation, and functions through composition.
+就像映射和过滤一样，组合的方式完全取决于您，通常取决于列表中值的类型。例如，数字通常通过算术组合，字符串通过连接，函数通过组合。
 
-Sometimes a reduction will specify an `initialValue` and start its work by combining it with the first value in the list, cascading down through each of the rest of the values in the list. That looks like this:
+有时，缩减会指定一个 `initialValue`，并通过将它与列表中的第一个值组合在一起来开始工作，然后通过列表中的其余每个值向下层叠。它是这样的:
 
 <p align="center">
     <img src="images/fig11.png" width="50%">
 </p>
 
-Alternatively, you can omit the `initialValue` in which case the first value of the list will act in place of the `initialValue` and the combining will start with the second value in the list, like this:
+或者，您可以省略`initialValue`，在这种情况下，列表的第一个值将代替`initialValue`，组合将从列表中的第二个值开始，如下所示:
 
 <p align="center">
     <img src="images/fig12.png" width="50%">
 </p>
 
-**Warning:** In JavaScript, if there's not at least one value in the reduction (either in the array or specified as `initialValue`), an error is thrown. Be careful not to omit the `initialValue` if the list for the reduction could possibly be empty under any circumstance.
+**警告:**在JavaScript中，如果reduction中没有至少一个值(要么在数组中，要么指定为`initialValue`)，则抛出一个错误。如果在任何情况下减少的列表可能是空的，注意不要忽略`initialValue`。
 
-The function you pass to `reduce(..)` to perform the reduction is typically called a reducer. A reducer has a different signature from the mapper and predicate functions we looked at earlier. Reducers primarily receive the current reduction result as well as the next value to reduce it with. The current result at each step of the reduction is often referred to as the accumulator.
+传递给 `reduce(..)` 以执行还原的函数通常称为减速器。与我们前面看到的映射器和谓词函数不同，减速器具有不同的签名。还原器主要接收当前还原结果以及下一个要还原它的值。每一步还原的当前结果通常称为累加器。（注：reducer 翻译为减速器）
 
-For example, consider the steps involved in multiply-reducing the numbers `5`, `10`, and `15`, with an `initialValue` of `3`:
+例如，考虑使用' 3 '的 `initialValue` 来减少数字' 5 '、' 10 '和' 15 '所涉及的步骤:
 
 1. `3` * `5` = `15`
 2. `15` * `10` = `150`
 3. `150` * `15` = `2250`
 
-Expressed in JavaScript using the built-in `reduce(..)` method on arrays:
+在JavaScript中表达使用内置的 `reduce(..)` 方法对数组:
 
 ```js
 [5,10,15].reduce( (product,v) => product * v, 3 );
 // 2250
 ```
 
-But a standalone implementation of `reduce(..)` might look like this:
+但是 `reduce(..)` 的独立实现可能是这样的:
 
 ```js
 function reduce(reducerFn,initialValue,arr) {
